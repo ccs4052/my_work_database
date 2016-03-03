@@ -1,0 +1,9 @@
+http://parsing.valemak.com/ru/php/import/curl/ - пример парсинга
+
+
+http://simplehtmldom.sourceforge.net/manual.htm - мануал и библиотека парсинга simple_html_dom
+https://davidwalsh.name/php-notifications - ѕример использовани€ библиотеки парсинга simple_html_dom.php
+
+
+
+http://www.simplecoding.org/parsing-xml-s-pomoshhyu-php.html

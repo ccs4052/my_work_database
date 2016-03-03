@@ -1,0 +1,18 @@
+function addComment(news_id){           //функция добавления коментариев изз модального окна
+    $('#modal-comment').modal('show');    //делаем модальное окно видимым
+    $('#modal-submit-button').click(function(){
+        var comment = $('#comment_user').val();     //take data frome the form (modal window)
+        var date = $('#date_user').val();
+        $.ajax({
+            type:'POST',
+            data:{id: news_id, com:comment,date:date},   //отправляем данные в контролер First в переменной comment
+            url:'First/add_comment',                    //Controller/action
+            success: function(response){
+                alert('Коментарий добавлен');
+            },
+            error: function(xht,str){
+                alert('Возникла ошибка: '+ xhr.responseCode);
+            },
+            complete:function(){
+                $('#modal-comment').modal('hide');
+            }

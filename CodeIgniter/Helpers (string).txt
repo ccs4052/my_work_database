@@ -1,0 +1,123 @@
+
+
+Helpers (помошники) загружают свои библиотеки которые ускоряют работу с разными типами данных в ПХП или функциями
+
+
+
+------------------ STRING
+------------------
+
+1) Создаем контролер для helpers в controllers/helpers.php
+
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed'); // BASEPATH путь к корневой папке мы указали в файле config
+
+class Helpers extends CI_Controller { 
+    function all_helpers(){       //для работы загружаем нужные хелперы что-бы библиотеки с их функциями работали
+    $this->load->helper('html');
+    $this->load->helper('text'); //загружаем функции класса helpers 
+    $this->load->helper('string'); // на данном примере расматриваем string
+    $this->load->view('helpers_view');
+    }
+}
+
+
+
+
+2)В папаки views/helpers_view.php - будем работать с функциями Хелпера string 
+
+<body>
+<?php
+//echo random_string('unique',10); //функция CI генерирует нам рендомную строку числовую но можно и alnum - буквычисла nozero  nozero - цифры без 0 и unique - будет генирировать рендом код из 32 символов
+
+/*$string = "Текст,, Текст,, Текст";
+echo reduce_multiples($string);  */   //функция убирает из строки повторяющиеся символы
+
+/*$string="Joe's \"dinner\"";
+echo strip_quotes($string); // Удаляет двойные и одинарные кавычки из строки.*/
+
+/*$string = "/this/that/theother/";
+echo trim_slashes($string); // Удаляет любые начальные/конечные косые черты из строки*/
+
+$string = "Текст \n"; //\n пробел
+echo repeater($string,10); //повторяет строку 10 раз
+
+?>
+</body>
+</html>
+
+
+
+------------------------
+------------------------ CAPTCHA
+Создает картинку для ввода данных (помогает от ботов при регистрации например)
+
+Создаем папку для captcha ./img/captcha/
+если каптча не работает то нада установить права дозаписывания на пипку в которую сохраняеться капча 
+chmod("./img/captcha", 0777);   //и тогда заработает
+если нет то тогда 
+chmod("./img/captcha", 0755);
+а потом 
+chmod("./img/captcha", 0777); 
+и заработает.
+ 
+загружаем в нашем контролере библиотеку captcha
+$this->load->helper('captcha');
+
+controllers/helpers.php 
+
+
+создадим капку где будут храниться картинки каптчи http://demo/cilessons/img/captcha/ - папка с капчей
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed'); // BASEPATH путь к корневой папке мы указали в файле config
+
+class Helpers extends CI_Controller {
+   function all_helpers(){
+    $this->load->helper('html');
+    $this->load->helper('text'); //загружаем функции класса helpers
+    $this->load->helper('string'); // на данном примере расматриваем string
+        $this->load->helper('captcha'); //загрузили библиотеку капча
+        $vals = array(
+            'word' => 'Random word', //слово которое мы увидим на капче
+            'img_path' =>'./img/captcha/', //'.img/captcha/', //путь к папке где храниться наша капча
+            'img_url' => 'http://demo/cilessons/img/captcha/', //url где храниться наша капа
+            'font_path' => './fonts/texb.ttf', //путь к папке со шрифтом которым будет написана капча у нас это стандартный шрифт в стандартной папке
+            'img_width' => '150', //ширина капчи
+            'img_height' => 30,
+            'expiration' => 10 //время в секундах сколько капча будет храниться в папке после она будет удаляться
+        );
+        $cap = create_captcha($vals); // функция create_captcha создаст нам картинку с этими значениями
+        echo $cap['image']; //выводим капчу
+        $this->load->view('helpers_view');
+    }
+}
+
+и в файле views/helpers_vews.php - будет отображаться капча с словом Random word
+
+
+
+----------Если хоти что-бы отображалось другое слово то сгенерируем его через helper('string')
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed'); // BASEPATH путь к корневой папке мы указали в файле config
+
+class Helpers extends CI_Controller {
+    function all_helpers(){
+    $this->load->helper('html');
+    $this->load->helper('text'); //загружаем функции класса helpers
+    $this->load->helper('string'); // на данном примере расматриваем string
+        $this->load->helper('captcha'); //загрузили библиотеку капча
+        $string = random_string('numeric',7); //функция работает через helper ('text')
+        $vals = array(
+            'word' => $string, //слово которое мы увидим на капче
+            'img_path' =>'./img/captcha/', //'.img/captcha/', //путь к папке где храниться наша капча
+            'img_url' => 'http://demo/cilessons/img/captcha/', //url где храниться наша капа
+            'font_path' => './fonts/texb.ttf', //путь к папке со шрифтом которым будет написана капча у нас это стандартный шрифт в стандартной папке
+            'img_width' => '150', //ширина капчи
+            'img_height' => 30,
+            'expiration' => 10 //время в секундах сколько капча будет храниться в папке после она будет удаляться
+        );
+        $cap = create_captcha($vals); // функция create_captcha создаст нам картинку с этими значениями
+        //echo $cap['image']; //выводим капчу
+        $this->load->view('helpers_view');
+    }
+}

@@ -1,0 +1,34 @@
+1) Изменить название сайта setting/system setting
+		 в фильтре настроек выбираем site
+ 	
+
+			- и меняем Site name на какой хотим
+
+	
+                        -Site start (1) каждая страница имеет свой индефикационый номер и нада указывать его в site start  ()
+
+  
+			 b) далее в фильтре указзываем friendly url   (для использования красивых URL и теперь все URL по всему сайту будут индивидуальными)
+
+	
+				- Use Friendly URLs - YES
+	
+				- Check for Duplicate URIs Across All  - YES
+	
+				- Use Friendly Alias Path - YES
+
+	-ЕСЛИ МЫ ВКЛЮЧИЛИ ВСЕ ЭТИ НАСТРОЙКИ то нужно включить .htaccess  (по умолчанию он такой ht.access изменить на такой .htaccess)
+
+
+2) Установка дополнений Extras/Package Management/Download Extras
+
+	
+
+	Для создания простого сайта достаточно 2-х плагинов
+
+	
+		-TinyMCE - нажать и загрузить
+	
+		-Wayfinder
+
+3) попасть в админ панель ввести в URL /manager

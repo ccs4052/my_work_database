@@ -1,0 +1,2 @@
+[2016-02-24 10:39:28] (ERROR @ /bogdan/MODX/manager/index.php) Could not find action file at: C:/xampp/htdocs/bogdan/MODX/manager/controllers/default/element/template
+[2016-02-25 08:55:34] (ERROR @ /bogdan/MODX/connectors/lang.js.php) Error caching lexicon topic lexicon/en/core/resource

@@ -1,0 +1,24 @@
+$(document).ready(function() {
+    $('tr').each(function(index){
+        //index передаем номер каждого tr(таблици в котором выведена информция )
+        $(this).children("td").first().attr('id',"td-"+index).draggable(); //(перетаскивать можно будет ПЕРВУЮ ЯЕЙКА СТРОКИ (по ней все будет происходить) )first() достаем первый id у дочернего td от родителя tr
+    });
+    $("#trashCan").droppable({              //id блока карзины куда будет бросать новость на удаление
+        drop: function(event, ui){          //метод drop
+            var thisId = ui.draggable.attr('id'); //id
+            var id_dell = ui.draggable.attr('data-id'); // вытаскиваем дата атрибут из ячейки TD в котором передем id новости которую удаляем
+            $('.'+thisId).remove();                     //для визуального эфекта удаляем строку таблици в которой записана эта новость (класс строки совпадает с ID клеточки таблици откуда перетаскиваем новость в блок КОРЗИНЫ)
+            $.ajax({                            //отправляем пост АЯКСОМ на ПХП для удаления новости из БД
+                type: 'POST',
+                data: {news_dell: id_dell},     //отправляем данные методом пост в ячейках с ключами id и sess
+                url: 'http://localhost/bogdan/OOP/index.php/delete_content',                    //url to send data
+                success: function (response) { //response
+                    $('.info').html('Успешно удалено');         //выводим информацию для юзера в блоке что все ОК
+                },
+                error: function (xht, str) {
+                    alert('Возникла ошибка: ' + xht.responseCode);
+                },
+            });
+        }
+    });
+});

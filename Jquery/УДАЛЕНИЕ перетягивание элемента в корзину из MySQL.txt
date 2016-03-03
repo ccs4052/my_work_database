@@ -1,0 +1,68 @@
+
+
+
+---------------------------------УДАЛЕНИЕ КОНТЕТА ИЗ БД - ПЕРЕТЯГИВАНИЕМ ЭЛЕМЕнТА В БЛОК КОРЗИНЫ
+
+
+--------HTML
+<div class="row">
+    <div id="trashCan" class="col-lg-3 delete">
+        Корзица
+    </div>
+</div>
+    <div style="width: 50%;left:50%;margin-left: 25%" class="panel panel-info">
+        <div class="row">
+            <div class="col-lg-4 info">
+                <!--Div to show user info -->
+            </div>
+        </div>
+        <?php $i=0;  //СЧЕТЧИК Который будет приписывать в КЛАССУ СТРОКИ и к ID ПЕРВОЙ ЯЕЙКИ по которой будем перетягивать и удалять новость
+		?>
+        <?php foreach($gbook_all as $row){ ?>
+        <div class="panel-body">
+            <table id="news_table" style="width: 100%" border="1px">
+                <tr class="td-<?php echo $i; ?>">
+                    <td id="td-<?php echo $i; ?>" data-id="<?php echo $row['id']; ?>" style="width: 20%"> //ДЛЯ УДАЛЕНИЯ передаем в АЯКС ДАТА АТРИБУТ с АЙДИ новости
+                        <?php echo $row['id']; ?>
+                    </td>
+                    <td style="width: 40%">
+                        <?php echo $row['name']; ?>
+                    </td>
+                    <td style="width: 40%">
+                        <?php echo $row['msg']; ?>
+                    </td>
+                </tr>
+            </table>
+        </div>
+		<?php $i++;  // УВЕЛИЧИВАЕМ СЧЕТЧИК с каждой итерацией
+		} ?>
+    </div>
+	
+	
+	
+	----------------------JS
+	
+$(document).ready(function(){
+    $('tr').each(function(index){
+        //index передаем номер каждого tr(таблици в котором выведена информция )
+        $(this).children("td").first().attr('id',"td-"+index).draggable() //(перетаскивать можно будет ПЕРВУЮ ЯЕЙКА СТРОКИ (по ней все будет происходить) )first() достаем первый id у дочернего td от родителя tr
+    });
+    $("#trashCan").droppable({              //id блока карзины куда будет бросать новость на удаление
+        drop: function(event, ui){          //метод drop
+            var thisId = ui.draggable.attr('id'); //id
+            var id_dell = ui.draggable.attr('data-id'); // вытаскиваем дата атрибут из ячейки TD в котором передем id новости которую удаляем
+            $('.'+thisId).remove();                     //для визуального эфекта удаляем строку таблици в которой записана эта новость (класс строки совпадает с ID клеточки таблици откуда перетаскиваем новость в блок КОРЗИНЫ)
+            $.ajax({                            //отправляем пост АЯКСОМ на ПХП для удаления новости из БД
+                type: 'POST',
+                data: {news_dell: id_dell},     //отправляем данные методом пост в ячейках с ключами id и sess
+                url: 'http://localhost/bogdan/OOP/main.php/delete_content',                    //url to send data
+                success: function (response) { //response
+                    $('.info').html('Успешно удалено');         //выводим информацию для юзера в блоке что все ОК
+                },
+                error: function (xht, str) {
+                    alert('Возникла ошибка: ' + xht.responseCode);
+                },
+            });
+        }
+    });
+});

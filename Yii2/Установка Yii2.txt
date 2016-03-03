@@ -1,0 +1,39 @@
+
+Для установки Yii2 качаем файл composer с сайта http://www.yiiframework.com/download/
+потом в Windows в командной строке пишем composer global require "fxp/composer-asset-plugin:~1.1.1" - и композер устанавливаеться
+СОЗДАЕМ yii2 в папке в которой мы хотим делть проэкт на этом фрейворке
+	-(Запускаем CMD из папке в которой хотим создать проэкт )В windows командная строка запускаеться с путем к папке к которой нада - зайти в папку а нажать shift+right_mouse_click и открыть командную строку надпись
+	- Потом в командной строке пишем composer create-project yiisoft/yii2-app-basic basic 2.0.6 (текущая версия yii2 ссылка отсюда http://www.yiiframework.com/download/)
+	- При установке если запросит токент то сделать токен по ссылке (https://github.com/settings/tokens) и ввести в командную строку сгенерированый токен
+	- Если вы установили версию yii2 basic то проэкт запуститься из папки basic/web
+	
+	
+	
+	
+	1)Подключение библиотек  css и JavaScript в файле assets/AppAsset
+		
+				public $css = [
+				'css/site.css',
+				'css/vasya.css',    //имя файла в view на который делаем css
+				];
+				public $js = [
+					'js/scripts_v1.js',
+				];
+				
+				--Вызываем в файдах так 
+				
+				//во вьюхе
+				$this->registerJsFile('path/to/myfile');
+				$this->registerCssFile('path/to/myfile');
+				 
+				//в контроллере или виджете
+				$this->view->registerJsFile('path/to/myfile');
+				$this->view->registerCssFile('path/to/myfile');
+				
+				
+				
+				
+		
+		
+		
+		

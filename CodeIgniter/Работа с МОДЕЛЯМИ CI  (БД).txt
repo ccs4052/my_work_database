@@ -1,0 +1,203 @@
+aplication/model
+
+--------------Работа с моделями в CI (codeigniter)
+Для работі с БД нада подключить библиотеку в папке config/autoload.php
+и пишем в файле вот так $autoload['libraries'] = array('database');
+
+-------------
+1)Создаем в папке models (для БД) файл articles_model.php который будет отправлять запрос в БД для работы с таблицей articles
+файл такого содержания 
+
+<?php
+if ( ! defined('BASEPATH'))  exit('No direct script access allowed');
+class Articles_model extends CI_Model { //файл с маленькой буквы а класс вызываем с большой (такое же название пишем что и сам файл)
+
+    function get_articles(){
+        //$this->db->limit('2'); //условие на то что-бы вывести 2 записи первые из всего запроса
+        //$this->db->where('id','1'); //из всего запроса делает выборку по полю date которое равно дате указаной
+        //$this->db->where('id>1'); // выводим все где id > 1
+        //$this->db->order_by('id','DESC'); //сортировка запроса от большего к меньшему по ID
+        $query =  $this->db->get('articles'); //используем готовые функции CI (get функция делает выборку по всей таблице БД)
+      return $query->result_array(); //возвращаем значение запроса в виде массива в функцию
+    }
+}
+-----------
+2) В папке controllers в файле с контролерам first.php создаем в классе First функцию для загрузки файла (articles_model)
+ и загрузки файла articles_views (файл который будет отображать нашь запрос в БД)
+ 
+first.php 
+
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed'); // BASEPATH путь к корневой папке мы указали в файле config
+//BASEPATH - http://demo/cilessons/index.php/
+class First extends CI_Controller { //файл с маленькой буквы а класс вызываем с большой (такое же название пишем что и сам файл)
+
+    public function index() //(эта функция загружаеться сама если вызвать класс First )сюда подгружаем виды из папки views
+    {                      //в нашем случае класс First вызываеться из командной строки так http://demo/cilessons/index.php/first и инфо которая содержиться в функции index загружаеться автоматически
+        $this->load->view('hello_views'); //load (означает загрузку айла) hello_views (имя файла который загружаем)
+    }
+    function articles(){
+        $this->load->model('articles_model'); //загрузили модель articles_model из папки models из файла articles_model
+        $data['articles'] = $this->articles_model->get_articles(); //создаем массив и в него помещаем содержимое функции get_articles из файла articles_model в папке models
+        $this->load->view('articles_views',$data); //загрузили вид и передали в него массив $data а теперь в views в файле articles_views нада вывести на экран содержимое фассива $data
+
+    }
+}
+
+
+
+3) Создаем файл articles_views в папке views который будет отображать нашь запрос из БД
+Он такого содержания 
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.ord/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Главная</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+    <link href="./css/index.css" rel="stylesheet" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"--></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+    <script src="./js/scripts_v1.js"></script>
+</head>
+<body>
+<?php
+foreach ($articles as $item){
+    echo '<pre>';
+    echo '<p>'.$item['date'].'</p>';
+    echo $item['title'];
+    echo $item['text'];
+    echo '</pre>';
+}
+?>
+
+<p>Новый вид</p>
+
+</body>
+</html>
+
+
+
+
+---------------------Добавление в базу данных через CI
+---------------------
+в папке controllers в файле first.php в классе First создаем функцию на добавление в БД
+
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed'); // BASEPATH путь к корневой папке мы указали в файле config
+class First extends CI_Controller { //файл с маленькой буквы а класс вызываем с большой (такое же название пишем что и сам файл)
+
+    function add_articles(){ //создаем функцию (для добавления новостей) в классе First для таблици новостей
+        $data['title'] = "Новая статья"; //создаем массив с названиями ячеек такими же как название столбцов таблици
+        $data['text'] = "Адвыдао вадвыдавыоа далывда фад ывадвыа двао";
+        $data['date'] = "2011-12-20";
+        $this->load->model('articles_model'); //загружаем нашу модель для БД
+        $this->articles_model->add_articles($data);  //обращаемся к функции add_articles и передаем в нее массив
+    }
+}
+
+
+-------Затем переходи в папку models (для БД функции с запросами в БД храним)
+В файле articles_model.php
+Создаем в классе Articles_model функцию которая будет принимать параметры которые будут помещаться в БД 
+
+<?php
+if ( ! defined('BASEPATH'))  exit('No direct script access allowed');
+class Articles_model extends CI_Model { //файл с маленькой буквы а класс вызываем с большой (такое же название пишем что и сам файл)
+    function add_article($data){     //создали функцию которая добавляет значение которые получает в БД
+        $this->db->insert('articles',$data); // имя таблици и масиив который помещаем в БД
+    }
+}
+
+--------------------UPDATE Базы данных черех CI
+--------------------
+Заходим к контролер controllers открываем файл first.php 
+В классе файла First создаем функцию на UPDATE таблици в БД
+
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed'); // BASEPATH путь к корневой папке мы указали в файле config
+
+class First extends CI_Controller { //файл с маленькой буквы а класс вызываем с большой (такое же название пишем что и сам файл) 
+    function edit_articles (){ //функция в контролере на изменени данных в БД
+        $data['title']='Новое значение';
+        $data['text']='Новое значение';
+        $data['date']='9999-01-01';
+        $this->load->model('articles_model');    //загружаем модель articles_model из бабки model (для БД)
+        $this->articles_model->edit_articles($data);  //обращаемся к функции add_articles и передаем в нее массив
+    }
+}
+
+а в папке models в классе Articles_model в файле articles_models.php создаем функцию на обработку
+массива который мы получим на Update таблици 
+
+<?php
+if ( ! defined('BASEPATH'))  exit('No direct script access allowed');
+class Articles_model extends CI_Model { //файл с маленькой буквы а класс вызываем с большой (такое же название пишем что и сам файл)
+    function edit_articles($data){  // функция на UPDATE таблици
+        $this->db->where('id','1'); // выбираем строку с ID=1
+        $this->db->update('articles',$data); // название таблици и массив который помещаем в нее (массив содержит ячейки с таким же название как и поля таблици)
+    }
+
+}
+
+
+---------------------DELETE удаление из БД в CI
+---------------------
+Заходим к контролер controllers открываем файл first.php 
+В классе файла First создаем функцию на DEL таблици в БД
+
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed'); // BASEPATH путь к корневой папке мы указали в файле config
+//BASEPATH - http://demo/cilessons/index.php/
+class First extends CI_Controller { //файл с маленькой буквы а класс вызываем с большой (такое же название пишем что и сам файл) 
+    function del_articles (){
+        $this->load->model('articles_model'); //загружаем модель для работы с БД
+        $this->articles_model->del_articles(); //обращаемся к моделе с классом articles_model и к функции класса del_articles()
+    }
+}
+
+
+папке models в классе Articles_model в файле articles_models.php создаем функцию на удаление
+
+<?php
+if ( ! defined('BASEPATH'))  exit('No direct script access allowed');
+class Articles_model extends CI_Model { //файл с маленькой буквы а класс вызываем с большой (такое же название пишем что и сам файл)
+    function del_articles (){       //функция на удаление из БД
+        $this->db->where('id','1'); //говори что удалять где ID = 1
+        $this->db->delete('articles'); //выделяем таблицу из которой будем удалять
+    }
+
+}
+
+либо можно передать в функции параметр по которому хотим удалить значение таблици
+
+controllers/first.php
+
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed'); // BASEPATH путь к корневой папке мы указали в файле config
+//BASEPATH - http://demo/cilessons/index.php/
+class First extends CI_Controller { //файл с маленькой буквы а класс вызываем с большой (такое же название пишем что и сам файл) 
+    function del_articles ($id){
+        $this->load->model('articles_model'); //загружаем модель для работы с БД
+        $this->articles_model->del_articles($id); //обращаемся к моделе с классом articles_model и к функции класса del_articles()
+    }
+}
+
+models/articles_model.php
+
+<?php
+if ( ! defined('BASEPATH'))  exit('No direct script access allowed');
+class Articles_model extends CI_Model { //файл с маленькой буквы а класс вызываем с большой (такое же название пишем что и сам файл)
+    function del_articles ($id){       //функция на удаление из БД
+        $this->db->where('id',$id); //говори что удалять где ID = 1
+        $this->db->delete('articles'); //выделяем таблицу из которой будем удалять
+    }
+
+}
+
+
+
+

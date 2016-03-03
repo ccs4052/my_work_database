@@ -1,0 +1,204 @@
+1) UPLOAD
+2) Image Manipulation - сохранение в миниатерю
+					  - написание водных знаков на сохраняемое фото
+
+
+
+
+--------------------------------UPLOAD Загрузка файлов на сервер на CI
+--------------------------------
+
+создаем папку для кортинок и в ней папку для фото ( например)
+
+в фойле (вконтролере) controllers/first.php в классе создадим новую функцию для загрузки файлов
+
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed'); // BASEPATH путь к корневой папке мы указали в файле config
+//BASEPATH - http://demo/cilessons/index.php/
+class First extends CI_Controller { //файл с маленькой буквы а класс вызываем с большой (такое же название пишем что и сам файл)
+    function upload_photo(){ // функция на загрузку файлов
+        if(isset($_POST['submit'])){ //если кнопка нажата
+            $config['upload_path'] = './img/photos/'; //путь куда сохранять
+            $config['allowed_types'] = 'gif|jpg|png'; // форматы
+            $config['max_size']	= '5000'; //размер допускаемых файлов
+            //$config['remove_spaces'] = TRUE; // убирает пробелы в названии файла
+            //$config['encrypt_name'] = TRUE; //параметр сохраняем картинку с новым именем
+            //$config['max_width']  = '1024'; // еще можно фильтровать по размеру
+            //$config['max_height']  = '768';
+
+            $this->load->library('upload', $config); //загружаем библиотеку с классом загрузки файлов
+            $this->upload->do_upload(); //и теперь вызываем функцию загрузки файла
+            $_SESSION['info'] = 'картинка успешно добавлена';
+            $this->load->view('upload_view');
+            // echo 'Файл успешно загружен';
+        }else{
+            $this->load->view('upload_view'); //если кнопка не нажата загружаем вид формы
+        }
+    }
+
+а в файле views/upload_view.php создаем форму для отправки файлов
+
+
+<body>
+<form method="post" action="http://demo/cilessons/index.php/first/upload_photo" enctype="multipart/form-data"> <!-- путь куда сохранять файлы с фото -->
+    <input type="file" name="userfile"> <!-- имя стоит по умолчанию при загрузке файлов в CI -->
+    <input type="submit" name="submit" value="загрузить">
+</form>
+<?php
+if (isset($_SESSION['info'])){ //передаем инфо о состоянии действия
+    $info = $_SESSION['info'];
+    unset ($_SESSION['info']);
+}
+if (isset($info)){
+    echo $info;
+}
+?>
+</body>
+</html>
+
+
+
+-ДЛЯ ЗАГРУЗКИ Имени файла в базу данных нада добавить функцию в класс в файле контролера с добавление в базу controllers/first.php
+
+<?php
+session_start();
+defined('BASEPATH') OR exit('No direct script access allowed'); // BASEPATH путь к корневой папке мы указали в файле config
+//BASEPATH - http://demo/cilessons/index.php/
+class First extends CI_Controller { //файл с маленькой буквы а класс вызываем с большой (такое же название пишем что и сам файл)
+    function articles (){
+        $this->load->view('articles_views');
+    }
+    function upload_photo(){ // функция на загрузку файлов
+        if(isset($_POST['submit'])){ //если кнопка нажата
+            $config['upload_path'] = './img/photos/'; //путь куда сохранять
+            $config['allowed_types'] = 'gif|jpg|png'; // форматы
+            $config['max_size']	= '5000'; //размер допускаемых файлов
+            //$config['remove_spaces'] = TRUE; // убирает пробелы в названии файла
+            //$config['encrypt_name'] = TRUE; //параметр сохраняем картинку с новым именем
+            //$config['max_width']  = '1024'; // еще можно фильтровать по размеру
+            //$config['max_height']  = '768';
+            -----------ДОБАВЛЕНИЕ ИМЕНИ ФАЙЛА И РАСШИРЕНИЯ В БАЗУ
+            $this->load->library('upload', $config); //загружаем библиотеку с классом загрузки файлов
+            $this->upload->do_upload(); //и теперь вызываем функцию загрузки файла
+            //для добавления имени файла в базу данных используем следущюю функцию (которая возвращает массив с именем файла и какую ячейку будем вызывать такую инфо нам будет отдавать массив)
+            $image_data = $this->upload->data(); //помещаем функцию data класса upload в массив
+            $add['img'] = $image_data['file_name']; //теперь вызываем масивом image_data ячейку с нужной информацией в данном члучае file_name и помещаем его в массив с именем ячейки таким же как имя колонки куда будем помещять эту информацию
+            $this->db->insert('photos',$add); //вы
+
+            $_SESSION['info'] = 'картинка успешно добавлена';
+            $this->load->view('upload_view');
+            // echo 'Файл успешно загружен';
+        }else{
+            $this->load->view('upload_view'); //загружаем вид формы
+        }
+    }
+}
+
+
+
+--------------------------------
+КЛАСС Image Manipulation  создание миниатюр (функции уменьшения изображения грубо говоря)
+--------------------------------
+--------------------------------
+
+
+в папку в которую мы сохраняем картинки создадим папку где буду храниться миниютеры фотографий
+назовем ее thumbs       img/Photos/thumbs  - теперь у нас одновремено будет сохраняться фото и миниатюра фото в папку thumbs
+
+class First extends CI_Controller { //файл с маленькой буквы а класс вызываем с большой (такое же название пишем что и сам файл)
+    function articles (){
+        $this->load->view('articles_views');
+    }
+    function upload_photo(){ // функция на загрузку файлов
+        if(isset($_POST['submit'])){ //если кнопка нажата
+            $config['upload_path'] = './img/photos/'; //путь куда сохранять
+            $config['allowed_types'] = 'gif|jpg|png'; // форматы
+
+            $this->load->library('upload', $config); //загружаем библиотеку с классом загрузки файлов
+            $this->upload->do_upload(); //и теперь вызываем функцию загрузки файла
+            //для добавления имени файла в базу данных используем следущюю функцию (которая возвращает массив с именем файла и какую ячейку будем вызывать такую инфо нам будет отдавать массив)
+            $image_data = $this->upload->data(); //помещаем функцию data класса upload в массив
+            //делаем миниатеру из изображения которое загрузили
+            $config = array( //в массиве указываем функции библиотеки уменьшения изобращения
+                'image_library' => 'gd2', //название библиотеки
+                'source_image' => $image_data['full_path'],    //путь к файлу
+                'new_image' => APPPATH.'../img/photos/thumbs', //путь куда сохранять миниатюру (в данном случае указывать base url не получиться (путь должен быть абсолютным серверным)
+                'create_thumb' => TRUE, //создаем эскиз картинки
+                'maintain_ratio' =>TRUE, //сохранять пропорции
+                'width' =>80, //размеры миниатюры
+                'height' =>80
+            );
+            $this->load->library('image_lib', $config); // загружаем библиотеку
+            $this->image_lib->resize(); // и вызываем функцию которая уменьшит изображение загружаемое на сервер
+            
+            $add['img'] = $image_data['file_name']; //теперь вызываем масивом image_data ячейку с нужной информацией в данном члучае file_name и помещаем его в массив с именем ячейки таким же как имя колонки куда будем помещять эту информацию
+            $this->db->insert('photos',$add); //вы
+
+            $this->load->view('upload_view');
+            // echo 'Файл успешно загружен';
+        }else{
+            $this->load->view('upload_view'); //загружаем вид формы
+        }
+    }
+}
+
+
+-----------Добавление водных знаков на фото которое загружаем Watermark
+
+<?php
+session_start();
+defined('BASEPATH') OR exit('No direct script access allowed'); // BASEPATH путь к корневой папке мы указали в файле config
+//BASEPATH - http://demo/cilessons/index.php/
+class First extends CI_Controller { //файл с маленькой буквы а класс вызываем с большой (такое же название пишем что и сам файл)
+    function articles (){
+        $this->load->view('articles_views');
+    }
+    function upload_photo(){ // функция на загрузку файлов
+        if(isset($_POST['submit'])){ //если кнопка нажата
+            $config['upload_path'] = './img/photos/'; //путь куда сохранять
+            $config['allowed_types'] = 'gif|jpg|png'; // форматы
+
+            $this->load->library('upload', $config); //загружаем библиотеку с классом загрузки файлов
+            $this->upload->do_upload(); //и теперь вызываем функцию загрузки файла
+            //для добавления имени файла в базу данных используем следущюю функцию (которая возвращает массив с именем файла и какую ячейку будем вызывать такую инфо нам будет отдавать массив)
+            $image_data = $this->upload->data(); //помещаем функцию data класса upload в массив
+            //делаем миниатеру из изображения которое загрузили
+            $config = array( //в массиве указываем функции библиотеки уменьшения изобращения
+                'image_library' => 'gd2', //название библиотеки
+                'source_image' => $image_data['full_path'],    //путь к файлу
+                'new_image' => APPPATH.'../img/photos/thumbs', //путь куда сохранять миниатюру (в данном случае указывать base url не получиться (путь должен быть абсолютным серверным)
+                'create_thumb' => TRUE, //создаем эскиз картинки
+                'maintain_ratio' =>TRUE, //сохранять пропорции
+                'width' =>80, //размеры миниатюры
+                'height' =>80
+            );
+            $this->load->library('image_lib', $config); // загружаем библиотеку
+            $this->image_lib->resize(); // и вызываем функцию которая уменьшит изображение загружаемое на сервер
+            //создание водяных знаков
+          /*  $config['source_image'] = $image_data['full_path']; //путь к файлу
+            $config['new_image'] = APPPATH.'../img/photos/WM'; // куда сохраняем
+            $config['wm_text'] = 'Copyright 2015 - Bogdan Dvinin'; //то что напишем на фото
+            $config['wm_type'] = 'text'; //стандартые настройки с мануала
+            $config['wm_font_path'] = './system/fonts/texb.ttf'; //стандартные настройки с мануала
+            $config['wm_font_size'] = '16'; //размер текста
+            $config['wm_font_color'] = '000000';// цвет
+            $config['wm_vrt_alignment'] = 'top'; //вертикальное выравнимание сверху
+            $config['wm_hor_alignment'] = 'center'; //горизонтальное выравнивание по центру
+            $config['wm_padding'] = '20';
+
+            $this->image_lib->initialize($config);
+
+            $this->image_lib->watermark();*/
+
+
+            $add['img'] = $image_data['file_name']; //теперь вызываем масивом image_data ячейку с нужной информацией в данном члучае file_name и помещаем его в массив с именем ячейки таким же как имя колонки куда будем помещять эту информацию
+            $this->db->insert('photos',$add); //вы
+
+
+            $this->load->view('upload_view');
+            // echo 'Файл успешно загружен';
+        }else{
+            $this->load->view('upload_view'); //загружаем вид формы
+        }
+    }
+}

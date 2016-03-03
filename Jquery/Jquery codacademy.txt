@@ -1,0 +1,319 @@
+$(document).ready();  -- $(document) - говорит что мы работаем в HTML документе .ready() - делает действия при загрузке HTML документа
+
+
+
+Обратиться к Блоку с именем КЛАССА $('.class_name')
+Обратиться к ID $('#ID')
+Обратиться к элементу HTML без названия $('button')
+
+
+
+
+
+
+---------------- Наводим мішку на блок он увеличиваеться на 5% как убераем мішку блок уменшаеться на 5% и при нажатии на блок он исчезает
+
+$(document).ready(function() {
+   $('div').mouseenter(function() {   //при наведении мышки 
+       $(this).animate({				// включаеться функция увеличения блока на 5px по высоте
+           height: '+=5px'
+       });
+   });
+   $('div').mouseleave(function() {
+       $(this).animate({				// как уберем мышку блок уменьшаеться по высоте на 5 px обратно
+           height: '-=5px'
+       }); 
+   });
+   $('div').click(function() {			// по нажатию на этот блок - блок исчезает
+       $(this).toggle(1000);
+   }); 
+});
+
+
+
+--------------
+
+$(document).ready(function() {
+    $('#green').fadeOut(1000);              // <div id = "green"> на этот блок вешаем дейсвие fadeOut  - ичезание вроде
+});
+
+
+---------------При наведении мышкой на DIV фон блока темнеет
+
+$(document).ready(function(){
+    $('div').mouseenter(function(){
+        $(this).fadeTo('fast',1);
+        });
+    });
+	
+	
+
+-------------В Функции создали переменную в которую поместили блок из HTML и потом этому блоку назначили действие	
+$(document).ready(function() {
+    var $target = $('ol');
+    $target.fadeOut('fast');
+});
+
+
+-----------------По нажатию на кнопку блоки исчезают
+
+ $(document).ready(function() {
+    $('button').click(function() {
+        $('.vanish').fadeOut('slow');
+    });
+});
+
+
+------------------По нажатию исчезание єлемента на странице
+$(document).ready(function() {
+    $('div').click(function() {
+        $(this).fadeOut('slow');
+    });
+});
+
+
+---------------По нажатию на элемент выезжает скрытый элемент и еще по ножатию уезжает обратно
+
+$(document).ready(function(){
+	$('.pull-me').click(function(){ //нажимая на элемент
+	$)('.panel').slideToggle('slow'); //выезжает элемент panel благодаря функции Jquery slideToggle из-начально .panel (discplay: none)
+	});
+})
+
+
+
+
+
+
+--------------------------------------------------------СОЗДАНИЕ УДАЛЕНИЕ ЭЛЕМЕНТОВ HTML  и КЛАССОВ 
+$(".info").append("<p>Stuff!</p>")   - добавить в блок с именем класса info как последний дочерний элемент 
+$(".info").prepend("<p>Stuff!</p>")  - добавить в блок с именем класса info как первый дочерний элемент
+-----
+$("#one").after("<p>You lke me!</p>")  - Добавить текст(например) после указаного блока с ID one
+$("#one").before("<p>You lke me!</p>") - Добавить текст(например) перед указаного блока с ID one
+-----Добавление и удаление элементов
+.empty()  - удаляет содержимое выбранного элемента
+$("p").remove() - удаляет выбранный элемент
+	$("p").remove(); - удалили все теги <p> из HTML документа
+
+-----Добавление и удаление классов 
+$('selector').addClass('className');
+$('selector').removeClass('className');
+
+	$(document).ready(function(){
+    $('#text').click(function(){			- по нажатию на блок с id text вызываем функцию которая добавляеть название класса этому блоку
+        $(this).addClass('highlighted');
+        });
+});
+
+.toggleClass('className') - функция проверяет если у блока есть название класса с таким именем то она его удаляет - если нет то добавляеть
+
+$(document).ready(function(){
+    $('#text').click(function(){
+        $(this).toggleClass('className');
+        });
+});
+    
+
+------Добавление CSS стилей блокам и элементам
+ $("div").height("100px");                        -например добавили блоку 100px высоты
+ $("div").width("50px"); 						- добавили 50px ширины
+ -- CSS стили изменять так
+ $("div").css("background-color","#008800");    - изменили фон блока
+ $("div").css("border-radius","10px");			- изменить углы блока
+	
+-----
+
+
+------Изменение контента HTML страници
+
+.html()  -  добавляет в указанное место указанные данные
+$('div').html("I love jQuery!");
+
+.val()  - вытаскивает значение 
+	<p></p>
+	<select id="single">
+	<option>Single</option>
+	<option>Single2</option>
+	</select>
+
+	function displayVals(){
+	var singleValues = $( "#single" ).val(); - засунули в переменную значение из єлемена с id single
+	
+	$('p').html("<b>Single:</b> " + singleValues); - вывили в теге <p> переменную singleValues
+	}
+	 $( "select" ).change( displayVals );   // //при изменении <select> выводим новое значение функции displayVals
+    displayVals();                          //вызываем функцию
+
+
+
+----------------------------------------РАБОТА С ФОРМАМИ Jquery
+Данные которые отправляем в форму выводить в определенном блоке и после удалять 
+
+<form id="checkListForm">
+    <input type="text" name="checkListItem"/>
+    <input type="hidden" name="date" value="<?php echo date('H-i-s'); ?>">
+</form>
+<div id="button">Add!</div>               --блок по которому нажимаем что-бы добавить элемент
+<div class="list"></div>                  --В єтот Блок будем отображать єлемент которій добавили
+
+
+
+<script>
+$(document).ready(function(){
+    $("#button").click(function(){                               //по нажатию на блок с iD button вызываем функцию которая принимает данные из формы
+        var toAdd = $("input[name=checkListItem]").val();        //создаем переменную в которую помещаем значение поля формы с именем checklistItem
+        var date = $("input[name=date]").val();
+        $('#checkListForm')[0].reset();								//затем очищаем поля формы с id checklistForm помощью функции reset()
+        $(".list").append('<div class="item">' + date + ' ' + toAdd + '</div>');
+    });
+	// зделаем что-бы по нажатию на надпись которую добавили мы могли ее удалить без перезагруски страници
+    $(document).on('click','.item',function(){     // функция говорит так - по нажатию на блок с именем класса item вызвать функцию удаления елемента
+        $(this).remove();
+    });
+});
+</script
+
+
+
+-----------------------------------------Изменение цвета при наведени мышки и исчезновение блока по нажатию мыши по нему
+
+$(document).ready(function(){
+    $('div').click(function(){           //по нажатию на этот блок вызываеться функция которая делает его невидимым
+        $(this).fadeOut('slow');
+    });
+    $('div').hover(function(){
+        $('div').addClass('red');       //класс .red описан у нас в таблице стилей css заранее на красній фон
+    },
+	function(){
+        $(this).removeClass('red');      //как снова наводим мыш класс удаляет и возвращаеться обратно цвет какой был
+    });
+});
+
+------------------------------------------Добавление эфектов при ДВОЙНОМ ЩЕЛЧЕ .dblclick()
+
+
+$(document).ready(function(){
+    $('div').dblclick(function(){      //по двойному щелску выбранный элемент исчезает
+        $(this).fadeOut('fast');
+        });
+    });
+	
+	
+	
+-----------------------------------------------Добавление эфектов при наведении мышкой .focus
+
+$(document).ready(function(){
+    $('input').focus(function(){                       //при наведении мышкой меняем цвет поля формы input
+        $(this).css('outline-color','#FF5555');
+    });
+});
+
+-------------------------------------------.keydown и .animate при нажатии любой кнопки клавиатуры  движение указанного объекта
+
+$(document).ready(function(){
+    $(document).keydown(function() {
+        $('div').animate({left: '+=10px'}, 500);
+    });
+});
+
+
+
+-----------------------------Картинка которой можно управлять верх вниз влево вправо для того что-бы работал animate css картинки или блока (position: absolut или  reletive и left и right - не должны быть указаны)
+
+$(document).ready(function() {
+    $(document).keydown(function(key) {							//загружаем функцию keydown по загрузке документа и передаем в функцию key - переменная с нажатой кнопкой на клаве
+       if(parseInt(key.keyCode) === 37) {						//parseInt - приведение к числу JS - keyCode - функция JS которая переводит кнопку на клавиатуре в цифру (и есть таблица на которой написано какая цифра это какая кнопка) и по стрелочкам на клавиатуре приравниваем действия (определенная цифра это буква на клаве и она выполняет определенное действие)
+           //двигаеться на лево
+           $('img').animate({left: "-=10px"}, 'fast');			// если функция получила цифру 37 это кнопку на клаве налево и значит делаем animate left
+       }else if (parseInt(key.keyCode) === 38){
+           //двигаеться на верх
+           $('img').animate({"bottom": "+=10px"}, 'fast');
+       }else if (parseInt(key.keyCode) === 39){
+           //двигаеться на право
+           $('img').animate({"left": "+=10px"}, 'fast');
+       }else if (parseInt(key.keyCode) === 40){
+           //двигаеться вниз
+            $('img').animate({"bottom": "-=10px"}, 'fast');
+        }
+    });
+});
+
+
+----------------------------------По нажатию на блок он лопаеться .effect('explode')
+
+$(document).ready(function(){
+    $('div').click(function(){
+        $(this).effect('explode');
+        });
+    });
+
+-----------------------------------По нажатию блок прыгает количество раз которое мы укажем  .effect('bounce',{times:3},500);
+$(document).ready(function(){
+    $('div').click(function(){
+        $(this).effect('bounce',{times:3},500);
+        });
+    });
+	
+
+
+----------------------------------По нажатию жлемент исчезает и віезжает на тоже место 	.effect('slide');
+$(document).ready(function(){
+    $('div').click(function(){
+        $(this).effect('slide');
+        });
+    });
+	
+	
+	
+---------------------------------Делаем так что элементы блока можно перетаскивать мышкой с помошью функции .draggable()
+
+$(document).ready(function(){
+    $('#car').draggable();
+    });
+	
+	
+	
+---------------------------------Изменение размера изображения  .resizable();
+
+$(document).ready(function(){
+    $('img').resizable();
+})
+
+--------------------------------При нажатии выделять элемент меню с помощью .selectable();
+
+$(document).ready(function(){
+    $('ol').selectable();
+    });
+
+-------------------------------При помощи мышки можно перетягивать элементы на разные места с помошью .sortable()
+$(document).ready(function(){
+    $('ol').sortable();
+});
+
+
+
+
+---------------------------------Сделать выпадающее меню с помощью .accordion();
+
+$(document).ready(function(){
+    $('#menu').accordion();
+    });
+	
+	
+	
+<div id="menu">
+            <h3>Section 1</h3>
+            <div>
+                <p>I'm the first section!</p>
+            </div>
+             <h3>Section 2</h3>
+            <div>
+                <p>I'm the second section!</p>
+            </div>
+             <h3>Section 3</h3>
+            <div>
+                <p>I'm the third section!</p>
+            </div>
+            
+ </div>

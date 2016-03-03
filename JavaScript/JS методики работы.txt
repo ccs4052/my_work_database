@@ -1,0 +1,36 @@
+Скрипт по которому подключаеться JavaScript файл
+
+<script type="text/javascript" src="/skins/js/cou/jquery.featureCarouse1.min.js">
+
+type="text/javascript" - показывает какой тип файлов мы хотим подгрузить с нашего сервера
+
+src="/skins/js/cou/jquery.featureCarouse1.min.js - указание пути файла откуда грузить
+ если мы путь не укажем то значит файл лежит в теле файла откуда мы его хотим зпускать
+ 
+ 
+ 
+ 
+ ------------------------- Что-бы запустить JS скрипт в определенном файле нужно
+ Использовать наш клаасс с глобальными массивами
+ 
+ class Core {                          //класс с подключением к ДБ
+    static $DB = 'localhost';
+    static $DBLOGIN = 'user';
+    static $DBPASS = '111';
+    static $DBNAME = 'bogdan';
+    static $DOMAIN = 'http://demo/Bogdan/';  // константа для отправки почты ( ссылка моего сайта)
+    static $JS     = array();           // глобальный массив для запуска джава скрипта
+    static $CSS    = array();
+    static $META   = array(
+        'title'=>'стандартный TITLE',
+        'description'=>'d',
+        'keywords'=>'k'
+    );//массив содержаший в себе настройки шапки сайта
+}
+
+
+ и вызываем в нужном файле наш глоб массив для джава скрипта 
+ 
+ <?php // JS будет подгружен на странице на которой мы вызываем скрипт
+ Core::JS[] = '<script type="text/javascript" src="/js/scripts_v1.js"></script>';
+ ?>

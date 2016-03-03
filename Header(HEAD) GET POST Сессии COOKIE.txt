@@ -1,0 +1,441 @@
+-------------------ПЕРЕДАЧА ДАННЫХ (Формар регистрации Форма Авторизации форма обратной связи)
+и через них отправляються данные от клиента к серверу- это основной способ передачи данных по средствам форм и еще есть сессии (передают данные от одной страници к другой)
+
+СЕСИИ!
+
+COOKIE!
+
+---------------HEADER - функция передает заголовки
+  --Редирект на уровне заголовка
+header ("Location: ./test.php")   //но лучьше писать абсолютный адрес нахождения файла http://localhost/test.php
+
+header("Refresh: 2");     // обновление страници каждые 2 секунды
+
+header("Content-type: text/xml"); //(в данном случае xml) говорит браузеру в каком формате выводит текст документа
+
+header("Content-type: text/html;charset=utf-8"); //говорит  браузеру какую кодировку установить utf-8
+
+
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"> //если нет заголовка с установленной кодировкой то после сработает эта установка кодировки
+
+-----(Сохранения документа с помошью header)(перенаправление вывода файла)Например у нас есть файл html и мы можем с помошью заголовка сохранить этот файл в другом формате
+в начале файла пишем 
+<?php
+header("Content-type: file/octet-stream");                             // первый заголовок объясняет что за тип отдаеться
+header ("content-disposition: attachment; filename=\"mytext.txt\"");   // content-desposition: attachment - позволяет сохранить файл где это написано filename - название файла который сохраним
+?>
+-----
+
+header("Cache-Control: no-cache, must-revalidate"); - оставляет кеш страници если он небыл изменен (например если стрелку в браузере нажать вернуть страницу назад там все останеться как было в последний момент как вы из нее прошли по следущему сайту)
+header("Expires: Sat, 26 Jun 1997 05:00:00 GMT");
+header("Last-Modified: " . gmdate("D, d M Y H:i:s") . "GMT");// если изменилась он получит новую по Last modifide если не изменилась то получает их Кеша
+
+
+
+Заголовки - служебная инфо в которой содержаться данные о кодировке например о типе дакумента который пришел в браузер
+( HTML или какой-то текстовый документ)
+Используеться если например мы поменяли сервер а там установлена другая кодировка
+
+<?php header("Content-type: text/html; Charset=windows-1251") ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <!--<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">-->
+    <title>Документ без названия</title>
+</head>
+<body>
+<?php
+echo 'Текст кирилицей';
+
+?>
+</body>
+</html>
+-----------Заголовки отправляються один раз перед запуском браузера
+----------- text/html - вместе html можно написать любой тип документа который будет перекодирован
+-----------------------
+------------Redirect - перенаправляем заголовок на другой сайт
+
+<?php
+//header("Content-type: text/html; Charset=windows-1251");
+header("Location: test.php");
+exit; //----------если дальнейший код нам не нужен то указываем exit;
+ ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.ord/TR/html4/loose.dtd">
+<html>
+<head>
+   <!-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8">-->
+    <title>Документ без названия</title>
+</head>
+<body>
+<?php
+echo 'Текс';
+?>
+
+
+</body>
+</html>
+--------------Redirect - с задержкой Refresh: 5 - задержка 5 секунд
+
+<?php
+//header("Content-type: text/html; Charset=windows-1251");
+//header("Location: test.php");
+header("Refresh: 5; url=test.php");   ----- 5 задержка и потом путь куда отправиться
+exit("Через 5 секунд вы попадаете на страницу X. Если не хотите ждать - кликните по <a href='test.php'>ссылке</a>");
+ ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.ord/TR/html4/loose.dtd">
+<html>
+<head>
+   <!-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8">-->
+    <title>Документ без названия</title>
+</head>
+<body>
+<?php
+echo 'Текс';
+?>
+
+
+</body>
+</html>
+
+
+---------------------МЕТОДЫ ПЕРЕДАЧИ ДАННЫХ GET и POST
+---------------------- Для передачи нам понадобица форма в которой создадим например одно ткстовое поле
+ GET -(информация передана методом GET видна в строке адресной) передает безопасные данные их видно в строке браузера ( ограничение в объеме передачи данных)
+ Параетры можно заполнять в адресной строке после знака '?'(какую длину строки потдерживает браузер столько данных и можно вводить) ( правило как они должны там выводиться) и они будут переданы в массив GET
+ GET - нельзя передавать файлы, ограничен по длинне ввода данных и виден на экране (в адресной строке поэтому данные зашифрованые им не передают)
+ GET - удобно использывать для поиска - потому как результат поиск отображаеться в адресной строке и его пожно скопировать и дать другому
+ 
+ 
+ POST -(передаються данные в скрытом типе) более зашифрованый метод ( этим методом передаем данные через форму)
+ Форма для передачи данных например одно поле и одна кнопка
+ Все даные с формы имеют строковый тип что-бы перевести в целочисленное значение в файлу
+ в котором выводим массив метода POST создаем переменную и в ней указыаем $name = (int)$_POST['name'];var_dump($name);
+ GET и POST пишуться в верхнем регистре!!
+ 
+ GET POST - Супер глобальные переменные. Приходят из ФОРМЫ
+ -------------
+ ФОРМЫ тег <form> все что внутри содержание формы</form>
+ЧТО_БЫ ФОРМА Одно и тоже при обновлении страници не отправляла в БД у словии надо писать header:location на эту же страницу 
+Своя форма отправляет свои данные
+В них будут различные поля и различные кнопки для отправки данных
+  action - атрибут куда будет отправлять данные нашей формы  (например в указанный файл) если атрибут не указан значит форма будет отправляться в тот же файл в котором она написана
+  method - 	$_POST или $_GET
+ ----
+ <?php                                          
+echo 'POST:<pre>'.print_r($_POST,1).'</pre>';
+?>
+<form action="" method="post">         //передаем логин и пароль
+    <input type="hidden" name="hide" value="скрытое значение">   <!-- в скрытом поле можно писать скртые значения данных отправленных ниже (они будут отображаться в массиве POST или GET) -->
+	<div>Заполнить логин: <input type="text" name="Login" value="Введите логин"></div>    <!-- value -можно не указывать (по умолчанию будет заполнять поле этим текстом) создадим поле для Логина в отдельном блоке для удобства -->
+    <div>Заполнить пароль: <input type="password" name="pass" value="Введите пароль"></div> <!-- value - можно не указывать (заполняет ячейку данным текстом) -->
+    <div><input type="submit" name="submit" value="Отправить данные" style="border:none"</div>  !-- предаем стили кнопке-->
+</form>
+-----------
+
+Существует простое правило - если мы работаем с паролем мы проверяем отправлен ли пароль
+если с логином то логин. Проверяем те данные с которыми работаем ( или отправлен ли выбраный пол)
+----------Работа с паролем
+<?php
+if(isset($_POST['login'],$_POST['pass'])){      //проверяем форму на существование логина и пароля ( на их отправку а потом начинаем работу)
+              echo $_POST ['login'];      //выполняем авторизацию
+}
+?>
+<h1>Форма</h1>
+<form action="" method="post">
+        <div>Заполнить логин: <input type="text" name="login" ></div>
+        <div>Заполнить пароль: <input type="password" name="pass" ></div>
+    <div><input type="submit" name="submit" value="Отправить данные"</div>
+</form>
+
+
+
+ 
+ 
+ 
+ 
+<body>
+
+<form>
+    Имя: <input type="text" name="name" /> <!-- name название поля -->
+    <input type="submit" name="submit" value="отправить"> <!--а в этом поле кнопка которая передает данные name имя кнопки value - имя кнопки -->
+</form>
+
+
+</body>
+
+
+GET - Имеет свой массив с индексами и значениями так вот в строке <input type="text" name="name" /> name - это индекс а "name" - значение
+
+<?php
+if($_GET['submit']){      // - если в ячейке submit что-то есть значит
+    echo $_GET['name'];   // значит в ячейке с именем что-то есть и вызываем слово ключем name
+    echo '<pre>';
+    print_r($_GET);      // распичатываем массив в читабельной форме
+    echo '</pre>';
+}
+
+
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.ord/TR/html4/loose.dtd">
+<html>
+<head>
+   <!-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8">-->
+    <title>Документ без названия</title>
+</head>
+<body>
+
+<form method="get">
+    Имя: <input type="text" name="name" /> <!-- name название поля -->
+    <input type="submit" name="submit" value="отправить"> <!--а в этом поле кнопка которая передает данные name имя кнопки value - имя кнопки -->
+</form>
+
+еще пример
+
+
+<?php
+
+echo "<a href='index.php?name=Bogdan&age=33'>link</a>";
+if($_GET){
+    echo 'Вас зовут '.$_GET['name'].'. Вам '.$_GET['age'].' лет';
+}
+
+
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.ord/TR/html4/loose.dtd">
+<html>
+<head>
+   <!-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8">-->
+    <title>Документ без названия</title>
+</head>
+<body>
+
+<form method="get">
+    Имя: <input type="text" name="name" /> <!-- name название поля -->
+    <input type="submit" name="submit" value="отправить"> <!--а в этом поле кнопка которая передает данные name имя кнопки value - имя кнопки -->
+</form>
+
+
+</body>
+</html>
+
+
+
+-------------------------- ДЛЯ РАБОТІ С ФОРМОЙ Будем использівать метод POST
+
+атрибут action - фаил куда будут отправены все данные массива POST
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.ord/TR/html4/loose.dtd">
+<html>
+<head>
+   <!-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8">-->
+    <title>Документ без названия</title>
+</head>
+<body>
+
+<form method="post" action="proces.php">
+    Имя: <input type="text" name="name" /> <!-- name название поля -->
+    <input type="submit" name="submit" value="отправить"> <!--а в этом поле кнопка которая передает данные name имя кнопки value - имя кнопки -->
+</form>
+
+</body>
+</html>
+______________
+Содержание файла Proces.php - файл в котором выводиться значение массива POST
+<?php
+
+if($_POST['submit']){
+    echo $_POST['name'];
+    echo '<pre>';
+    print_r($_POST);
+    echo '</pre>';
+}
+?>
+
+
+
+
+--------------------СЕСИИ - это супер глобальные массивы в котором храниться информация храниться в физическом файле на сервере!
+Сесия делиться на 3 этапа -1) Старт (открытие) 2) Инициализация сессионных переменных
+3) Закрытие сессии
+
+1) Открыть сессию это функция session_start();
+2) $_SESSION['name'] = Валерия (например);  инициализируем сессионые переменные
+3) Закрытие сессии session_start();session_destroy(); обязательно указть и то и другое
+Функция unset($_SESSION['name']); разрегестрировать в скообках указана переменная запущеной сессии
+        session_unset(); - разрегестрирует все сессионые переменные
+		
+------------ В ЭТОТ ПРИМЕРЕ в связке работают 4 страници сайта в примере я их расположу по порядку
+-------Страница 1
+<?php
+session_start();
+$_SESSION['name'] = 'Валерия';
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.ord/TR/html4/loose.dtd">
+<html>
+<head>
+   <!-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8">-->
+    <title>Документ без названия</title>
+</head>
+<body>
+
+<a href="index.php">sess 1</a> | <a href="sess2.php">sess 2</a> | <a href="sess3.php">sess 3</a> | <a href="sess4.php">sess 4</a>
+
+<hr />
+<p>Страница 1. Привет, <?php echo $_SESSION['name']; ?></p>
+
+</body>
+</html>
+----------СТРАНИЦА 2
+<?php
+session_start();
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.ord/TR/html4/loose.dtd">
+<html>
+<head>
+   <!-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8">-->
+    <title>Страница 2</title>
+</head>
+<body>
+
+<a href="index.php">sess 1</a> | <a href="sess2.php">sess 2</a> | <a href="sess3.php">sess 3</a> | <a href="sess4.php">sess 4</a>
+
+<hr />
+<p>Страница 2. Привет, <?php echo $_SESSION['name']; ?></p>
+
+</body>
+</html>
+------------СТРАНИЦА 3
+<?php
+session_start();
+//unset($_SESSION['name']);
+session_unset();
+session_destroy();
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.ord/TR/html4/loose.dtd">
+<html>
+<head>
+   <!-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8">-->
+    <title>Страница 3</title>
+</head>
+<body>
+
+<a href="index.php">sess 1</a> | <a href="sess2.php">sess 2</a> | <a href="sess3.php">sess 3</a> | <a href="sess4.php">sess 4</a>
+
+<hr />
+<p>Страница 3. Привет, <?php echo $_SESSION['name']; ?></p>
+
+</body>
+</html>
+----------------СТРАНИЦА 4
+<?php
+session_start();
+unset($_SESSION['name']);
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.ord/TR/html4/loose.dtd">
+<html>
+<head>
+   <!-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8">-->
+    <title>Страница 4</title>
+</head>
+<body>
+
+<a href="index.php">sess 1</a> | <a href="sess2.php">sess 2</a> | <a href="sess3.php">sess 3</a> | <a href="sess4.php">sess 4</a>
+
+<hr />
+<p>Страница 4. Привет, <?php echo $_SESSION['name']; ?></p>
+
+</body>
+</html>
+
+
+
+-------------------- cookie КУКИ
+    Сессии используют кукие при создании сессии создаеться кука с анлог именем.
+	Фаил с куки храниться на компе клиента. Это строка состоящая из (имя и значение).
+	Обратиться к КУКИ можно через массив куки setcookie("name", "Andrey",time()+60) первый параметр имя куки второй содержимое и время жизни куки.
+      Виды куки -   Сессионые временые и поястоянные .
+Приминяеться для хранения инфо о пользывателях ( на форумах например где есть форма авторизации) 
+
+Файл с сессией храниться на сервере а куки храниться на компьютере клиента!
+С помощью сессии хранить файлы безопаснее потому как они храняться на сервере!
+
+<?php
+
+setcookie("name", "Andrey", time()+60);
+//setcookie("name", "Bogdan"); // таким образом куки удаляеться после закрытия браузера
+//setcookie("name", "");  //таким образом cookie удаляються
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.ord/TR/html4/loose.dtd">
+<html>
+<head>
+   <!-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8">-->
+    <title>Документ без названия</title>
+</head>
+<body>
+
+<?php echo $_COOKIE['name'];?>    <!--ВЫЗЫВАЕМ МАССИВ Cookie-->
+
+
+
+</body>
+</html>
+
+
+
+
+------------пример создания Cookie--  Временая кука которая удаляеться при закрытии сайта 
+
+<?php
+setcookie ("name","John");
+if(isset($_COOKIE["name"])){
+	echo $_COOKIE["name"];
+}
+?>
+
+
+-----------Создание Cookie  которая живет 2 минуты
+
+<?php
+setcookie ("name","John",time()+120);   //после закрытия браузера будет жить 2 минуты
+if(isset($_COOKIE["name"])){
+	echo $_COOKIE["name"];
+}
+?>
+----------Удаление Cookie
+
+if (isset($_POST['submit'])){
+	setcookie("name");			//в функции setcookie передаем только один параметр с именем куки и тогда куки удаляеться
+}
+
+
+-----------Щетчик посещений для пользователей сайта через Cookie
+
+<?php  //щетчик посещений
+$visitCounter = 0;
+if (isset($_COOKIE['visitCounter'])){
+    $visitCounter = $_COOKIE['visitCounter'];
+    $visitCounter++;
+}
+if(isset($_COOKIE["lastVisit"])){
+    $lastVisit = $_COOKIE["lastVisit"];
+}
+setcookie("visitCounter",$visitCounter, 0x7FFFFFFF);
+setcookie("lastVisit",date("d-m-Y H:i:s"), 0x7FFFFFFF);
+echo $_COOKIE['visitCounter'].'<br>';
+echo $_COOKIE['lastVisit'];
+?>
+
+
+<!--в файле где мы хотим отображать посещение пишем следущий код-->
+<?php
+if($visitCounter==1)
+    echo "<p>Добро пожаловать!";
+else{
+    echo "<p>Вы пришли $visitCounter раз";
+    echo "<p>Последнее посещение $lastVisit";
+}
+?>
+
+
+
+

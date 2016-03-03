@@ -1,0 +1,13 @@
+  ------ПОДКЛЮЧЕНИЕ МОДУЛЕЙ МЕНЮ например через массив $_GET
+  
+    <?php
+	$allowed = array('about me','news','info');
+	if(!isset($_GET['module'])) {
+		$_GET['module'] = 'about me';
+	} elseif(!in_array($_GET['module'],$allowed)) {
+		header("Location: /index.php?module=error&page=404");
+		exit();
+	}
+	if(!isset($_GET['page'])) {
+		$_GET['page'] = 'main';
+	}

@@ -1,0 +1,42 @@
+<?php          //класс отправки Mail при регестрации
+
+mail('кому','тема письма','текст письма'); // mail функция для отправки писем
+mail('кому','тема письма','текст письма',$headers); //$headers заголовки которые нужно указать
+ //письма можно отправялть 2-х типов
+class Mail
+{
+    static $subject = 'По умолчанию';
+    static $from = 'noreply@mydomain.ru'; //почта например Домена на котором наш сайт
+    static $to = 'bogdan.dvinin@rambler.ru';
+    static $text = 'Вы успешно заррегестрировались';
+    static $headers = '';
+
+    static function send(){
+        self::$subject = '=?utf-8?b?'.base64_encode(self::$subject).'?='; //указываем что свойство (переменная класа) $subject будет использовать кодировку utf-8
+        self::$headers = "Content-type: text/html; charset=\"utf-8\"\r\n"; //указали Content-type и charset
+        self::$headers .="From: ".self::$from."\r\n";  //кто отправитель
+        self::$headers .="MIME-Version: 1.0\r\n";      //версия письма
+        self::$headers .="Date: ". date('D, d M Y h:i:s O')."\r\n"; //дата когда письмо было отправлено
+        self::$headers .="Precedence: bulk\r\n";       //Precedence bulk говорит о том что рассылки отсылаються всем подрят
+        return mail(self::$to, self::$subject, self::$text, self::$headers);   //mail отправляет письмо и возвращает true или false поэтому если return вернет значение true то письмо отправлено
+        //mail возвращет true или false поэтому если вернет true значит письмо отправлено
+    }
+
+   /* static function testMail()    //функция тестовая если не будут отправляться письма то на англиском нада отправлять
+    {
+        if (mail(self::$to, 'English words', 'English words')) {
+            echo 'письмо отправлено';
+        } else {
+            echo 'письмо не отправлено';
+        }
+        exit();
+    }*/
+}
+
+Mail::$to = 'Oleg@ram.ru';
+Mail::$subject = 'вы зарегестрировались';
+Mail::$text = 'Наш текст';
+Mail::send();               //письмо отправленно
+
+//чтобы запустить проверку письма если она нада (вдруг письмо не отправляеться )
+//Mail::testmail();

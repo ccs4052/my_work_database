@@ -1,0 +1,81 @@
+---------------------------------------СОБЫТИЯ Jquery
+
+
+-----------------------Browser Events
+
+.error()  //Called if an element is not loaded correctly
+.resize() //Whene the size of the browser window changes
+.scroll() //Whene the user scrolls to a different place in an element
+
+
+
+------- пример .scroll ()
+$("document").ready(function(){				//При перематывании чего либа будет выполняться действие
+  $('#scrol_div').scroll(function(){
+        console.log('Scrolling');           //пока мы будем перематывать данный блок через overflow: scroll; будет писаться нажпись Scrolling
+    })
+});
+
+-----
+$(window).scroll(function(){				//При перемотке окна браузера будет выполняться какое либо действие
+        console.log('перематываем экно');
+    })
+	
+---------примрер .resize()
+
+ $(window).resize(function(){                 //делает действия при изменении экрана 
+            console.log('resize the brouser to ' + window.outerWidth + 'x' + window.outerHeight);   //при каждом изменении экрана выводит его щирину и высоту в момент изменения
+        })
+
+
+
+----------------------Keyboard events
+
+.keydown()
+.keypress()
+.keyup()
+
+
+-----пример .keyup()
+
+$("document").ready(function(){
+       $('#text').on('keyup',function(e){    //keyup нажатая кнопка на клавиатуре
+            console.log(e.which);  //выводит в консоль лог НОМЕРА всех введенных символов или букв или цифр с клавиатуры
+        });
+});		
+
+
+
+-----------------------FORM Event
+.change()
+.focus()
+
+
+----пример
+$("document").ready(function(){
+    $('#text')
+        .on('change',function(){
+            console.log('изминили поле1');   //происходит действие если изменить этот элемент - написать в поле инпут что-нибуть и потом клацнуть на другой объект
+        })
+        .on('focus',function(){
+         console.log('изминили поле');   // делаеться действие по нажатию на этот элемент
+        })
+});
+
+
+---------------------- Mouse Event
+
+.click()
+.dblclick()
+.hover()
+.mousedown()
+.mouseenter()
+.mouseleave()
+.mousemove()
+.mouseout()
+.mouseover()
+.mouseup()
+
+
+
+

@@ -1,0 +1,32 @@
+мой уникальный адрес сайта Magento - admin_pa9ekg
+адрес Magento store http://localhost/bogdan/Magento/
+адрес Magento admn  http://localhost/bogdan/Magento/admin_pa9ekg/
+Encryption Key: 4b8e29f70443a3913518b4e7e601555d
+
+
+
+
+
+https://www.magentocommerce.com - логин capons
+				- пароль Bog323914dan - с большой буквы
+
+
+
+
+
+Учебник по Magento
+http://devdocs.magento.com/guides/m1x/magefordev/mage-for-dev-1.html - Учебник по магенто ЧИТАТЬ
+
+
+https://www.youtube.com/watch?v=AuaNmKpG4wY&list=PL50yapnS01f4T99uNKogNaPZCW5yRqg4p - уроки по магенто
+
+
+
+Установка Xdebag
+
+http://sllite.ru/2013/01/%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-xdebug-%D0%BF%D0%BE%D0%B4-windows/
+
+
+Статья по установке http://habrahabr.ru/post/31452/
+
+Запуск Xdebag       http://habrahabr.ru/post/209024/

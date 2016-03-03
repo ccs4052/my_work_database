@@ -1,0 +1,107 @@
+ Существует 2 вида фильтрации входных данным MySQL числовая и буквинная
+ нада указать элемент который всовываем в таблицу (INT) ili (Float) ili (String)
+ 
+ 
+ Функции проверок данных и фильтровки:
+ 
+ trim() - убирает пробелы перед и после слова
+ htmlspecialchars - экранирует спец сисволы HTML
+ mysqli_real_escape_string - экранирует кавычки и слеши в словах - чтобы работала нада указать mysqli_set_charset($connect,'utf8')) - указать в какой кодировке мы получаем данные
+ strip_tags - удаляет из строки все теги HTML PHP и так далие 
+
+
+
+
+-------------ЗАЩИТА ВХОДЯЩИХ ДАННІХ                 (https://www.youtube.com/watch?v=xxTMusbYpIk урок по безопасности фильтрация данных)
+
+------Передача данных через массивы
+
+ГЛОБАЛЬНЫЕ (массивы)  :
+$_GET;
+$_POST;
+	
+	$_GET['id']=(int)$_GET['id'] - делаем что-бы вводились целые числа
+	
+	---
+	$_GET['money'] = (float)$_GET['money']; //555111,22fdfdf - фильтрует входящие данніе на числа ( с плавающей запятой)
+	echo $_GET['money']; // 555111,22
+	
+	
+	if($_GET['page'] != 'main') {
+	exit();
+	}
+	
+	if(isset($_POST['email'])) {
+	if(!empty($_POST['email'])) {
+	     // для проверок удобно использ Filter_var;
+		// name@gobmail - верный ли эмайл
+		// name.com - правельный ли адрес
+		}
+	}
+	------------
+	Filter_var - функция для фильтрации данных
+	-----------------проверка на эмейл
+			<?php
+		if(isset($_POST['email']) && filter_var($_POST['email'],FILTER_VALIDATE_EMAIL)){
+			echo 'все ок';
+		}else{
+			echo "неверно введен email";
+		}
+
+		?>
+		<form action="about.php" method="post">
+			<input type="text" name="email">
+			<input type="submit" name="submit" value="отправить">
+		</form>
+	----------------
+	
+	-------------------Область допустимых значений
+		if($_GET['page'] == 'main' || $_GET['page'] == 'contacts' || $_GET['page'] == 'about'){   //если одно из этих значений подходит то мы работает с скриптом
+		echo 'все хорошо';
+		}else {
+			echo 'вы ввели неправильно значение';
+		}
+		
+		
+		
+	-----------------
+	<?php
+		$_GET['page'] = (isset($_GET['page']) ? $_GET['page'] : 'main');
+		$allowed = array('main','contacts','about') ;     //массив с нашими элементами меню
+		if(!in_array($_GET['page'], $allowed)) {          //проверяем есть ли данный элемент в массиве
+			exit('вы ввели недопустимое значение');
+		}
+		include $_GET['page'].'.php';
+		?>
+	--------------обработка анкеты например (нада форму добавить) (форма фильтрации данных)
+		<?php
+		$sex = array('man','girl');
+		if(isset($_GET['sex'])){
+			if(in_array($_GET['sex'],$sex)){      //обработка анкеты например
+		}else {
+			$_SERVER['REMOTE_ADDR']; // покажет с какого IP пытались ввести неверные данные
+			exit();            //запрос пытаються потделать
+		}
+	    }
+		
+		 
+		 а теперь можно вывести значения массива $sex 
+		 
+		 <select name="sex"
+		<?php foreach($sex as $v) { ?>
+		<option value="<?php echo $y; ?>"><?php echo $v; ?></option>
+		<?php }?>
+		</select>
+		
+		
+		
+		
+--------------------ПРоВЕРКА ДАННІХ через Switch
+function clearData($data, $type="s"){ //в зафисимости от того с какой буквой будет получать $type таким значение и будет обрабатывать
+    switch($type){
+        case "s":    //s string значение
+            return mysql_real_escape_string(trim(strip_tags($data)));
+        case "i":    //i integer
+            return (int)$data;
+    }
+}

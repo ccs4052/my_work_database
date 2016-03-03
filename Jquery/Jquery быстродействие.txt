@@ -1,0 +1,5 @@
+https://habrahabr.ru/post/103174/  -  статья на ускорение работ Jquery
+
+
+
+http://www.cmsmagazine.ru/library/items/programming/how-to-make-your-script-jquery-to-67percent-more-efficient/ - статья на ускорение работы Jquery

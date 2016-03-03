@@ -1,0 +1,141 @@
+
+                МАССИВЫ JavaScript
+				
+-------------МАССИВ если в [] значит массив
+
+var junk = ["data","name",2,10];
+console.log(junk);
+
+--Выводим конкретный элемент
+var junkData = ["Eddie Murphy", 49, "peanuts", 31];
+console.log(junkData[3]);
+
+
+
+---------------ГЕТЕРОГЕННЫЙ МАССИВ смешаный
+var myArray = [42,true,"bogdan"];
+
+
+---------в смешанный массив можно поместить и ОБЪЕКТ
+
+var myObj ={
+    type: 'fancy',
+    disposition: 'sunny'    
+    };
+
+var myArray = [5,true,"bogdan",myObj];
+----
+
+
+--------------ВЛОЖЕНЫЕ МАССИВА 
+var newArray = [[1,2,3],[3,2,1],[5,6,7]];
+
+--еще пример
+
+var name = ["bogdan"];
+var age = [20,25,30];
+var newArray = [[name,age],[4,3,2],[6,4,3]]
+
+
+
+
+-------------ВЫВОДИМ ВСЕ ЭЛЕМЕНТЫ МАССИВА ЦИКЛОМ For
+
+var cities = ["Bod1", "Bog2", "Helsinki", "NYC","Bog3"];
+
+for (var i = 0; i < cities.length; i++) {
+    console.log("I would like to visit " + cities[i]);
+}
+
+				
+				
+
+------------МАССИВЫ JavaScript
+
+<body>
+<?php
+$users = array(
+    'user1' => array(
+        'Имя' => 'Стас',
+        'Nick' => 'cap',
+        'age' => 40,
+        'level' => 10,
+    ),
+);
+?>
+<script type="text/javascript">  // Масив в JavaScript
+    var user = {'key' : 'value', 'ke2' : 'value2'};        //фигурная скобка говорит о том что мы создаем объект знак : тоже самое что в PHP  => в масиве
+    alert(user['key']);  // один способ вызвать через ключ значение
+    alert(user.ke2);     // второй способ вызвать значение через ключ
+
+</script>
+</body>
+
+
+--------------МНОГОМЕРНЫЕ МАССИВЫ 
+
+<body>
+<?php
+$users = array(
+    'user1' => array(
+        'Имя' => 'Стас',
+        'Nick' => 'cap',
+        'age' => 40,
+        'level' => 10,
+    ),
+);
+?>
+<script type="text/javascript">  // Масив в JavaScript
+
+    var users = {
+        'user1' : {
+            'Имя' : 'Стас',
+            'Nick' : 'cap',
+            'age' : 30,
+            'skilllevel' : 100,
+        },
+        'key2' : 'value2'
+    };
+    console.log('Пользователь: ' + users.user1.Nick + users['user1']['age']); //выводим результат в понели Консоль в инспекторе
+
+</script>
+</body>
+
+
+
+
+------------АНАЛОГ Foreach в JavaScript for 
+
+
+<script type="text/javascript">  // Масив в JavaScript
+    var users = {
+        'user1' : {
+            'Имя' : 'Стас',
+            'Nick' : 'cap',
+            'age' : 30,
+            'skilllevel' : 100,
+        },
+        'key2' : 'value2'
+    };
+    for (key in users.user1){
+        console.log(key);        //ВЫВОДИМ ВСЕ КЛЮЧИ МАССИВА
+    }
+</script>
+
+
+----
+
+<script type="text/javascript">  // Масив в JavaScript
+    var users = {
+        'user1' : {
+            'Имя' : 'Стас',
+            'Nick' : 'cap',
+            'age' : 30,
+            'skilllevel' : 100,
+        },
+        'key2' : 'value2'
+    };
+    for (key in users.user1){
+        console.log(users.user1[key]); //выводим и перебираем ЗНАЧЕНИЯ КЛЮЧЕЙ
+    }
+</script>

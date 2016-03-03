@@ -1,0 +1,56 @@
+<?php                     // выводит все нечетне числа
+$i=1;
+while($i<50){
+	echo $i.'<br>';
+	$i+=2;
+}
+?>
+-------------
+
+<?php
+echo 'Перед циклом<br>';
+$x = 1;
+do {
+    echo $x.'<br>'; //выводит 1 раз даже если условие цикла не правильное ( а если условие цикла как щас то 9 раз выводит )
+    ++$x;
+} while ($x < 10);
+echo 'После цикла';
+?>
+------------
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+    <head>
+    	<link type='text/css' rel='stylesheet' href='style.css'/>
+		<title>More Coin Flips</title>
+	</head>
+	<body>
+	<p>We will keep flipping a coin as long as the result is heads!</p>
+	<?php
+	$flipCount = 0;
+	do {
+		$flip = rand(0,1);
+		$flipCount ++;
+		if ($flip){
+			echo "<div class=\"coin\">H</div>";
+		}
+		else {
+			echo "<div class=\"coin\">T</div>";
+		}
+	} while ($flip);
+	$verb = "were";
+	$last = "flips";
+	if ($flipCount == 1) {
+		$verb = "was";
+		$last = "flip";
+	}
+	echo "<p>There {$verb} {$flipCount} {$last}!</p>";
+	?>
+    </body>
+</html>

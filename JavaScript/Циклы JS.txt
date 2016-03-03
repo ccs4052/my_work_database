@@ -1,0 +1,115 @@
+
+
+----------ЦИКЛ For
+
+for (var counter = 1; counter < 6; counter++) {
+	console.log(counter);
+}
+
+-- По 5 растет
+for (var i = 5; i < 51; i+=5) {
+	console.log(i);
+}
+
+
+--Счетчик на отрицание
+for (var i = 10; i >= 0; i--) {
+	console.log(i);
+}
+
+
+------------------ПРИМЕР Цикла For находим слова с определенными буквами в слове и выводим их
+
+var text = "fdf dsfdsf Bogdan dsfdsf Bogdan";             //данная строка
+var myName = "Bogdan";                                    //Строка которую хотим найти в другой страке
+var hits = [];											  //массив куда будем помещать совпадения
+for (var i=0; i < text.length; i++){					  //цикл делаеться на длину строки text
+    if (text[i] === "B"){								// Нада указать первую букву слова которое ищем обязательно как только натыкаеться цикл на букву B запускаеться цикл на длину слова переменной myName
+            for (var j = i; j< (myName.length + i); j++){ // запускаеться цикл на длину слова которое ищем
+                hits.push(text[j])                       //помещаем результат в масив hits
+                }
+        }
+    }
+if(hits.length === 0){                        //если в массиве что-то есть то выводим это на экран
+    console.log("Your name wasn't found!");
+    }else {
+        console.log(hits);                     //выводим массив с результатом
+        }
+		
+		
+		
+-----------------------ЦИКЛ WHILE ИСПОЛЬЗУЕМ КОГДА МЫ НЕЗНАЕМ Какое количество раз нам нада использовать цикл (тоесть выводит все возможные циклы)
+
+
+var coinFace = Math.floor(Math.random() * 2);
+
+while(coinFace === 0){
+	console.log("Heads! Flipping again...");
+	var coinFace = Math.floor(Math.random() * 2);
+}
+console.log("Tails! Done flipping.");
+
+
+----Выводит надпись 1 раз
+var understand = true;
+while( understand ){
+	console.log("I'm learning while loops!");
+	understand = false;
+}
+
+
+----или так пока будет True будет выводиться надпись 
+
+var bool = true;
+while(bool){
+    console.log("Less is more!");
+    bool = false;
+}
+
+
+
+-----ЦИКЛ While и функция на запуск определенного действия 3 раза
+
+var count = 0;                              //создали переменную
+var loop = function(){						//создаем функцию
+	while(count < 3){						//запускаем цикл
+		console.log("I'm looping!");
+		count++;							//включаем счетчик
+	}
+};
+loop();										//запускаем функцию
+
+
+
+
+
+
+
+
+
+
+--------------ПРИМЕР С ИСПОЛЬЗОВАНИЕМ IF  и WHILE игра 
+
+var slaying = true;
+// A bit of new math magic to calculate the odds
+// of hitting the dragon. We'll cover this soon!
+var youHit = Math.floor(Math.random() * 2);               //гененирует число 1 или 0  - True или False
+var damageThisRound = Math.floor(Math.random() * 5 + 1);  // генерирует число от 1 до 5
+var totalDamage = 0;                                      //переменая которая набирает в себя общий урон
+
+while (slaying) {                                        // если True
+  if (youHit) {											// если True
+    console.log("You hit the dragon and did " + damageThisRound + " damage!");
+    totalDamage += damageThisRound;						//если условие выполняеться то дописываем в totalDamage значение damageThisRound
+    
+    if (totalDamage >= 4) {								//если > 4 то True
+      console.log("You did it! You slew the dragon!");
+      slaying = false;									//если условие выполнелось то останавливаем цикл
+    } else {
+      youHit = Math.floor(Math.random() * 2);			//запускаем youHit снова если условие не выполнелось
+    }
+  } else {
+    console.log("The dragon burninates you! You're toast.");
+    slaying = false;
+  }
+}

@@ -1,0 +1,177 @@
+------------------РЕГИСТРАЦИЯ, ОТПРАВЛЕНИЕ ДАННЫХ НА ТАБЛИЦУ SQL, ОБРАБОТКА ПРОВЕРКА
+				АВТОРИЗАЦИЯ
+				
+				
+-------------ПРИМЕР КОДА НА РЕГИСТРАЦИЮ ПРОВЕРКУ ДАННЫХ ОТПРАВКУ И ТД
+
+<?php
+error_reporting(-1);
+header('Content-Type: text/html; charset=utf-8');
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.ord/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>PhotoArt</title>
+    <link href="style1.css" rel="stylesheet" type="text/css">
+</head>
+<body style="margin: 0px">
+<div id="login">
+    <?php
+    $connect = mysql_connect('localhost','user','111') or die(mysql_error());     // СНАЧАЛА СОЕДИНЯЕМСЯ С БД
+    mysql_select_db('bogdan');                      // в БД выбираем нужную базу данных
+    if(isset($_POST['name']) && ($_POST['pass']) && ($_POST['passr']) &&  filter_var($_POST['email'],FILTER_VALIDATE_EMAIL)){    (3)// проверяем єлементы массива GET на существование 
+        $login= $_POST['name'];   //для удобства значения массива POST помещаем в переменные
+        $pass = $_POST['pass'];
+        $passr = $_POST['passr'];
+        $email = $_POST['email'];
+        if($pass == $passr){    (4)// проверка что-бы в форме в поле пароль и пароль 2 были введены одинаковые данные
+            $pass = md5($pass);  (5)//теперь значение переменной пароль засовываем в кодировку md5 для БД
+            $query = mysql_query("INSERT INTO capons VALUES('','$login','$pass','$email')") or die(mysql_error());   (6)//Помещаем значение которые указали в запроси в БД
+        }else{
+            echo'Password must match!';
+        }
+    }else{
+        if(isset($_POST['submit'])) {          
+            echo 'вы не заполнили все поля';
+        }
+    }
+    if (isset($_POST['login1'])){     (7) // проверяем была ли нажта кнопка формы (2) на отправку данных регистрации для логина
+        $e_login=$_POST['name1'];      (8) // помещаем переменные массива POST в переменные
+        $e_pass=md5($_POST['pass1']);    (9)// поскольку проверять будем по паролю в БД вы пароль переводим в md5 кодировку что-бы можно было сравнить с паролем в БД
+        $query = mysql_query("SELECT * FROM capons WHERE login='$e_login'"); (10)// - отправляем запрос в БД віделить все из таблици capons где значчение столбца login равно значению нашей переменной $e_login массива 
+        $user_data = mysql_fetch_array($query);//(11) разбиваем наши данные из БД в массив и засовываем в переменную
+        if($user_data['pass'] == $e_pass){        //(12) - сравниваем значение ячейки pass ( взятой из БД) с нашим значенией переменной $e_pass
+            $check = true;                        // можно уже выполнять действие если будет ТРУ или поместит значение ТРУ в переменную $check что-бы использывать нижу ( хотя тоже самое можно сделать и здесь без переменной с ТРУ)
+        }else{
+            echo "Wrong password or login";
+        }
+        if($check = true){
+            include 'main.php';
+        }
+    }
+    ?>
+</div>
+
+<div id="footer1">
+    <form style="margin-top: -15px" method="post" action="main.php">       (1) //форма на регистрацию
+        <pre>
+            <input style="background-color: khaki" type="text" name="name" placeholder="Login" required>
+            <input style="background-color: khaki" type="password" name="pass" placeholder="password" required>
+            <input style="background-color: khaki" type="password" name="passr" placeholder="repeat pass" required>
+            <input style="background-color: khaki" type="email" name="email" placeholder="email" required>
+            <input type="submit" name="submit" value="Авторизация">
+            <input  type="submit" name="cookie" value="Выход">
+        </pre>
+    </form>
+</div>
+<div id="login2">
+    <form method="post" action="main.php">                     (2)  //форма на авторизацию ( использует данные которые мы использ на регистрации)
+        <pre>
+            <input style="background-color: khaki" type="text" name="name1" placeholder="Login" required>
+            <input style="background-color: khaki" type="password" name="pass1" placeholder="password" required>
+            <input type="submit" name="login1" value="Войти";
+        </pre>
+    </form>
+</div>
+
+
+</body>
+</html>
+
+
+-----------------------ПРИМЕР РАБОТЫ СЕССИИ
+
+
+
+<?php
+error_reporting(-1);
+header('Content-Type: text/html; charset=utf-8');
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.ord/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>PhotoArt</title>
+    <link href="style1.css" rel="stylesheet" type="text/css">
+</head>
+<body style="margin: 0px">
+<div id="login">
+    <?php
+    $connect = mysql_connect('localhost','user','111') or die(mysql_error());
+    mysql_select_db('bogdan');
+    if(isset($_POST['name']) && ($_POST['pass']) && ($_POST['passr']) &&  filter_var($_POST['email'],FILTER_VALIDATE_EMAIL)){
+        $login= $_POST['name'];
+        $pass = $_POST['pass'];
+        $passr = $_POST['passr'];
+        $email = $_POST['email'];
+        if($pass == $passr){
+            $pass = md5($pass);
+            $query = mysql_query("INSERT INTO capons VALUES('','$login','$pass','$email')") or die(mysql_error());
+        }else{
+            echo'Password must match!';
+        }
+    }else{
+        if(isset($_POST['submit'])) {
+            echo 'вы не заполнили все поля';
+        }
+    }
+    if (isset($_POST['login1'])){
+        $e_login=$_POST['name1'];
+        $e_pass=md5($_POST['pass1']);
+        $query = mysql_query("SELECT * FROM capons WHERE login='$e_login'");
+        $user_data = mysql_fetch_array($query);
+        if($user_data['pass'] == $e_pass){
+            session_start();                                       //- Сесия начинает работать
+            $_SESSION['name']=$e_login;                          //Создаем сессионую переменную
+            //$check = true;
+        }else{
+            echo "Wrong password or login";
+        }
+        if($check = true){
+            include (main.php);
+        }
+    }
+    if(isset($_POST['logout'])){                                //- условие для выхода из СЕССИИ
+        unset($_SESSION['name']);
+        session_destroy();
+    }
+    ?>
+</div>
+
+<div id="footer1">
+    <form style="margin-top: -15px" method="post" action="mainreg.php">
+        <pre>
+            <input style="background-color: khaki" type="text" name="name" placeholder="Login" required>
+            <input style="background-color: khaki" type="password" name="pass" placeholder="password" required>
+            <input style="background-color: khaki" type="password" name="passr" placeholder="repeat pass" required>
+            <input style="background-color: khaki" type="email" name="email" placeholder="email" required>
+            <input type="submit" name="submit" value="Авторизация">
+            <input  type="submit" name="cookie" value="Выход">
+        </pre>
+    </form>
+</div>
+<div id="login2">
+    <?php
+    if(isset($_SESSION['name'])){                                //условие для запуска повторной авторизации если СЕССИИ не существует
+        echo "вы уже залогинились";
+    }else{
+    echo ' <form method="post" action="mainreg.php">
+        <pre>
+            <input style="background-color: khaki" type="text" name="name1" placeholder="Login" required>
+            <input style="background-color: khaki" type="password" name="pass1" placeholder="password" required>
+            <input type="submit" name="login1" value="Войти";
+
+        </pre>
+    </form>
+</div>';
+}
+?>
+<div id="logout">
+    <form method="post" action="mainreg.php">
+        <input type="submit" name="logout" value="Выйти";         //форма с созданной кнопкой для выхода из сессии
+    </form>
+</div>
+    
+</body>
+</html>

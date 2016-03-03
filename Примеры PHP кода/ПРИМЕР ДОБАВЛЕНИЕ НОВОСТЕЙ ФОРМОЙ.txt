@@ -1,0 +1,127 @@
+--------- ДЕЛАЕМ ФОРМУ ИЛИ КОНТЕЙНЕР ДЛЯ ДОБАВЛЕНИЯ НОВОСТЕЙ НА САЙТ (Делаем соотвецтвующюю таблицу с БД которая соотвецтвует полям в форме)
+
+
+-----ПЕРВЫЙ ФАЙЛ основной ВЫВОДИТ СОДЕРЖИМОЕ БД в определенном месте
+
+(BD test.php)
+
+<?php
+session_start();
+if(isset($_SESSION['info'])){
+
+    $info = $_SESSION['info'];
+    unset ($_SESSION['info']);
+}
+if(isset($info)){?>
+    <h1><?php echo $info; ?></h1>
+<?php } ?>
+
+
+
+<a href="addnews.php">ДОБАВИТЬ НОВУЮ НОВОСТЬ</a><br>  - ссылка на добавление новостей находиться в addnews.php
+Все существующие новости:
+
+<?php
+if(isset($_SESSION['info'])){
+
+$info = $_SESSION['info'];
+unset ($_SESSION['info']);
+}
+define ('DB','localhost');
+define ('DBLOGIN','user');
+define ('DBPASS','111');
+define ('DBNAME','bogdan');
+$connect = mysqli_connect(DB,DBLOGIN,DBPASS,DBNAME) or die(mysqli_error());
+
+$news = mysqli_query($connect,"SELECT * FROM news ORDER BY 'id' DESC");
+
+while($row = mysqli_fetch_assoc($news)) { ?>       //прикрепим сюда ссылку на удаление файла которая будет обрабатываться в файле dell.php сылка выделена цветом
+    <div>
+        <div><a href="dell.php?action=delete&id=<?php echo $row['id']; ?>">УДАЛИТЬ</a><?php echo $row['cat']; ?> <span style="color:#555555; font-size:10px"><?php echo $row['date']; ?> </span></div>
+    </div>
+<?php } ?>
+
+
+
+
+-----------НАЖИМАЕМ НА ССЫЛКУ Добавления новостей и переъодим в addnews.php
+Тут форма для отправки новостей с нужными полями и названия (названия как правило соотвецтвуют названию столбцов таблици в БД)
+В action формы указан файл который обрабатывает запрос add.php
+<div style="padding-top:20px; padding-bottom:20px;">
+
+    <form action="add.php" method="post">
+        <div>
+            Заголовок новости: <input type="text" name="title">
+        </div>
+        <div>
+            Категория новостей: <input type="text" name="cat">
+        </div>
+        <div>
+            Описание новости: <br>
+            <textarea name="description"></textarea>
+        </div>
+        <div>
+            Полный текст новости: <br>
+            <textarea name="text"></textarea>
+        </div>
+
+
+        <input type="submit" name="add" vаlue="Добавить новость">
+
+
+    </form>
+
+
+</div>
+
+
+при нажатии на кнопку отправить попадаем в add.php
+Этот файл add.php обрабатывает данные полученые из формы спец функциями и помещает их в БД после
+ создаем сесионую переменную в которую помещаем слово (запись добавлена) что-бі вывести эту запись на экран
+на страницу куда стоит переадресация срабатывает переадресация на страницу BD test.php
+ и на этой странице приравниваем сесионую переменую к обычной переменной
+потом удаляем сессию и выводим слово которое приравняли к переменной
+в нашем случае (запись добавлена) 
+
+<?php
+session_start();
+define ('DB','localhost');
+define ('DBLOGIN','user');
+define ('DBPASS','111');
+define ('DBNAME','bogdan');
+$connect = mysqli_connect(DB,DBLOGIN,DBPASS,DBNAME) or die(mysqli_error());
+mysqli_set_charset($connect,'utf8');
+if(isset($_POST['add']) && ($_POST['text']) && ($_POST['cat']) && ($_POST['description']) && ($_POST['title'])){
+    foreach($_POST as $k=>$v){    //с помощью цикла обработали все эдементы массива функцией trim ( но ради безопасности серьезными проверками лучьше не пользываться в Foreach а писать в ручную
+        $_POST['$k'] = trim($v);
+    }
+    $cat =($_POST['cat']);
+    $cat = htmlspecialchars($cat);
+    $cat = mysqli_real_escape_string($connect,$cat);
+    $title =($_POST['title']);
+    $title = htmlspecialchars($title);
+    $text = ($_POST['text']);
+    $text = htmlspecialchars($text);
+    $description = ($_POST['description']);
+    $description = htmlspecialchars($description);
+    $date = date('Y-m-d');
+    mysqli_query ($connect, "INSERT INTO news VALUES ('','$date','$title','$cat','$text','$description','','','')") or exit(mysqli_error());
+    $_SESSION['info'] = 'Запись успешно добавлена';
+    header('Location: BD test.php');
+    exit();
+
+}
+
+---------------------------ДЛЯ ОБРАБОТКИ УДАЛЕНИЯ Создаем файл DELL.php  для меньшего места мы объединили его с файлом add.php
+<?php
+session_start();
+define ('DB','localhost');
+define ('DBLOGIN','user');
+define ('DBPASS','111');
+define ('DBNAME','bogdan');
+$connect = mysqli_connect(DB,DBLOGIN,DBPASS,DBNAME) or die(mysqli_error());
+if(isset($_GET['action']) && $_GET['action'] == 'delete'){                   //условие на удаление записи из блока новостной ленты
+    mysqli_query($connect, "DELETE FROM news WHERE id = ".$_GET['id']."");
+    $_SESSION['del'] = 'Новость была удалена';               //создаем надпись в сессионной переменной что-бы передать ее на друг страницу и там вывести приравняя ее к обычной переменной
+    header("Location: BD test.php");
+}

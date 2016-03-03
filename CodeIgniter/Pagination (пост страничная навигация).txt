@@ -1,0 +1,118 @@
+
+
+-----------------Pagination. Пост страничная навигация
+Тут поможет библиотека pagination
+Делаем на примере нашего контролера First и функции articls (controllers/first.php)
+
+Библиотеку нада включить на автозагрузку для этого нада зайти в config/autoload.php
+
+$autoload['libraries'] = array('database','pagination'); // database мы уже подключили для работы с БД
+
+теперь библиотека подключена и работает можно с ней работать 
+-----------------
+-----------------
+controllers/first.php в классе First создаем функцию для запроса всех новостей из таблици с пагинацией 
+
+1)
+
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed'); // BASEPATH путь к корневой папке мы указали в файле config
+//BASEPATH - http://demo/cilessons/index.php/
+class First extends CI_Controller { //файл с маленькой буквы а класс вызываем с большой (такое же название пишем что и сам файл)
+    function articles(){
+        $config['base_url'] = 'http://demo/cilessons/index.php/first/articles'; //путь к функции (например)или файлу где хотим сделать пагинацию класс first функция articles
+        $config['total_rows'] = '3'; // указываем сколько всего записей в таблице у нас
+        $config['per_page'] = '1'; // сколько записей показывать на каждой странице
+		 //$config['total_rows'] = $this->db->count_all('articles'); //если у нас большая таблица то полное число записей достать
+        $config['full_tag_open'] = '<p style="color:red; text-align: center" >'; //добавление стилей к пагинации например начало
+		 $config['prev_link'] = '&lt; Prev';
+		$config['prev_tag_open'] = '<li>';
+		$config['prev_tag_close'] = '</li>';
+		$config['next_link'] = 'Next &gt;';
+		$config['next_tag_open'] = '<li>';
+		$config['next_tag_close'] = '</li>';
+		$config['cur_tag_open'] = '<li class="active"><a href="#">';
+		$config['cur_tag_close'] = '</a></li>';
+		$config['num_tag_open'] = '<li>';
+		$config['num_tag_close'] = '</li>';
+		$config['first_link'] = FALSE;
+		$config['last_link'] = FALSE;
+	   $config['full_tag_close'] = '</p>'; // конец
+		
+        $this->pagination->initialize($config); // инициализируем класс Пагинации что-бы все работало
+
+        $this->load->model('articles_model');
+        $data['articles'] = $this->articles_model->get_articles($config['per_page'],$this->uri->segment(3)); //передаем в функцию параметры для пагинации
+        $this->load->view('articles_views',$data); //загрузили вид и передали в него массив $data а теперь в views в файле articles_views нада вывести на экран содержимое фассива $data
+		
+		//$this->uri->segment(3) -пагинация делаеться по 3-му сегменту в строке URI тоесть  http://demo/cilessons/index.php/first/articles - first- 1 сигмент / articles - 2 сигмент и далее если будем клацать на пагинацию на странице то после articles/1 будет цифры появляться номера пагинации это и будет 3-й сигмент по которому меняеться страница
+
+	}
+   
+}
+
+2)
+models/articles_model.php к классе Articles_model создаем функцию на запрос в БД с пагинацией 
+<?php
+if ( ! defined('BASEPATH'))  exit('No direct script access allowed');
+class Articles_model extends CI_Model { //файл с маленькой буквы а класс вызываем с большой (такое же название пишем что и сам файл)
+    function get_articles($num,$offset){ //принимаем параметры из функции articles класса controllers/first.php
+        $query =  $this->db->get('articles',$num,$offset); //передаем параметры в запрос в таблицу articles
+        return $query->result_array(); //возвращаем значение запроса в виде массива в функцию
+    }
+}
+
+3) Все это мы отображаем в views/articles_views.php и в этом файла для отображения пагинации нада
+записать следущее
+
+<body>
+<?php
+foreach ($articles as $item){
+    echo '<pre>';
+    echo '<p>'.$item['date'].'</p>';
+    echo $item['title'];
+    echo $item['text'];
+    echo '</pre>';
+}
+echo $this->pagination->create_links(); //под выводом новостей из таблици добавим такую строку на пагинацию новостей
+?>
+
+<p>Новый вид</p>
+
+</body>
+</html>
+
+
+
+-------------------------------------- 2 ПАГИНАЦИЯ НА 1 VIEW
+
+-ФУНКЦИЯ В КОНТРОЛЕРЕ
+
+ public function gallery(){
+
+    $config1 = array();
+    $config1["base_url"] = site_url("pages/gallery");
+    $config1["total_rows"] = $this->pagination_model->video_count();
+    $config1["per_page"] = 1;
+    $config1["uri_segment"] = 3;
+
+    $this->pagination->initialize($config1);
+
+    $page1 = ($this->uri->segment(3,0)) ? $this->uri->segment(3,0) : 0;
+    $data["videos"] = $this->pagination_model->fetch_video($config1["per_page"], $page);
+    $data["links1"] = $this->pagination->create_links();
+
+    $config2 = array();
+    $config2["base_url"] = site_url("pages/gallery").'/'.$this->uri->segment(3,0);
+    $config2["total_rows"] = $this->pagination_model->gallery_count();
+    $config2["per_page"] = 3;
+    $config2["uri_segment"] = 4;
+
+    $this->pagination->initialize($config2);
+
+    $page2 = ($this->uri->segment(4)) ? $this->uri->segment(4) : 0;
+    $data["galleries"] = $this->pagination_model->fetch_gallery($config2["per_page"], $page2);
+    $data["links2"] = $this->pagination->create_links();
+
+    $this->template->gallery_view($data);
+} 

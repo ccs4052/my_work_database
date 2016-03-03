@@ -1,0 +1,53 @@
+
+----------------ЗАПРОС по 3 функция ( myBasket выборка по 2-м таблицам) а потом используем віборку по 2-м таблицам для запроса в другой функции
+
+			function db2array($data){
+				$arr = array();
+				while ($row = mysqli_fetch_assoc($data)) {
+					$arr[] = $row;
+				}
+				return $arr;
+			}
+
+			function myBasket (){ //запрос в таблицу basket и catalog ( для отображение инфо на странице корзины этот запрос объединяет 2 таблици basket и catalog
+				$connect = mysqli_connect(DB,DBLOGIN,DBPASS,DBNAME) or die (mysqli_error());
+				$sql = "SELECT
+							author,title,pubyear,price,
+							basket.id,goodsid,customer,quantity
+							FROM catalog,basket
+							WHERE customer='".session_id()."'
+							AND catalog.id=basket.goodsid ";    //отобразит только товары которые в таблице basket благодаря условию
+				$result = mysqli_query($connect,$sql) or die (mysqli_error($connect)) ;   //запрос поместили в переменную
+				return db2Array($result); //результат запроса засунем в функцию db2Array (что-бы сделать массив из запроса)
+			}
+
+
+			function resave ($dt){ //заливаем данные о заказе в таблицу orders и удаляем такие же данные из таблици basket (потому как они нам там уже не нужны если человек нажал кнопку оформить заказ
+				$connect = mysqli_connect(DB,DBLOGIN,DBPASS,DBNAME) or die (mysqli_error());
+				$goods = myBasket();// вызываем функцию myBasket(); в ней уже описан запрос который содержит данные нашей таблици корзины для покупателя (баскет)
+				foreach($goods as $item){ //запрос делаем внутри цикла поэтому экранируем данные так  '{$item["author"]}'
+					$sql1 ="INSERT INTO orders (
+										author,
+										title,
+										pubyear,
+										price,
+										customer,
+										quantity,
+										datetime,
+										goodsid)
+								  VALUES (
+										'{$item["author"]}',
+										'{$item["title"]}',
+										{$item["pubyear"]},
+										{$item["price"]},
+										'{$item["customer"]}',
+										{$item["quantity"]},
+										'$dt',
+										{$item["goodsid"]})";
+					mysqli_query($connect,$sql1) or die (mysqli_error($connect)); //отправляем запрос в БД внутри foreach
+					$sql2 = "DELETE FROM catalog WHERE id='{$item["goodsid"]}'";
+					mysqli_query($connect,$sql2) or die (mysqli_error($connect));
+				}
+				$sql = "DELETE FROM basket WHERE customer ='".session_id()."'"; //запрос на удаление все записей с id = session_id
+				mysqli_query($connect,$sql) or die (mysqli_error($connect));
+			}

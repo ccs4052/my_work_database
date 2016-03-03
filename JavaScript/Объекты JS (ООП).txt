@@ -1,0 +1,164 @@
+
+
+-----------------------------------------Объекты в JavaScript ООП
+Один вид
+
+var phonebookEntry = {};
+
+phonebookEntry.name = 'Oxnard Montalvo';            //переменные внутри объекта
+phonebookEntry.number = '(555) 555-5555';
+phonebookEntry.phone = function() {
+  console.log('Calling ' + this.name + ' at ' + this.number + '...');
+};
+
+phonebookEntry.phone();  //вызываем объект и функцию внутри него
+----
+2 способа создавать ОБЪЕКТЫ
+
+1 - var me = new Object();    //создали Объект
+2 - var me = {};              //создан объект
+
+	
+	
+---Поместим массив в ключь объекта 
+
+var myObject = {
+  name: 'Eduardo',
+  type: 'Most excellent',
+  interests: ['bogdan','ira']
+};
+
+
+
+----ПРИМЕР ИСПОЛЬЗОВАНИЯ ОБЪЕКТОВ
+
+
+var friends = {};                  //создали объект
+friends.bill = {                  //создаем новый объект внутри нашего объекта
+  firstName: "Bill",
+  lastName: "Gates",
+  number: "(206) 555-5555",
+  address: ['One Microsoft Way','Redmond','WA','98052']   //адресс у нас помещен в массив
+};
+friends.steve = {
+  firstName: "Steve",
+  lastName: "Jobs",
+  number: "(408) 555-5555",
+  address: ['1 Infinite Loop','Cupertino','CA','95014']
+};
+
+var list = function(obj) {      //передаем название объекта из которого нужно вывести названия всех объектов
+  for(var prop in obj) {
+    console.log(prop);			//выводим имена всех объектов
+  }
+};
+
+var search = function(name) {       //передаем в функцию название содержимого ключа по этому название сделаем сравнение
+  for(var prop in friends) {				перебираем все объекты объекта friends
+    if(friends[prop].firstName === name) {  //(friends[prop] - названия объектов объекта friends    -- firstName - ключь массива который содержит имя значения )    в условие приравниваем имя ключа объекта с значением которое мы отправили в функцию 
+      console.log(friends[prop]);        //выводим значение в консоли
+      return friends[prop];             // либо передаем значение в функцию если мы хотим его гдето использовать
+    }
+  }
+};
+
+list(friends);            //вызываем все объекты из объекта friends
+search("Steve");          // ищем слово функцией search в объекте friends и в объектах friends
+
+
+----------Еще пример использования телефонной книги  в объектах
+
+
+<script>
+    var bob = {
+        firstName: "Bob",
+        lastName: "Jones",
+        phoneNumber: "(650) 777-7777",
+        email: "bob.jones@example.com"
+    };
+
+    var mary = {
+        firstName: "Mary",
+        lastName: "Johnson",
+        phoneNumber: "(650) 888-8888",
+        email: "mary.johnson@example.com"
+    };
+
+    var contacts = [bob, mary];                  //Создаем массив в который помещаем имена объектов
+
+    function printPerson(person) {					// функция печатает элементы которые находяться в объекте который мы получили через функцию
+        console.log(person.firstName + " " + person.lastName);
+    }
+
+    function list() {								//печатаем элементы объекта
+        var contactsLength = contacts.length;
+        for (var i = 0; i < contactsLength; i++) {
+            printPerson(contacts[i]);
+        }
+    }
+
+
+    function search(name){								 //находим по названию ключа в объекте нужное поле
+        var contactsLength = contacts.length;
+        for (var i = 0; i < contactsLength; i++) {
+
+            if(contacts[i].lastName === name){            //содержимое поля объекта сравниваем с тем что пришло в функцию
+               // console.log(printPerson(contacts[i]));
+               return printPerson(contacts[i]);           // возвращаем значение в функцию
+            }
+        }
+    }
+	function add (firstName,lastName,phoneNumber,email){ //функция добавляет в массив объектов новый объект с новыми значениями
+    contacts[contacts.length]={
+        firstName: firstName,
+        lastName: lastName,
+        phoneNumber: phoneNumber,
+        email: email
+        };
+    }
+    add("sdfsdf","sdfsdf","23424","sddf");
+	
+   //search("Johnson");   //вызываем функцию search и передаем в нее значение для поиска
+
+</script>
+
+
+
+
+----------------ОБЇЕКТ СЧИТАЕТ СУММУ Разных товаров и возвращает ответ
+
+var cashRegister = {            //наш объект
+    total:0,					//метод который несет в себе число 0
+    add: function(itemCost){	//метод объекта с функцией которая выводит сумму товаров и кладет результат в метод total
+        this.total += itemCost;
+    }
+};
+cashRegister.add(0.98+1.23+4.99+0.45);
+console.log('Your bill is '+cashRegister.total);
+
+
+----ТОже самое но с оператором Case
+var cashRegister = {
+    total: 0,                            //метод отображающий сумму покупки
+	 lastTransactionAmount:0,           //метод отображающий сумму единиц выбраного товара
+    add: function(ItemCost){            // метод добавляет функцией результат в метод total
+        this.total += ItemCost;
+        },
+	scan: function(item, quantity) {     //метод scan запускает функцию с свичем который в зависимости от того что передали в функцию подбирает цену - вторым параметром передаем количество товара
+            this.lastTransactionAmount += 1 * quantity;  //добавляем в метод количество выбранных единиц товара
+		   switch (item) {
+                case "eggs": this.add(0.98 * quantity); break;     // цена умноженая на количество - количество передали вторым параметром в функию
+                case "milk": this.add(1.23 * quantity); break;
+                case "magazine": this.add(4.99 * quantity); break;
+                case "chocolate": this.add(0.45 * quantity); break;
+                default: this.add(0);
+            }
+            return true;                                       //возвращаем ответ в функцию
+        }
+ };
+    cashRegister.scan("eggs",4);                            //передаем название товара и количество вторым параметром 
+    cashRegister.scan("milk",4);
+    cashRegister.scan("magazine",4);
+    cashRegister.scan("chocolate",4);
+    console.log('Your bill is '+cashRegister.total);           //вызываем объект с методом total с общим количеством суммы товара
+	console.log('Your bill is '+cashRegister.total);      //отображаем метод с количеством выбранного товара 

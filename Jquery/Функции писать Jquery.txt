@@ -1,0 +1,277 @@
+
+----------------------------------Jquery
+
+nowtime = new Date().getTime(); // показывает сколько времени прошло между запросами или между надписями в чате - ее можно засунуть в какую нибуть функцию
+
+
+
+Библиотека с функциями написаными на JavaScript
+
+
+Подключение Jquery 
+В связи с тем что Jquery постоянно обновляеться - если сайт начали писать с определенной 
+версией то нада на этой-же версии и писать потому что функции которые обновили могут не работать!
+Поэтому на гугле храняться все версии Jquery для работы
+
+если скачали библиотеку локально - А ЕСЛИ Скачать библиотеку и подгрузить из файла то если гугл урадет то моя библиотека будет работать НО РАБОТАЕТ МЕДЛЕННЕЕ
+ <script type="text/javascript" src="js/Jquery.js"></script>
+ 
+ а если из интернета подключать то так
+ <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+ 
+ библиотека Jquery на сервере google - НО ЕСЛИ ГУГЛ УПАДЕТ То не будет работать мой сайт РАБОТАЕТ БЫСТРЕЕ
+ <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+ 
+ 
+    Ajax ( технология или функция) - при помощи которой отправляеься запрос на сервере
+- Ajax отправляет данные без перезагрузки страници 
+ Ajax работает внутри ОДНОГО ДОМЕНА ( тоесть вызывает страници сайта которые находятся в одной точке грубо говоря на одном сервере)
+
+
+---------ФУНКЦИЯ ЗАПУСКА Надписи с другой страници без перезагрузки страници
+
+ <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+    function myAjax() {
+        $.ajax({                    // $ говорит о том что мы работаем с Jquery и вызываем Ajax один из методов Jquery
+            url: "./test1.php",     // Путь куда мы передаем свой запрос
+            type: "POST",           // Метод которым передаем данные ( GET POST без разници) 
+            cache: false,           //(True используеться если выводить инфо которое не меняеться у нас в контенте)Говорит о том что если мы будем метядь данные со страници которую выводи Ajax они будут выводиться изменеными что и надо ( а если True указать то то что мы выводим из другой страници запомнилось бы и если бы мы внесли изменения то они бы не вывелись ( а вывелись старые))
+            date: { key1: 'value1', key2 : 'value2'},
+            timeout: 15000,
+            success: function(msg) {   // //выводит все содержимое страници test1.php ( в переменной функции (msq)) ( эту функцию можно вызвать в любом другой диве например)
+               alert(msg);           // и выводим с помощью alert(msq)
+            },
+        });
+    }
+    window.onload = function() {
+        document.getElementById('xxx').onclick = myAjax;
+    }
+</script>
+<div id="xxx">Тест Ajax</div>
+<div id="yyy" style="color: #4DA13F" data-color="green">тестируем Jquery</div>
+</body>
+
+----Содержимое страници test1.php
+
+<?php
+error_reporting(-1);
+header('Content-type: text/html; charset=utf-8');
+echo 'Это пришол ответ из страници тест ';
+
+
+
+
+
+-----------------ОТПРАВКА ДАННЫХ ЧЕРЕЗ функцию Ajax методом POST или GET 
+
+----основной файл
+
+ <script src="jquery.js" type="text/javascript"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+</head>
+<body>
+<script type="text/javascript" >
+    function myAjax() {
+        $.ajax({
+            url: "./test1.php",                      //файл куда отправляем
+            type: "POST",                            //метод отправки данных
+            cache: false,
+            data:  { login : 'capons', age : 20 },   //отправляем массив ( где получаем разбиваем массив Foreach 
+            timeout: 15000,
+            success: function(msg) {                  //выводит все содержимое страници test1.php ( в переменной функции (msq)) ( эту функцию можно вызвать в любом другой диве например)
+               alert(msg);                           //и выводим с помощью alert(msq)
+            },
+        });
+    }
+    window.onload = function() {
+        document.getElementById('xxx').onclick = myAjax;
+    }
+</script>
+<div id="xxx">Тест Ajax</div>
+<div id="yyy" style="color: #4DA13F" data-color="green">тестируем Jquery</div>
+</body>
+
+---файл test1.php
+
+<?php
+error_reporting(-1);
+header('Content-type: text/html; charset=utf-8');
+    foreach ($_POST as $k => $v) {
+        echo $k . ' = ' . $v . '<br>';
+    }
+	
+	
+	
+	
+	
+	
+-------------Например сделаем что-бы надписи отправлялись на один файл и выводились 
+в отправляемом файле только в другом блоке например как в чате !!!
+
+файл основной --
+
+ <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+</head>
+<body>
+<script>
+    function myAjax() {
+        document.getElementById('yyy').innerHTML += '<br>Login = capons'; //при нажатии на блок xxx в блоке yyy дописываем (+= дописать) тестовое значение ( = '<br>Login = capons') с каждым новым зажатием будет появляться все новая и новая инфо
+        $.ajax({
+            url: "./test1.php",                      //файл куда отправляем
+            type: "POST",                            //метод отправки данных
+            cache: false,
+            data:  { login : 'capons', age : 20 },   //отправляем массив ( где получаем разбиваем массив Foreach ) + можно сохранять полученные данные в БД ( например история переписки)
+            timeout: 15000,
+            success: function(msg) {                  //выводит все содержимое страници test1.php ( в переменной функции (msq)) ( эту функцию можно вызвать в любом другой диве например)
+               alert(msg);                           // и выводим с помощью alert(msq)
+            },
+        });
+    }
+    window.onload = function() {
+        document.getElementById('xxx').onclick = myAjax; //нажимая на блок xxx мы запускаем функцию MyAjax
+    }
+</script>
+<div id="xxx">Тест Ajax</div>
+<div id="yyy" style="color: #4DA13F" data-color="green">тестируем Jquery</div>
+</body>
+
+---файл test1.php - который обрабатывает данные получаемые + данные можно еще сохранять в БД
+
+<?php
+error_reporting(-1);
+header('Content-type: text/html; charset=utf-8');
+foreach ($_POST as $k => $v) {              //полученый массив разбиваем что-бы вывести в нормальном виде в файле test.php
+        echo $k . ' = ' . $v . '<br>';
+    }
+	
+	
+-----------------ЕСЛИ timeout: 15000 не выполняеться  то даписываем в функцию Ajax сдедующее условие (error нужен в функции если что-то пошло не так)
+Причина почему ответ не пришол с сервера много ( прервался интернет )
+
+Что-бы проверить функцию error в файле куда мы отправляем запрос можно установить функцию sleep (20) 20 секунд скрипт будет спать ( это время должно быть больше timeaut в функции отправки запроса) и тогда сработает функция error в нашем скрипте
+
+function myAjax() {
+        document.getElementById('yyy').innerHTML += '<br>Login = capons';
+        $.ajax({
+            url: "./test1.php",                      
+            type: "POST",                            
+            cache: false,
+            data:  { login : 'capons', age : 20 },   
+            timeout: 15000,                       // если в указаное время ответ не приходит то success не срабатывает и запускаеться error        
+            success: function(msg) {    
+               alert(msg);   
+            },
+            error: function(x, t, m){
+                if(t==="timeout"){                //t приравниваеться к timeout
+                     alert('Возможно сайт лежит не приходит ответ с сервера или у вас интернет не работает');
+					 //setTimeout(myAjax, 10000); //либо через 10 секунд отправить еще раз такой-же запрос вместо Alert (вдруг интернет упал на пару секунд тогда Settimeout поможет
+                } else {
+                    alert('Какие-то проблемы');
+                }
+            }
+        });
+    }
+	
+	
+	
+	
+	
+	
+------------------------------------------Выводим массив ajax через функцию JSON.parse
+
+
+
+
+  <script type="text/javascript" src="http://scriptjava.net/source/scriptjava/scriptjava.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+</head>
+<body>
+<script>
+    function myAjax() {
+        $.ajax({
+            url: "./test1.php",
+            type: "POST",
+            cache: false,
+           // data: {login: 'inpost'},
+            success: function (msg) {
+                var response = JSON.parse(msg) // создаем локальную переменную response которая перекадирует msg
+                if(response.status == 'ok') {
+                    alert(response.name); //обращаемся к ячейке массива с ключем (name) в файле test1.php
+                }
+            },
+        });
+        return false;
+    }
+  window.onload = function () {
+        document.getElementById('xxx').onclick= myAjax; //нажимая на блок xxx мы запускаем функцию MyAjax
+    }
+</script>
+<div id="xxx">Тест Ajax</div>
+<div id="yyy" style="color: #4DA13F" data-color="green">тестируем Jquery</div>
+</body>
+
+-----test1.php
+<?php
+error_reporting(-1);
+header('Content-type: text/html; charset=utf-8');
+$array = array(
+    'name' => 'александр',
+    'F' => 'Радеонович',
+    'Nick' => 'capons'
+);
+$array['status'] = 'ok';
+echo json_encode($array); // JavaScriptObject -json_encode ( перекодировали массив в объект в строку
+
+
+
+
+
+
+
+
+
+---------------------Jquery по нажатию на див другой див меняет цвет 
+
+<body>
+<script>
+    window.onload = function() {
+        document.getElementById('yyy').onclick = myJquery;
+    }
+    function myJquery() {
+        //var x = $('#yyy').attr('data-color','red');  //$ означает что работает с Jquery (#xxx обращаемся к ID дива) (.attr() работаем с атрибутами
+                                                    //attr('data-color','red') - в атрибуде data-color меняем цвет
+        var x = $('#xxx').css('background-color','red');   // css (работаем с таблицей стилей - меняем цвет на красный
+       // alert(x);
+    }
+</script>
+<div id="xxx">Тест Ajax</div>
+<div id="yyy" style="color: #4DA13F" data-color="green">тестируем Jquery</div>
+</body>
+
+
+
+
+----------------Jquery селект this ( обращение)
+
+
+<body>
+<script>
+    window.onload = function() {
+        document.getElementById('yyy').onclick = myJquery;
+    }
+    function myJquery() {
+        //var x = $('#yyy').attr('data-color','red');  //$ означает что работает с Jquery (#xxx обращаемся к ID дива) (.attr() работаем с атрибутами
+                                                    //attr('data-color','red') - в атрибуде data-color меняем цвет
+        //var x = $('#xxx').css('background-color','red');   // css (работаем с таблицей стилей - меняем цвет на красный
+       // alert(x);
+        $(this).css('color','red');             // this вызыветься тот блок по которому мы нажали в данном случае 'yyy'
+    }
+</script>
+<div id="xxx">Тест Ajax</div>
+<div id="yyy" style="color: #4DA13F" data-color="green">тестируем Jquery</div>
+</body>
+
+

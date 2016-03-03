@@ -1,0 +1,30 @@
+
+Логические операторы
+
+and (&&), or (||), and not (!)
+
+ИЛИ
+true || true;     // => true
+true || false;    // => true
+false || true;    // => true
+false || false;   // => false
+
+И
+true && true;    // => true
+true && false;   // => false
+false && true;   // => false
+false && false;  // => false
+
+
+
+
+
+
+
+
+
+
+
+
+
+

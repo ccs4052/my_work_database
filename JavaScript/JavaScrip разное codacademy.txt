@@ -1,0 +1,88 @@
+
+
+prompt   - выводит на экрант табличку с надписью
+
+prompt("What is your name?")
+
+
+-----------------
+length - показывает длину строки
+
+"bogdan training today".length
+
+
+----------------
+
+"I'm coding like a champ".length > 10; - True
+
+
+
+--------------IF
+=== - РАВНО
+!== - НЕ РАВНО
+>
+<
+>=
+<=
+
+
+
+if ( "Bogdan".length >3 ) {
+    console.log("Ок");
+}
+else {
+
+    console.log("Слишком длинное слово");
+}
+
+----
+if (12 / 4 === "Ari".length) {
+    confirm("Will this run the first block?");
+} else {
+    confirm("Or the second block?");
+}
+
+---
+if( 10%2 === 0 ) {      //Если остаток от деления 0 значит TRUE (а тут остаток 0)
+    console.log("The first number is even");
+} else {
+    console.log("The first number is odd");
+}
+
+
+
+-----------------ОСТАТОК ОТ ДЕЛЕНИЯ Выводим так можно не только в консоли
+
+console.log(14 % 3);       = 2
+console.log(99 % 8);       = 3
+console.log(11 % 3);       = 2
+
+
+
+
+
+------------------ПЕРЕМЕННЫЕ JavaScript
+--- Выводим пременую в консоли
+var myAge = 20;
+console.log(myAge);
+---
+
+
+
+
+----------------------------------ФУНКЦИИ
+-----substring(x,y)   // x- начало и y- конец
+
+"Bogdan".substring(0,6)   // выведет Bogdan
+"Bogdan".substring(2,6)   // выведет gdan
+
+console.log("Januaty".substring(0,3));             //Jan
+console.log("Melbourne is great".substring(0,12));
+console.log("Hamburgers".substring(3,10));
+
+---
+var myCountry="Ukraine";   
+console.log(myCountry.length); //длина переменной
+console.log(myCountry.substring(0,3)); //вывидим первые 3 буквы
+---
+

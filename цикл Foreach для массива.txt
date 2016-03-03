@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    	<link type='text/css' rel='stylesheet' href='style.css'/>
+		<title>More Coin Flips</title>
+	</head>
+	<body>
+	<p>We will keep flipping a coin as long as the result is heads!</p>
+	<?php
+	$flipCount = 0;
+	do {
+		$flip = rand(0,1);
+		$flipCount ++;
+		if ($flip){
+			echo "<div class=\"coin\">H</div>";
+		}
+		else {
+			echo "<div class=\"coin\">T</div>";
+		}
+	} while ($flip);
+	$verb = "were";
+	$last = "flips";
+	if ($flipCount == 1) {
+		$verb = "was";
+		$last = "flip";
+	}
+	echo "<p>There {$verb} {$flipCount} {$last}!</p>";
+	?>
+    </body>
+</html>
+
+-----------------
+<?php
+$names = array('Ivan','Petr','Frost','Icon');
+echo '<pre>';
+print_r ($names);
+echo '</pre>';
+foreach ($names as $k=>$v){
+    echo 'Ключ у нас = '.$k.', А значение ='.$v.'<br>';  //выводит значение массива  ключи в переменнок $k а значение в переменной $v
+}
+?>
+
+
+foreach ($names as $v){
+echo $v                             // так будет выводить только значения массива
+
+------------------
+
+<?php
+$names = array('Ivan','Petr','Frost','Icon');
+echo '<pre>';
+print_r ($names);
+echo '</pre>';
+foreach ($names as $k=>$v){
+    if ($v == 'Frost'){         // как только цикл доходит до значения 'Frost' цикл останавливаеться и остальные значения не воводяться
+        break;                    // обрывает цикл
+    }
+    echo $v.', ';
+}
+echo 'Цикл завершился';
+?>
+
+----------------------
+
+<?php
+$names = array('Ivan','Petr','Frost','Icon');
+echo '<pre>';
+print_r ($names);
+echo '</pre>';
+foreach ($names as $k=>$v){
+    if ($v == 'Frost'){         // данный цикл не ваводит только значение массива соотвецтвуюзее 'Frost'
+        continue;               // продолжает цикл
+    }
+    echo $v.', ';
+}
+echo 'Цикл завершился';
+?>
+
+-------------------Подсчет сколько в массиве єлементов с помощью foreach (можно и функцию count прикрепить к массиву для подсчета)
+<?php
+$names = array('Ivan','Petr','Frost','Icon');
+$count = 0;
+foreach($names as $v){
+    ++$count;
+}
+echo $count;
+
+?>
+---------------------
+
+
+----------------ВЫВОДИМ ИЗ МНОГОМЕРНОГО МАССИИВА Определенные значения с каждой новой итерацией (пример взят таблици из БД)
+
+<?php
+function wtf($x){
+    echo '<pre>';
+    print_r ($x);
+    echo '</pre>';
+}
+
+$users = array(
+    1 => array(
+        'id' => 4,
+        'login' => 'inpost',
+        'password' => '123',
+        'email' => '111@dddd.ru'
+    ),
+    2 => array(
+        'id' => 4,
+        'login' => 'inpost1',
+        'password' => '123',
+        'email' => '111@fgfgfgfg.ru'
+    ),
+    3 => array(
+        'id' => 4,
+        'login' => 'inpost2',
+        'password' => '123',
+        'email' => '111@ram.ru'
+    ),
+    4 => array(
+        'id' => 4,
+        'login' => 'inpost3',
+        'password' => '123',
+        'email' => '111@dssdsd.ru'
+    ),
+);
+//wtf ($users);
+foreach ($users as $k=>$v){
+    echo '<div>Запись №'.$k.'<br>';
+    echo 'Имя пользователя: '.$v['login'].',Его почта:'.$v['email'];
+    //wtf($v);
+    echo '</div>';
+}
+
+
+
+----------------Если обрабатываем многомерый массив с помощью foreach и обработка trim
+              
+			  $array = array (
+			       'text',
+				   '1',
+				   '  1',
+				   array(
+				    'x'=>'11',
+					'y'=>'   test',
+				),
+			);
+			foreach($array as $k=>$v){
+				if(is_array($v)){
+					foreach($v as $k2=>$v2){
+						$array[$k][$k2] = trim($v2);
+					}
+				} esle {
+					echo $k.'=>'.$v.'<br>';
+					$array[$k] = trim($v);
+				}
+			}
+			print_r($array);
+
+
+
+

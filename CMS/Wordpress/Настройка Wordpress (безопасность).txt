@@ -1,0 +1,59 @@
+
+
+
+
+
+
+
+
+
+--------------------------------------------------------------Безопасность Wordpress
+ 1) ПРИ Создании сайта Wordpress нада изменить префикс таблиц в файле wp-config - $table_prefix  = 'df56_'; изменяем на любой
+ 
+ 2) Затем что-бы в ХЕДЕ сайта не писалось что сайт на вордпресс заходим в wp_content\themes\twentysixteen\function.php  и в файл добавляем remove_action('wp_head','wp_generator'); - теперь не будет писаться в ХЕДЕ что это ворпресс
+ 
+ 3) Запретим удаленном наполнять сайт контентом  в файле (xmlrpc в корневой папке разместим) добавим в файл wp_content\themes\twentysixteen\function.php следущее
+																							add_filter('xmlrpc_enabled','__return_false');
+																							remove_action('wp_head','rsd_link');
+																							remove_action('wp_head','wlwmanifest_link');
+																							
+ 4) И закрыть доступ к файлу с удаленым наполнением сайта xmlrpc через .htaccess добавим слудущее 
+ 
+																							 <Files xmlrpc.php>
+																							 order allow,deny
+																							 deny from all
+																							 </Files>
+																							
+																							 
+ 5) И еще отключим доступ в файл wp-config в .htaccess
+ 
+ <Files wp-config.php>
+order allow,deny
+deny from all
+</Files>
+
+
+ 6) Еще нужно добавить в .htaccess что-бы на админ панель пускало только тех кто знает особый ключь который нада добавить в URL сайта что-бы попасть в панель администратора
+ <ifModule mod_rewrite.c>
+ RewriteEngine On
+ RewriteCond%{SCRIPT_FILENAME}!^(.*)admin-ajax\.php
+ RewriteCond%{HTTP_REFERER}!^(.*)ДОМЕН/wp-admin
+ RewriteCond%{HTTP_REFERER}!^(.*)ДОМЕН/wp-login\.php
+ RewriteCond%{QUERY_STRING}!^КЛЮЧ
+ RewriteCond%{QUERY_STRING}!^action=logout
+ RewriteCond%{QUERY_STRING}!^action=rp
+ RewriteCond%{QUERY_STRING}!^action=postpass
+ RewriteCond%{HTTP_COOKIE}!^.*wordpress_logged_in_.*$
+ RewriteRule^.*wp-admin/?|^.*wp-login\.php/not_found[R,L]
+ RewriteCond%{QUERY_STRING}^loggedout=true
+ RewriteRule^$/wp-login.php?КЛЮЧ[R,L]
+ <IfModule>
+ 
+ 7) В корневой папке сайта нужно создать файл robots.txt и поместить в него такой текст
+ Это полный запрет для всех роботов (Сайт не индексируеться)
+ Это немного ускоряет работу сайта  и что-бы не испортить поисковые характеристики сайта
+  
+ User-agent: *
+ Disallow: /
+ 
+ 

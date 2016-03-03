@@ -1,0 +1,12 @@
+
+
+<div id="d1" data-role="page" data-last-value="43" data-hidden="true"
+   data-options='{"name":"John"}'>
+</div>
+
+
+
+$("#d1").data("role");          // "page"
+$("#d1").data("lastValue");     // 43
+$("#d1").data("hidden");        // true;
+$("#d1").data("options").name;      // "John";

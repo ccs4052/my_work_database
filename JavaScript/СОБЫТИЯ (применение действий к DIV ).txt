@@ -1,0 +1,263 @@
+
+------------JavaScript Обращение к определенным блокам элементов HTML
+
+document.(обратиться можно у любому элемента DIV блока например ( например ко всем формам внутри дива и так далие) главное указать нужную функцию после .)
+
+- Обращаемся к определенному тексту внутри DIV элемента 
+
+<body>
+
+<div id="main" style="background-color: #F2D497">
+    text
+</div>
+<form action="http://google.ru" method="get" onsubmit="return del()">
+    <input type="text">
+    <input type="submit" value="Отправить в гугл">
+</form>
+
+<script> //можно ссылаться на определенный DIV по id или на определенное свойсва DIV
+    // window.document.body              //window -(указівать не обязательно наше окно браузера document - содержание нашей стронички body - и так далее к нужному элементу или просто можно указать имя элемента к которому обращаемся
+    // document.getElementById('main')      //ссылаемся на весь DIV по ID
+    x = document.getElementById('main').innerHTML // innerHTML говорит о том что мы ссылаемся к тексту внутри DIV элемента
+     //   x = document.getElementById('main').innerHTML = 'Новый текст'; // так мы изменим весь текст который содержиться в DIV на тот который написали
+     //  document.getElementById('main').style.backgroundColor = 'red'	//меняем фон DIV main ( backgroundColor - пишеться без дифиса не так как в CSS)
+	//x = document.getElementById('main') //можно поместить в переменную что-бы проще было сылаться к элементу
+	     ----убрали блок отмеченый и сразу добавили его обратно 
+        	alert(1)
+			document.getElementById('main').style.display = 'none';
+			alert(2);
+			document.getElementById('main').style.display = 'block';
+		-----
+	alert(x); //вызываем текст который помещен в элемент див в окошке
+</script>
+
+</body>
+
+
+
+---НАПРИЕР ОБРАТИТЬСЯ ТАК 
+<script>
+document.ul.li - ко всем элементам li
+</script>        
+<ul>
+    <li></li>
+    <li></li>
+</ul>
+
+
+------------------СОБЫТИЯ
+
+
+
+
+Дерево JavaScript формируеться сверху вниз - тоесть если мы обратимсь к определенному блоку вывести его текст функцией alert
+и скрипт будет выше этого DIV то скрипт не увидит DIV потому как он был выше него
+
+
+Ловим событие определенного ТЕГА например и делаем потом то что мы с ним хотим через JavaScript
+
+В HTMLbook.ru если открывать теги HTML у каждого тега у которого есть событие оно описано
+ниже характеристик тега ( события то что можно делать с элементом)
+
+
+------По нажатию на определенній обїект сделаем что-бы другой объект исчез или наоборот появился!
+// - ЛУЧЬШЕ ИСПОЛЬЗОВАТЬ ТАКОЙ МЕТОД ОБРАЩЕНИЯ к СОБЫТИЯМ в даном случае onclick
+<div id="main" style="background-color: #F2D497">
+    text
+</div>
+<!--<div style="font-size:16px;" onclick="document.getElementById('main').style.display='none';">Нажми на меня</div>  <!--onclick (событие элемента которое произойдет по нажатию на него) в кавычках обращаемся к нужному DIV блоку наприммер и делаем его невидемым через Display='none' ( по нажатию на слово этот див исчезает - можно сделать что-бы изначально он был невидемый и появлялся наоборот"" -->
+
+<div style="font-size:16px;" onclick="hide();">Нажми на меня</div>  <!--или сделаем тоже самое только через функцию ( в месте где у нас были параметры onclock вызовим "функцию" -->
+<script>
+    function hide(){
+        document.getElementById('main').style.display='none';
+    }
+</script>
+
+
+
+
+---ПОЯВИЛСЯ ИСЧЕЗ--------Сделаем что-бы определенный блок по одному нажатию исчезал а по нажатию еще раз на какой-то элемент появлялся снова
+
+<div id="main" style="background-color: #F2D497; display: block;">
+    text
+</div>
+<!--<div style="font-size:16px;" onclick="document.getElementById('main').style.display='none';">Нажми на меня</div>  <!--onclick (событие элемента которое произойдет по нажатию на него) в кавычках обращаемся к нужному DIV блоку наприммер и делаем его невидемым через Display='none' ( по нажатию на слово этот див исчезает - можно сделать что-бы изначально он был невидемый и появлялся наоборот"" -->
+<div style="font-size:16px;" onclick="hideShow();">Нажми на меня</div>  <!--или сделаем тоже самое только через функцию ( в месте где у нас были параметры onclock вызовим "функцию" -->
+<script>
+    function hideShow(){
+        if(document.getElementById('main').style.display=='block'){ //если стоит параметр block
+            document.getElementById('main').style.display='none';   //то мы скрываем тогда этот элемент
+        }else{
+            document.getElementById('main').style.display ='block'; //поскольку мы его сделали скрытым если по нему еще раз нажать он сделаеться видимым
+        }
+    }
+</script>
+-----так функция будет віглядеть лучьше
+	
+	 function hideShow(){
+        x = document.getElementById('main');
+        if(x.style.display == 'block'){ //если стоит параметр block
+            x.style.display='none';   //то мы скрываем тогда этот элемент
+        }else{
+            x.style.display ='block'; //поскольку мы его сделали скрытым если по нему еще раз нажать он сделаеться видимым
+        }
+    }
+
+	
+	
+	
+	
+	
+	
+----------ПОСКОЛЬКУ JavaScript считывает элементы к которым мы обращаемся сверху вниз - то
+получиться если писать код Java в <Head> то Java не увидит єлементі на которіе мі будем сылаться
+потому как они находяться нижу в <body> и чтобы Java работал его код помещаеться в функцию onload
+
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script>
+        window.onload = function() {       //функция onload сначала выводит содержимое основное и затем мы можем уже вызвать alert - без нее в начале не полу читься вызвать элемент alert без unload потому как DIV к которому мы оращаемся еще не загружен
+            alert(document.getElementById('main').innerHTML); //просто в самом начале ыведем тект содержащийся в DIV 'main'
+            document.getElementById('keey').onclick = function () {
+                x = document.getElementById('main');
+                if (x.style.display == 'block') {
+                    x.style.display = 'none';
+                } else {
+                    x.style.display = 'block';
+                }
+            }
+        }
+    </script>
+
+</head>
+<body>
+
+<div id="main" style="background-color: #F2D497; display: block;">
+    text
+</div>
+<div id="keey" style="font-size:16px;">Нажми на меня</div>  <!--или сделаем тоже самое только через функцию ( в месте где у нас были параметры onclock вызовим "функцию" -->
+
+
+     --ВТОРОЙ ВАРИАНТ как обратиться ( внутри <script> написать функцию но вызвать ее в месте которое находиться
+в window.onload в зоне видимости всего кода в <body>	 )
+
+				<script>
+						function hideShow(){
+							x = document.getElementById('main');
+							if (x.style.display == 'block') {
+								x.style.display = 'none';
+							} else {
+								x.style.display = 'block';
+							}
+						}
+						window.onload = function() {       //функция onload сначала выводит содержимое основное и затем мы можем уже вызвать alert - без нее в начале не полу читься вызвать элемент alert без unload потому как DIV к которому мы оращаемся еще не загружен
+							alert(document.getElementById('main').innerHTML);
+							document.getElementById('keey').onclick = hideShow; //функция вешаеться на элемент onclick надписи DIV
+						}
+					</script>
+
+				</head>
+				<body>
+
+				<div id="main" style="background-color: #F2D497; display: block;">
+					text
+				</div>
+				<div id="keey" style="font-size:16px;">Нажми на меня</div>  <!--или сделаем тоже самое только через функцию ( в месте где у нас были параметры onclock вызовим "функцию" -->
+
+				
+				
+				
+---------------------ИСПОЛЬЗОВАНИЕ ОДНОГО СКРИПТА ДЛЯ НЕСКОЛЬКИХ БЛОКОВ
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script>
+             function hideShow(id){  //id написали что-бы функцию можно было использовать много раз а там где вызываем функци. в скобках указываем название id элемента к которому будем приминять функцию onclick="hideShow('main')
+                var x = document.getElementById(id);
+                 if (x.style.display == 'block') {
+                     x.style.display = 'none';
+                 } else {
+                     x.style.display = 'block';
+                 }
+             }
+    </script>
+
+</head>
+<body>
+<div id="main" style="background-color: #F2D497; display: block;">
+    text
+</div>
+<div id="keey" style="font-size:16px;" onclick="hideShow('main')">Нажми на меня</div>  <!--onclick="hideShow('main') вызвали функцию а в скобках указали id блока который будем использовать например-->
+
+
+<div id="new" style="background-color: #F2D497; display: block;">
+    text
+</div>
+<div id="ok" style="font-size:16px;" onclick="hideShow('new')">Нажми на меня</div> <!-- снова вызвали но указали другой id в скобках функции-->
+
+</body>
+
+
+
+
+
+
+
+---------------------На ссылку можно вывести подтверждение ( Хотите ли вы зайти на сылку а потом нажимаем и заходим)
+
+<a href="http://google.ru" onClick="alert(вы дествительно хотите зайти)">GOOGL IT</a> - так нажмем потом подтвердим и зайдим на сайт
+
+<a href="http://google.ru" onClick="alert(вы дествительно хотите зайти); return false;">GOOGL IT</a>  - а так нас после подтвержения выкинит обратно и не зайдет 
+
+
+
+
+
+
+
+
+
+
+
+------------ВЫВОДИМ ПРЕДУПРЕЖДЕНИЕ ДЛЯ ЗАПОЛНЕНИЯ Формі
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script>
+        function del(){
+          var  l = (document.getElementById('key').value.length); //length - показывает длину того что написали в value в форме
+            if (l<5){
+                alert('Вы ввели только'+l+' символа');
+                return false;
+            }
+        }
+    </script>
+</head>
+<body>
+<form action="http://google.ru" method="get" onsubmit="return del();"> <!-- по нажатию вызываем функцию -->
+    <input type="text" id="key" value="">
+    <input type="submit" value="Удалить запись">
+</form>
+</body>
+
+
+---------------ПОДТВЕРЖДЕНИЕ НА УДАЛЕНИЕ ССЫЛКИ НАПРИМЕР 
+Эта функция должна вызываться везде где мы хотим например удалять что-то
+
+<script>
+        function del(){
+           return confirm ('Вы уверены что хотите удалить файл');
+        }
+    </script>
+
+</head>
+<body>
+<a href="http://google.ru" onclick="return del();"> Удалить статью</a> <!-- по нажатию вызываем функцию -->
+</body>

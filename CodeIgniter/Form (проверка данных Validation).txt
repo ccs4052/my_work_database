@@ -1,0 +1,76 @@
+
+
+
+-------------------- Класс Form Validation
+--------------------
+
+Очень объемный класс позволяет ставить различные проверки нашим формам
+
+
+-------------Провера на добавление данных в таблицу!
+правила на проверку находяться в разделе Form Validation в низу таблица
+
+1) Сиздаем контролер который будет запускать наш вид с формой  и принимать данные из формы
+controllers/add.articles.php c таким содержанием
+
+<?php
+if( ! defined('BASEPATH'))  exit('No direct script access allowed'); // BASEPATH путь к корневой папке мы указали в файле config
+
+class Add_articles extends CI_Controller {
+    public function index(){
+        $this->load->library('form_validation'); //обязательно загружаем библиотеку по которой будут работать проверки формы
+        if (isset($_POST['add'])){
+            $this->load->model('add_articles_models');//теперь при нажатии должна загружаться наша модель с проверками
+            $this->form_validation->set_rules($this->add_articles_models->add_rules); //установили правила add_rules которые находяться в модели add_articles_models в папке models
+            $check = $this->form_validation->run();//(в переменную поместим) теперь запускаем правила проверки формы
+            if($check == TRUE){ // если условие выполняеться значит все прошло ок
+               //теперь добавим проверенные данные из формы в БД
+               $add['title'] = $this->input->post('title'); //вызываем функцию CI input - создали ячейку массива и указали какую ячейку из массива POST мы туда помещаем
+               $add['text'] = $this->input->post('text');
+               $add['date'] = date('Y-m-d'); // в поле таблици добавляем время - хотя в форме такого поля у нас нет
+                //помещем данные в таблицу БД
+                $this->db->insert('articles',$add); //теперь помещаем массив $add с данными формы в таблицу articles
+                $this->load->view('info_view'); // если TRUE то выводим что все ок
+            }else{
+                $this->load->view('add_articles_view'); // а если нет то грузим снова наш вид с формой
+            }
+            //$this->load->view('info_view'); // просто выводим вид с словом на экран
+             //если нажали то запустим вид из views который напишет что все прошло ок
+            //тут можно и надпись к сесионной переменной приравнять что-бы ее вывести
+        }else{
+            $this->load->view('add_articles_view'); //загружаем наш вид с формой
+        }
+    }
+}
+
+
+2) Создаем в папке ВИД файл с формой и отправлять данные будем в контролер
+views/add_articles_views.php с такам содержанием 
+
+<body>
+<form method="post" action="http://demo/cilessons/index.php/add_articles"> <!--абсалютный путь к контролеру куда отправляем данные из формы -->
+ Название статьи:<br>  <input type="text" name="title" value="<?php echo set_value('title'); ?>" ><?php echo form_error('title'); ?><br> <!-- form_error('title'); выводим ошибки касательно проверок этого поля  -->
+ Текст статьи:<br><textarea name="text" rows="10" cols="40" value="<?php echo set_value('text'); ?>" ></textarea><?php echo form_error('text'); ?></br> <!-- echo set_value('text') - при обнавлении страници позволяет сохранить надпись которая была до обновления -->
+<!--ЧТо-бы добавить поле с датой мы его добавляем в нашем контролере ПХП фукцией -->
+    <input type="submit" name="add" value="Добавить">
+</form>
+
+3) Создаем в папке Models файл add_articles_models.php который будет фильтровать данные полученные из формы
+функции класса из add_articles_models будут запущены в контролере 
+
+<?php
+if( ! defined('BASEPATH'))  exit('No direct script access allowed'); // BASEPATH путь к корневой папке мы указали в файле config
+class Add_articles_models extends CI_Model {
+    public $add_rules = array( //создаем многомерный массив в котором укажем поля формы для проверки ( 1 масив это одно поле формы)
+        array(              //сколько в форме полей проверяем столько и массивов с правилами создаем
+            'field' => 'title', //название поля формы
+            'label' => 'Название статьи',//название строки title в форме
+            'rules' => 'required|min_length[5]|max_length[50]|trim' //кроме функций CI можно указывать и функции PHP       //правила на проверку находяться в разделе Form Validation в низу таблица
+        ),
+        array(
+            'field' => 'text', //название поля формы
+            'label' => 'Текст статьи',//название строки title в форме
+            'rules' => 'required|max_length[2000]|trim'
+        )
+    );
+}

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+		<title></title>
+	</head>
+	<body>
+    <?php
+    $i = 5;
+    switch ($i) {        //указываем переменную которую будем проверять
+    case 5:             //CASE ( в случае) 
+        echo 'пять'; //чтонибуть делаем
+	case 6:          // Как только case находит значение указаное в $i он делает условие и будит выполнять остальные кейсы следущие пока не поставим break
+		echo 'шесть'; 
+		
+    break;                //
+    case 8:
+        echo "$i больше 4";
+    break;
+    case 9:
+        echo "$i меньше 10";     ------ пишет условие которое соотвецтвует $i
+        break;
+        default:           //default если ни один case не выполнен то выполниться default
+            echo "$i нет такого числа";   
+    }
+     
+    ?>
+	</body>
+</html>
+---------------------
+СЧИТАЕТ МАССИВ
+
+<?php
+$a = array('100 G','230mb','198    Kb');
+function convert($value) {
+$num = (int)$value;
+$result = $num;
+if ($num > 0) {
+$key_word = strtolower(trim(implode(',', array_filter(explode((int)$value, $value)))));
+switch ($key_word) {
+case 'g':
+$result *= 1024;
+case  'mb' :
+$result *= 1024;
+case  'kb':
+$result *= 1024;
+break;
+default :
+return 'Unknown format';
+}
+}
+return $result . 'b in ' . $value;
+}
+
+foreach($a as $value){
+echo convert($value).'</br>';
+}
+?>
+
+
+------------------или так 
+
+<?php //берем значение директивы php и присваиваем ей другое значение ( к килабайтах)
+$a =ini_get(post_max_size); //8m
+$letter = $a{strlen($a)-1}; //(m) вытаскиваем из переменной $a значение последнего символа ( там может быть m или g) в зависимости от размера
+$a = (integer)$a;//8
+switch($letter){
+	case 'g': $a *=1024;
+	case 'm': $a *= 1024;
+	case 'k': $a *= 1024;
+	}
+echo 'POST_MAX_SIZE = '.$a.'bytes';
+?>

@@ -1,0 +1,46 @@
+
+
+
+---------------------------------------------------CURL     ПАРСИТЬ СТРАНИЦИ 
+
+
+
+---------ВЫВОДИМ ЗАГОЛОВОК САЙТА 
+
+  <?php
+    $ch = curl_init();														//Инициализировать сессию
+	curl_setopt($ch, CURLOPT_URL, "http://bogdandvinin.site88.net/");		//Задать нужные нам опции 
+    curl_setopt($ch, CURLOPT_NOBODY, 1);  //читаем заголовок сайте
+    curl_setopt($ch, CURLOPT_HEADER, 1);  // без тела сайта
+	$output = curl_exec($ch);               								//curl_exec выполняет запрос CURL
+    print_r ($output);
+	curl_close($ch);														//Завершаем сессию
+    ?>
+	
+----------
+
+------------------НАХОДИМ НА СТРАНИЦЕ НУЖНЫЙ НАМ HTML кусок текста
+
+
+<body>
+    <?php
+    $url = 'http://bogdandvinin.site88.net/';
+    $ch = curl_init( $url );
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+    $err     = curl_errno( $ch ); //ошибки
+    $errmsg  = curl_error( $ch ); //ошибки текстом
+    $header  = curl_getinfo( $ch ); //CURL INFO
+    $content = curl_exec( $ch ); //выполняем запрос
+    $page = $content;
+    //обрезаем текст ДО: этого элемента HTML
+    $pos = strpos($page,"<div class=\"modal fade\""); //ОТВЕТ ОСТАЕТЬСЯ ВОТ ТАКОЙ КУСОК КОДА
+    $page =substr($page,$pos);
+    //Обрезаем ПОСЛЕ этого куска HTMl тоесть оставляем кусок который нас интересует
+    $pos = strpos($page," id=\"modal-comment\">");
+    $page = substr($page,0,$pos);
+    echo htmlspecialchars($page); //выводим ответ на экран
+    ?>
+</body>

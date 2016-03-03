@@ -1,0 +1,807 @@
+mysql_result() - точечная выборка из массива запроса
+
+mysql_num_rows($connect) - количество записей запроса
+
+mysql_num_fields($connect) - количество полей
+
+mysql_field_name - имя поля
+
+mysql_effected_rows() - количество изменений покажет
+
+mysql_insert_id() - id последней записи 
+
+--------------------------------------ВИДЫ ТАБЛИЦ MySQL
+
+Foreign KEY - это id ключи первой таблици которые используем во второй таблице для выборки
+
+
+
+CREATE TABLE Orders
+(
+O_Id int NOT NULL,
+OrderNo int NOT NULL,
+P_Id int,
+PRIMARY KEY (O_Id),
+FOREIGN KEY (P_Id) REFERENCES Persons(P_Id)		- создали колонку в которой храним id ключи первой таблици для выборки
+
+)
+
+
+
+---------------------------------НОРМАЛЬНЫЕ ФОРМЫ БЗ ДАННЫХ
+
+Смысл в том что все данные в таблице должны находиться каждый в своей категории (категории повторяються например но в разных строках это можно а если в одной категории в одной строке записано 2 товара то так нельзя)
+
+1) Первая нормальная форма (1NF)
+
+Подробнее: 
+   - Все строки должны быть различными. 
+   - Все элементы внутри ячеек должны быть атомарными (не списками). 
+Другими словами, элемент является атомарным, если его нельзя разделить на части, которые могут использовать в таблице независимо друг от друга.
+
+
+Методы приведения к 1NF: 
+
+   - Устраните повторяющиеся группы в отдельных таблицах (одинаковые строки). 
+   - Создайте отдельную таблицу для каждого набора связанных данных. 
+   - Идентифицируйте каждый набор связанных данных с помощью первичного ключа (добавить уникальный id для каждой строки)
+
+2) Вторая нормальная форма (2NF) (в Двух словах это 2 таблици которые связаны между собой каким-то полем (если таблица сложная ее лучьше разбить на 2 и более что-бі лучьше делать запрос))
+
+Сразу скажу, что если Ваша таблица приведена к первой нормальной форме и у нее установлен уникальный id для каждой строки, то она находится и во второй нормальной форме.
+
+
+Подробнее: 
+
+   - Таблица должна находиться в первой нормальной форме.
+
+   - Любое её поле, не входящее в состав первичного ключа, функционально полно зависит от первичного ключа.
+
+Методы приведения к 2NF:
+
+   - Создайте отдельные таблицы для наборов значений, относящихся к нескольким записям (Выше мы это сделали).
+
+   - Свяжите эти таблицы с помощью внешнего ключа (В нашем случае – это поле id autoincrement).
+
+3)Третья нормальная форма (3NF)
+
+Подробнее:
+
+   - Таблица находится во второй нормальной форме.
+
+   - Любой её не ключевой атрибут функционально зависит только от первичного ключа.
+
+ (Например у нас есть 2 таблици - ПЕРВАЯ содержит id(autoinctrement) и country а ВТОРАЯ name (имя шпиона) и city_id(foreigne key id страны))
+Благодаря этому правилу, при удалении какого-то государства, имена шпионов не будут утеряны
+
+Методы приведения к 3NF:
+	
+	- Удаление полей не зависящих от ключа
+
+ВСЕГО ПОМОЕМУ 6 Нормальных форм БД но пользуються только 3-мя!
+
+------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+----------------РАБОТА С БАЗОЙ ДАННОЙ
+
+НАСТРОЙКА КОДИРОВКИ БД!
+mysqli_query($connect,"SET NAMES 'utf8'");
+mysqli_query($connect,"SET CHARACTER SET 'utf8'");
+
+ЕСЛИ БД ОГРОМНАЯ ЕЕ Разделяют на несколько небольших БД что-бы проще было обрабатывать запросы
+Пример соединения с 2-мя базами данных
+$link = mysqli_connect (DB_LOCAL,DB_LOGIN,DB_PASS,"DB1");
+$link2 = mysqli_connect (DB_LOCAL,DB_LOGIN,DB_PASS,"DB2");
+mysqli_set_charset($link2,'utf8'); // устанавливаем кодировку передачи данных в БД
+
+Проверка ошибок запроса
+Нада пометить запрос в переменую и если возникла ошибка сделать echo на переменную
+$sql = "SELECT * FROM teachers";
+если ошибка вывести запрос
+echo '$sql';
+
+
+
+---Создать БД и таблицу в ней через запрос
+
+	CREATE DATABASE имяБД;
+	
+	CREATE TABLE news {
+		id int(4) NOT NULL auto_increment,
+		title varchar(255) NOT NULL default '',
+		description varchar(255) NOT NULL default '',
+		content text,
+		author varchar(50) NOT NULL default '',
+		pubdate timestamp NOT NULL default '',
+		PRIMARY KEY (id)
+		};
+
+
+
+
+
+
+
+
+
+1.Добавить  - "INSERT INTO"
+INSERT INTO capons(название таблици) VALUES ('','dddf','4445','bog@ram.ru') (элементы указаны в том же порядке как и элементы названия таблици столбцов первый элемент не указан он указан автоматом в таблице))
+или так
+INSERT INTO capons VALUES ('','','','bog@ram.ru')
+Строчки в зпросе нада писать в кавычках а числа не обязательно
+
+INSERT INTO 'table' SET
+	'key' = 'value',
+	'key2' = 'value2'
+	
+	
+	---------Создаем таблицу и засовіваем в нее значения
+						/*mysqli_query($connect,"create table category(id int primary key,
+										parent_category_id integer references category(id),
+										name varchar(100) not null)DEFAULT CHARACTER SET=utf8;") or die (mysqli_error());*/
+					/*mysqli_query($connect, "INSERT INTO category VALUES        //Добавляем данные в таблицу
+											(1,0,'Краска Фасадная'),
+											(2,0,'Краска декор'),
+											(3,0,'Краска авто'),
+											(4,1,'Цемент марки 100'),
+											(5,1,'Цемент марки 80'),
+											(6,1,'Цемент марки 60'),
+											(7,2,'Профиля П3м'),
+											(8,2,'Профиля Д3м'),
+											(9,2,'Профиля Т1м')
+											") or die (mysqli_error());*/
+					/*$res = mysqli_query($connect, "SELECT * FROM category WHERE name LIKE 'кра%'") or die (mysqli_error()); //выводим все что соотвецтвует 'кра'
+					while($cat = mysqli_fetch_assoc($res)){
+						echo '<br>';
+						echo htmlspecialchars($cat['name']);
+					}*/
+
+
+
+
+
+2.Отредоктировать - "UPDATE"
+
+UPDATE 'users' SET 'age' = 'age' + 3  ДОБАВИЛИ ВСЕй СТРОКЕ ЗНАЧЕНИЯ +3 всем элементам
+
+-------
+	UPDATE capons
+	SET
+	zarplata = zarplat * 2,
+	premia = premia * 10
+	WHERE name LIKE 'Иванов%'
+	OR name LIKE 'Петров%'
+	OR name LIKE 'Сидоров%'
+	
+	
+	UPDATE capons
+	SET
+	zarplata = zarplat * 2,
+	premia = premia * 10
+	WHERE name IN
+	('Иванов', 'Петров', 'Сидоров')
+	
+--------
+
+
+
+---------------------------UPDATE по 2 таблицам сразу 
+
+public function done_job($id){
+        $query = mysqli_query($this->db_connect(),"UPDATE family_father,family_job
+                                                   SET family_father.job_done=1,family_job.job_done=1				//поле в первой и во второй меняем на 1
+                                                   WHERE family_father.job_id='".$id."' AND family_job.id='".$id."' // Условие
+                                                   ") or die (mysqli_error($this->db_connect()));
+        if($query === TRUE){
+            return TRUE;
+        }else{
+            return FALSE;
+        }
+    }
+
+
+
+-------------------------------
+
+
+
+
+
+
+
+3.Удалить - "DELETE FROM"
+DELETE FROM 'capons' WHERE 'id' >20
+
+DELETE FROM 'capons' LIMIT 2      - удалим 2 записи
+
+----Правельный запрос 
+<?php
+define ('DB','localhost');
+define ('DBLOGIN','user');
+define ('DBPASS','111');
+define ('DBNAME','bogdan');
+$connect = mysqli_connect(DB,DBLOGIN,DBPASS,DBNAME) or die(mysqli_error());
+
+$query = mysqli_query($connect,"UPDATE capons SET login='11111', pass='2222', email='33333',form_token='1111' WHERE id=30");
+
+
+----
+	DELETE FROM lessons
+	WHERE lessons.date = '2005-06-11'
+
+
+
+---
+DELETE FROM 'table' WHERE 'id' = $_GET['mess']  (на кнопку призявали эту команду)
+
+<a href="index.php?mess=10000"
+
+
+еще вариант удаления от такого до такого 
+
+
+<?php
+define ('DB','localhost');
+define ('DBLOGIN','user');
+define ('DBPASS','111');
+define ('DBNAME','bogdan');
+$connect = mysqli_connect(DB,DBLOGIN,DBPASS,DBNAME) or die(mysqli_error());
+$query = mysqli_query($connect,"DELETE FROM capons WHERE id>64 && id<71");
+
+
+
+
+
+------
+
+4.Вібрать данные - "SELECT"
+SELECT 'login' FROM 'capons'
+
+SELECT `login`, `pass`, `email` FROM `capons`
+
+
+SELECT * FROM 'news' WHERE 'category' = 'economy'
+
+SELECT * FROM 'news' WHERE 'id' = 5000
+
+
+
+
+
+ORDER BY ----- СОРТИРОВКА
+Выбирея разные имена столбиков мы может сортировать их как угодно
+ORDER BY 'id' - например ASC или DESC
+
+SELECT * FROM 'capons' ORDER BY 'id' ASC (по возрастанию) или DESC (по убыванию)
+
+Можно указывать сортировку по 2-м полям
+
+SELECT * FROM 'users' ORDER BY 'age' DESC,'id' ASC (можно указывать сортировку след ячейки через запятую)
+
+SELECT * FROM 'capons' WHERE 'age' = 20 ORDER BY 'id' DESC
+
+SELECT name, addr, city FROM capons ORDER BY name DESC
+
+SELECT * FROM capons WHERE id > 30 AND title LIKE 'Web%'    // ПОХОЖИЕ СЛОВА НАХОДИТ на то что вы в LIKE указали
+
+ В таблице всегда есть ячейка котора обозначена Primery если при сортировке не указать по какой ячейке будем сортировать то он сам отсортирует по Primery
+
+ 
+	LIMIT - показывает столько запесей сколько мы укажем в LIMIT
+	
+	SELECT * FROM 'users' WHERE 'age' = 20 ORDER BY 'id' ASC LIMIT 2   (сначала выбрали age потом отсортировали его по ID и потом выбрали 2 записи отсортированые)
+	 ЕСЛИ УКАЖЕМ LIMIT 1,2 (с какой начинает и сколько берет) (то начнем выбирать числа начиная с первой записи и возмем 2 ( тоесть 1 и 2) если LIMIT 3,2 ( то начиная с 3 записи берем 2)) ( счет идет с 0 в ПХП)
+
+	 
+	 SELECT * FROM 'comments' LIMIT 0,5 (с первой записи 5 ) или LIMIT 5,10
+	 
+
+	 
+	 -----BETWEEN
+	 
+	 SELECT * FROM capons WHERE col1 BETWEEN 2 and 5;    - В диапазоне
+	 ---------------
+	 -----LIKE
+	 
+	 SELECT * FROM capons WHERE name LIKE 'John%';
+	 ---------------
+	 -----IN
+	 SELECT * FROM capons WHERE id IN ('1','2','a');
+	 
+	 -----DISTINCT --Неповтаряющийся
+	 SELECT DISTINCT YEAR(lesson_date),MONTH(lesson_date) --выбираем не повторяющийся год и месяц ЗАНЯТИЯ
+		FROM lessons                                      -- из таблици
+		WHERE teacher IN (1,3,5)                          --Во множестве 1,3,5
+	 
+	 
+	 -----SUM --сумма значений 
+	 SELECT teacher, sum(length) FROM lessons GROUP BY teacher
+	 ------------------
+	 
+	 
+	 ПРИМЕР ПАГИНАЦИИ В ПХП-----------
+	 
+	 $limit = 10;
+$_GET['page'] = 1;
+($_GET['page'] - 1 * $limit) = 0;
+
+$_GET['page'] = 2;
+($_GET['page'] - 1 * $limit) = 10;
+
+$_GET['page'] = 3;
+($_GET['page'] - 1 * $limit) = 20;
+$count = ($_GET['page'] - 1) * $limit;
+
+
+страница 1: 0,10
+страница 2: 10,10
+страница 3: 30,10
+страница 4: 40,10
+
+LIMIT $count, $limit
+
+
+
+
+------------ПРИМЕР ЗАПРОСА НА MySQL 
+mysqli_query("
+	SELECT *
+	FROM 'table'
+	WHERE 'id' = 17
+	 AND 'age' BETWEEN 7 AND 17")
+	 AND 'login' = ".mysqli_real_escape_string($login)."
+	ORDER BY 'age' DESC
+	LIMIT 10
+");
+
+
+
+--------------
+Безопасность 
+БЕЗ НИХ НЕ ПРОВОДИТЬСЯ НИ ОДИН SQL запрос
+mysqli_real_escape_string - функция помогает избежать экранировние данных (фильтрует данные которы получает)
+если в каком-то поле мы получаем цифру то нада ее приводить к цифре (int)
+
+			АЛГОРИТМ СОЕДИНЕНИЯ С БД 
+			
+			
+	mysql   - старая функция (она уже не нужна)
+	mysqli  - новая функция
+	
+	
+	<?php
+error_reporting(-1);
+header('Content-Type: text/html; charset=utf-8');
+include_once './libs/config.php';   //константы для соединения с БД
+
+$link = mysqli_connect(DB,DBLOGIN,DBPASS,DBNAME);
+mysqli_set_charset($link,'utf8'); // устанавливаем кодировку передачи данных к определенной БД
+$a='11';
+$b='22';
+$c=30;
+$g = 'rr@ram.ru';
+$query = "INSERT INTO capons VALUES ('','$a','$b','$c','$g')";
+mysqli_query($link, $query);
+
+
+
+/*можно засунуть переменную в запрос к БД
+$login = 'login2';
+$age = 25;
+INSERT INTO 'capons' values
+    mysqli_real_escape_string('$login',
+     '$age'
+    );*/
+	
+----
+	INSERT INTO capons (title, length)
+	VALUES ('Java', 40)
+	
+
+
+	
+	
+------------Отправляем запрос содержащий массив со значениями на удаление через Чекбокс методом POST
+IN - означает что будут выполнены все значения с указаными элементами в запросе
+
+ foreach($_POST['ids'] as $k=>$v){    //присвоих всем элементам массива ids числовые значени (int)
+        $_POST['ids'][$k]= (int)$v;
+    }
+if(isset($_POST['delete'])){
+	$ids = implode (',',$_POST['ids']);   ////но посколько все элементы из массива ids стали строками а нам нада сделать их числами обработаем элементы массива ids и все элементы обозначим (int) сделаем из них числа
+	mysqli_query ($connect, "DELETE FROM capons WHERE id IN (3,2,1)");        -3,2,1 элементы массива $_POST['ids']
+	}
+	 
+-------------------------------JOIN ( Запросы по нескольким таблицам)
+есть 2 таблици 
+customers   --инфо с покупателя  id name address city state zip
+items         --таблици с товаром id name cost seller_id bids(количество ставок) 	 
+	
+$query = "SELECT customers.id, custoers.name,items.name,items.cost
+		  FROM customers, items
+		  WHERE customers.id = seller_id
+		  ORDER BY customers.id"	
+	 
+	 
+
+
+----------------------------------GROUP BY  + SUM    (Суммируем количество покупок у всех покупателей например)
+
+
+SELECT Customer,SUM(Price) FROM Orders GROUP BY Customer   - сумируем сумму всех покупок (Price) где одинаковые ячейки Customer-покупатель (что-бы вывести сумму всех покупой клиента)
+
+Таблица Orders
+Customer - столбец с именем покупателя
+Price - цена одной покупки (покупателя) - но таких полей может быть много потому как покупок может быть много
+SUM(Price) - сумируем все ячейки Price
+
+
+---------------------------------------HAVING   пример(выведем на экран стоимость всех покупок клиентов у которыъ эта сумму > 10000 евро)
+
+SELECT customer_name, SUM(order_price) FROM orders GROUP BY customer_name HAVING SUM(order_price) >= 10000;
+
+HAVING SUM(order_price) >= 10000 - сумма больше 10000		
+
+
+----------------------------------------DISTINCT  (выбираем неповторяющиеся данные)
+пример
+
+Выбрать страны, из которых поставляют продукцию производители, так, чтобы страны не повторялись по 2 и более раз.
+
+SELECT DISTINCT country FROM manufacturers
+
+---------------------------------------функция NOT  (не)
+пример
+
+Вывести все модели автобусов ЛАЗ, вместимостью не менее 15 пассажиров. 
+
+SELECT * FROM buses WHERE brand=”ЛАЗ” AND NOT seats<15
+
+--------------------------------------ФУНКЦИЯ IN
+С помощью конструкции IN вывести производителей из Украины, Германии и США
+
+SELECT * FROM manufacturer WHERE country IN (“Украина”, “Германия”, “США”)
+
+Вывести всех производителей за исключением тех, которые находятся в Китае, Таджикистане и России.									(Запрос с ИСКЛЮЧЕНИЕМ NOT IN)
+
+SELECT * FROM manufacturer WHERE country NOT IN (“Китай”,”Таджикистан”, “Россия”)
+
+--------------------------------------ФУНКЦИЯ BETWEEN
+Выбрать только те автобусы,  цена которых лежит в пределах от 100000 до 180000 долларов включительно.
+
+SELECT * FROM buses WHERE price BETWEEN 100000 AND 180000
+
+
+--------------------------------------ПРИМЕР ВЛОЖЕННОГО ЗАПРОСА 
+--------------------------------------
+--------------------------------------
+SELECT * FROM buses WHERE price=(SELECT MAX(price) FROM buses)
+
+---------------------------------------ФУНКЦИЯ REGEXP  (на подобии preg_match)  )(ВЫБИРАЕМ ЗАПРОС С ПОХОЖиМ СОВПАДЕНИЕМ СЛОВОСОЧИТАНИЙ)
+
+SELECT brand FROM buses WHERE brand REGEXP ‘lvo|ool‘
+
+
+модно и так
+
+SELECT * FROM buses WHERE brand LIKE “Mer_edes”
+
+
+---------------------------------------
+---------------------------------------ФУНКЦИЯ ОБЪЕДИНЕНИЯ КОЛОНОК - CONCAT
+
+У нас есть таблица usa, в которой есть колонка city с названиями городов и колонка state, с названиями штатов. Нужно вывести новую колонку new_
+column, которая будет содержать название города и через запятую название штата, в котором находится этот город. Например вот так: Raleigh, NC. 
+
+SELECT CONCAT(city, ‘,‘, state) AS new_column FROM usa
+
+CONCAT(city, ‘,‘, state)  - в скобках указаны колонки которые будет объекдинять "," и указали символ который будет объединять 2 значения
+AS new_column - в какой колонке будет находиться запрос
+
+
+
+
+
+
+--------------------------------------КОМАНДЫ ДЛЯ ПОДСЧЕТА ЗНАЧЕНИЙ ПОЛЯ
+--------------------------------------
+SELECT MAX(seats) FROM buses                 // Выведет автобус с максимальным количеством сидений
+SELECT MIN(seats) FROM buses                 // Выведет автобус с минимальным количеством сидений
+SELECT SUM(seats) FROM buses                 // Выведет общее количество сидений во всех автобусах
+SELECT AVG(seats) FROM buses                 // Выведет среднее количество сидений
+SELECT COUNT(*) FROM buses                   // Выведет общее количество автобусов в таблице
+SELECT COUNT(*) FROM buses WHERE brand=”ЛАЗ” // Выведет количество автобусов ЛАЗ
+
+
+
+
+
+
+
+
+----------------------------------------EXPLAIN  (омогает усткорить работу запросов)
+EXPLAIN может в точности рассказать, что происходит, когда мы выполняем запрос. Эта инфор
+-
+мация позволит нам обнаружить медленные запросы и сократить время, затрачиваемое на об
+-
+работку запроса, что впоследствии может значительно ускорить работу вашего приложения.
+
+
+
+пример 
+
+EXPLAIN SELECT * FROM users WHERE id=’42’
+
+
+
+---------------------------------------ЗАПРОС С ИСПОЛЬЗОВАНИЕМ ПСЕВДОНИМОВ   (AS test)    - test псевдоним
+
+Таблице  my_table  задать  псевдоним  t  и  вывести  всех,  у  кого  salary 
+выше 3800
+
+SELECT * FROM my_table AS t WHERE t.salary>3800
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	 
+----------------------------------ОБЪЕДИНЕНИЕ ТАБЛИЦ - JOIN
+----------------------------------
+INNER JOIN - Внутреннее объединение таблици
+LEFT[OUTER]JOIN - Левое внешнее
+RIGHT[OUTER]JOIN - Правое внешнее
+FULL OUTER JOIN - Полное внешнее объединение
+CROSS JOIN - Кросс объединение
+
+У нас есть 2 таблици и они не совпадают по количеству записей
+employee (работник)   --  LastName DepartmentID
+department (отдел)  --  DepartmentName DepartmentID	 
+
+---
+INNER JOIN   - копируються записи только которые соотвецтвуют условию
+  --DepartmentId таблици соотвецтвует с DepartmentID работника (и по ID понимае в какомо отделе работает работник)
+SELECT * FROM employee
+		INNER JOIN department                --вторая таблица по которой делаем обыединение
+		ON employee.DepartmentID = department.DepartmentID      -условие по которому происходит объединение таблиц 
+
+--Пример запроса 
+	(Кто из преподавателей читал курс 30сентября?)
+	SELECT teachers.name - выбери колонку name
+		FROM teachers     - из таблици 
+			INNER JOIN lessons ON teachers.id = lessons.teacher  -она обїединяется с lessons по условию techear.id = lessons.teacher
+		WHERE lessons.lesson_date = '2006-09-30';            -где дата такого-то числа
+
+--- --- ТОЕСТЬ LEFT и RIGHT разница в том что если вывести запрос то запрос по таблице будет с лево или справо по сравниваемой таблице
+LEFT OUTER JOIN - копируються все записи без исключения (если соотвецтвие не найдено на категорию ставиться NULL) и им ставиться в соотвецтвие правая таблица
+		
+	SELECT * FROM employee      
+		LEFT OUTER department     -копируються все данные из левой таблици 
+		ON employee.DepartentID =
+			department.DepartmentID
+		
+---
+RIGHT OUTER JOIN - копируються все данные из правой таблици в порядке вашей записи и по возвожности ставиться соотвецтвие 
+
+	SELECT * FROM employee      
+		RIGHT OUTER department     -копируються все данные из правой таблици 
+		ON employee.DepartentID =
+			department.DepartmentID
+	 
+---
+FULL OUTER -  копируються все записи всех таблиц
+
+	SELECT * FROM employee      
+		FULL OUTER department     -копируються все данные по таблицам 
+		ON employee.DepartentID =
+			department.DepartmentID
+			
+---
+CROSS JOIN - выводит в каждому значению первой таблици все значения второй таблици
+Почти не используеться
+
+SELECT * FROM employee
+	CROSS JOIN department
+	 
+	 
+---ПРОСТО ПРИМЕР
+Какие курсы читает преподавател Иванов
+SELECT DISTINCT courses.title   -выбираем неповторяющие записи в поле
+	FROM courses
+		INNER JOIN lessons ON course.id = lessons.course
+		INNER JOIN teachers ON teachers.id = lessons.teacher
+	WHERE teachers.name = 'Иванов иВан Иванович';
+	 
+	 
+	 
+	 
+	 
+	 
+----------------------------------Использование более 2-х таблици ( ОБЇЕДИНЕНИЕ 2 и более таблиц)
+
+Рисунок 1 в папке с файлом смотрим
+
+--
+1)Таблица 1 указаны имена учителей 
+
+2)Таблица 2 Указано какие курсы эти учителя проводили (поле tid это идентификатор учителя из таблици 1)
+что-бы использывать в запросе несколько полей по 2-м таблицам используем INNER JOIN
+
+INNER JOIN - Запрос по 2-м и более таблицам	
+
+Смотрим рисунок 1 в папке с этим файлом
+		(левая таблица на рис называеться teachers а правая lessons поэтому в запросах t и l)
+	SELECT t.name, t.code, l.course
+	FROM teachers t 
+	INNER JOIN lessons l ON t.id = l.tid // t.id = l.tid  айди первой таблици должно равняться колонке tid второй таблици
+	
+	
+Пример по єтим же таблицам LEFT OUTER JOIN рисунок 2
+
+	SELECT t.nme, t.code,l.course
+	FROM teachers table
+	LEFT OUTER JOIN lessons l ON t.id = l.tid
+
+	
+------ПРИМЕР ОБЪЕДИНЕНИЕ 3-ъ таблиц	
+SELECT DISTINCT - Выбирает только одно значение из не одинаковых ( тоесть покажет из запроса только по одному одинаковому значению если у нас будет 5 полей с значениями 5 оно выдаст 1 поле 5 и все)
+
+	SELECT DISTINCT teachers.name
+	FROM teachers INNER JOIN
+	(lessons INNER JOIN course
+	ON lessons.course = courses.id)
+	ON teachers.id = lessons.teachers
+	WHERE courses.title LIKE 'Web%'
+	ORDER BY teachers.name
+	
+	
+	
+	
+	
+--------------------ИСПОЛЬЗОВАНИЕ ПОДГОТОВЛЕННЫХ ЗАПРОСОВ\
+Используеться при очень большом количестве запросов
+	
+	Запрос который отдается базе зарение он анализируеться и база готова его принимать 
+	Рисунок 3 
+	
+	mysql_query ("PREPARE myinsert FROM        //myinsert имя подготовленного запроса
+					'INSERT INTO
+						test_table (name, price)
+						VALUES (?,?)'");       // ? и должен стоять вместо значений - база сохраняет запрос под конкретным именем анализирует его (один раз)
+					потом делаем следующее
+	
+	for ($i = 0; $i < 1000; $i++){
+		mysql_query("SET @name = 'Товар # $i'");  // SET(назначит\ получить) @name (перемення в БД)
+		mysql_query("SET @price = " .($i * 10));
+		mysql_query("EXECUTE myinsert USING @name, @price"); // EXECUTE (исполни запрос с именем myinsert)
+	}
+	
+	
+	
+	
+---------------------------ЗАПРОС ПО 2 ТАБЛИЦАМ
+
+function myBasket (){ //запрос на таблицу basket ( для отображение инфо на странице корзины этот запрос объединяет 2 таблици basket и catalog
+    $sql = "SELECT
+                author,title,pubyear,price,           //эта столбци таблици catalog
+                basket.id,goodsid,customer,quantity   // это столбци таблици basket
+                FROM catalog,basket
+                WHERE customer='".session_id()."'   //customer столбец таблици  basket
+				AND catalog.id=basket.goodsid ";    // id в таблице catalog = столбцу goodsid в таблице basket
+}
+
+
+
+
+-----------------------------------------
+
+------------------------------ВЫБОРКА ИЗ 3 ТАБЛИЦ Одного значения -  3 условия в одном  с помощью UNION
+
+public function check ($job_id){
+        $query = mysqli_query($this->db_connect(),"SELECT *
+                                                   FROM family_mother									//условие по 1 таблице 
+                                                   WHERE family_mother.job_id = '".$job_id."'
+                                                   UNION
+                                                   SELECT *
+                                                   FROM family_father									//условие по 2 таблице 
+                                                   WHERE family_father.job_id = '".$job_id."'
+                                                   UNION
+                                                   SELECT *
+                                                   FROM family_child									//условие по 3 таблице 
+                                                   WHERE family_child.job_id = '".$job_id."' ") or die (mysqli_error($this->db_connect()));;
+       return $query;
+    }
+
+
+--------------------------------
+--------------------------------
+
+
+
+
+
+-----------------------------------------ЗАПРОС по 4 таблица
+
+У нас есть 4 таблици
+1)  ROLES
+
+	-id
+	-name			//name перебрасываем в Users.username по этому полю связаны эти таблици (roles i Users)
+	-permissions
+
+2)	USERS
+
+	-id				//users.id связана с USERS_DATA.user_id и с USERS_LOGIN.user_id
+	-username
+	-role_id
+
+3)	USERS_DATA
+
+	-id
+	-user_id
+	-first_name
+	-last_name
+	
+4)	USERS_LOGIN
+
+	-id
+	-user_id
+	-login_time
+	
+ДЕЛАЕМ ВЫБОРКУ НА ИМЯ ПОЛЬЗОВАТЕЛЯ (name) его права (permissions) его ИМЯ и ФАМИЛИЯ (first_name,last_name)) и время проваждения на сайте (login_time)
+
+
+ЗАПРОС 
+
+
+			$name = 'capons';
+			$connect = mysqli_connect('localhost','user','11111','webtest') or die (mysqli_errno());
+			$res = mysqli_query($connect,"SELECT users.username,roles.permissions,users_data.first_name,users_data.last_name,users_logins.login_time   //перечисляем названия таблиц+поле в них которое мы хотим выбрать 
+											FROM users                   //таблица 1
+											INNER JOIN users_data		//таблица 2
+											INNER JOIN roles			//таблица 3
+											ON users.username = roles.name       //отдельное условие на выборку из таблиц USERS и ROLES (потому что она отдельно друг с другом связаны)
+											INNER JOIN users_logins		//таблица 4
+											ON users.id = users_data.user_id = users_logins.user_id      //условие на выборку из 3 ТАБЛИЦ которые связаны между собой id и user_id
+											WHERE username='".$name."'") or die (mysqli_error($connect));
+
+			foreach($res as $row){
+				echo "<pre>";
+				print_r ($row);
+				echo "</pre>";
+			}
+			
+------------------------------------------
+------------------------------------------
+
+
+
+
+
+-------------------------------------------
+-------------------------------------------ПРИМЕР ДОБАВЛЕНИЯ В ОДНУ ТАБЛИЦУ ДРУГОЙ С ОДИНАКОВЫМИ ПОЛЯМИ (МОжно и разными)
+
+Есть таблица one, к ней нужно добавить таблицу two, которая содержит такие же поля (id, name, seller, price). Как это сделать?
+
+INSERT INTO one(id, name, seller, price) SELECT id, name, seller, price FROM two 

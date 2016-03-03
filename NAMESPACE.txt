@@ -1,0 +1,81 @@
+use first\bogdan as test; 		//as test - это использование альасов - краткое имя для того что-бы не использовать полный путь к пространствам имен 
+echo test::string('sdfsdfdsf');		// и обращаемся к нему
+
+-------
+
+<?php
+namespace first;			namespace создает пространство имен - теперь к лассу можно обращаться first\bogdan
+class bogdan
+{
+    static $name='';
+    static function string($name1){
+      return  self::$name = $name1;
+    }
+}
+
+-------
+
+
+
+
+
+
+
+
+---------------------------------------Простая автозагрузка по namespace
+
+--файл автозагрузки 
+
+<?php
+function autoloader($class){
+    include_once $class.'.php';
+}
+spl_autoload_register('autoloader');
+
+--файл с классом 
+
+<?php
+namespace libs\Model;			//путь к этому файлу кладем в namespace
+class Capons
+{
+    private static $string = '11111111111111111111111';
+
+    public static function say()
+    {
+        return self::$string;
+    }
+}
+
+--основной файл
+
+<?php
+require_once ("./libs/Autoload.php");
+use libs\Model\Capons as Capons;
+echo Capons::say();
+
+
+
+---------------
+---------------
+Еще вариант автозагрузки файла 
+
+class Autoloader {
+    static public function loader($className) {
+        $filename = $className.".php";
+        if (file_exists($filename)) {
+            include($filename);
+            if (class_exists($className)) {
+                return TRUE;
+            }
+        }
+        return FALSE;
+    }
+}
+spl_autoload_register('Autoloader::loader');
+
+
+
+
+
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------

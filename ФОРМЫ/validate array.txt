@@ -1,0 +1,1 @@
+$_POST = array_map('htmlspecialchars',$_POST); - ПОСТ Масив проганяет через функцию
