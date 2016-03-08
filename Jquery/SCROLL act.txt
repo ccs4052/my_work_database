@@ -1,0 +1,57 @@
+
+
+
+				-------------------
+				------------------- Scroll spy - scroll detaction - scroll position
+				
+				
+
+------------------- Пролистали блок высотой 260px
+
+$(document).ready(function() {
+    $(document).scroll(function() {
+        if ($(document).scrollTop() > 260) {
+            $('#scroll').addClass("add_new");
+        }
+        else {
+            $('#scroll').removeClass("add_new");
+        }
+    });
+});
+
+
+---------------------- Блок делаем на шырину крана и при изменение размера экран меняем его размер (DIV resize)
+
+
+$(document).ready(function(){
+    var winWidth = $(window).width();
+    var winHeight = $(window).height();
+    // set initial div height / width
+    $('#one').css({
+        'width': winWidth,
+        'height': winHeight
+    });
+});
+//resize div whene window resize
+$(window).resize(function(){
+    $('#one').css({
+        'width': winWidth,
+        'height': winHeight
+    });
+});
+
+
+-----------------------------Как узнать пролистали DIV или нет
+
+
+$(window).scroll(function(){
+        var scrollTop = $(window).scrollTop();
+        var home = $('#home').height();
+        if($(this).scrollTop() >= home){
+            $('#home_m').removeClass("active");
+            $('#profile_m').addClass("active");
+        } else {
+            $('#home_m').addClass("active");
+            $('#profile_m').removeClass("active");
+        }
+    });
