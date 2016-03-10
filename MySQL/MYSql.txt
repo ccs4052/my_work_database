@@ -793,7 +793,26 @@ public function check ($job_id){
 			}
 			
 ------------------------------------------
-------------------------------------------
+------------------------------------------ЗАПРОС ПО 4 таблицам ВЫВОДИМ ИНФО ЗАКАЗА ПОКУПАТЕЛЯ И СУММУ ЗАКАЗА ПО ВСЕЙ ЗАЯВКЕ ЗАКАЗА
+
+
+1)Запрос по таблицам orders, authorization, order_product,stock
+
+SUM(order_product.quantity * stock.price) - умножиди 2 ячейки и потом сумировали результать этих ячеек по все строкам таблици (2 разных товара и разное количество - одна строка это 1 това + его количество и цена) получили суму всех товаров заказчика по этой строке
+
+SELECT orders.order_id,orders.customer,orders.order_status,orders.date_add,orders.date_modify,
+authorization.email,authorization.tell,order_product.quantity,stock.price,SUM(order_product.quantity * stock.price) FROM orders
+					INNER JOIN authorization ON orders.id_authorization = authorization.id
+                                        INNER JOIN order_product ON orders.order_id = order_product.id_orders
+                                        INNER JOIN stock ON order_product.id_goods = stock.stock_id
+					GROUP by orders.order_id					//запрос совместили по полю orders.order_id (по id заказа совместили запрос)
+                                        
+
+
+------------------------------------------------------------
+
+
+
 
 
 
