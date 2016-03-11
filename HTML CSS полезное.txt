@@ -1,4 +1,4 @@
-
+﻿http://learn.shayhowe.com/advanced-html-css/transitions-animations/ - полезные приколы анимации
 
 
 transform: scale (1.2) - увеличение объекта при наведении мышкой
