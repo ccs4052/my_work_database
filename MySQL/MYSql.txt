@@ -793,7 +793,7 @@ public function check ($job_id){
 			}
 			
 ------------------------------------------
-------------------------------------------ЗАПРОС ПО 4 таблицам ВЫВОДИМ ИНФО ЗАКАЗА ПОКУПАТЕЛЯ И СУММУ ЗАКАЗА ПО ВСЕЙ ЗАЯВКЕ ЗАКАЗА
+------------------------------------------ЗАПРОС ПО 4 таблицам ВЫВОДИМ ИНФО ЗАКАЗА ПОКУПАТЕЛЯ И СУММУ ЗАКАЗА ПО ВСЕМ ЗАЯВКАМ ЗАКАЗА
 
 
 1)Запрос по таблицам orders, authorization, order_product,stock
@@ -801,15 +801,40 @@ public function check ($job_id){
 SUM(order_product.quantity * stock.price) - умножиди 2 ячейки и потом сумировали результать этих ячеек по все строкам таблици (2 разных товара и разное количество - одна строка это 1 това + его количество и цена) получили суму всех товаров заказчика по этой строке
 
 SELECT orders.order_id,orders.customer,orders.order_status,orders.date_add,orders.date_modify,
-authorization.email,authorization.tell,order_product.quantity,stock.price,SUM(order_product.quantity * stock.price) FROM orders
+authorization.email,authorization.tell,order_product.quantity,stock.price,SUM(order_product.quantity * stock.price) as sum FROM orders
 					INNER JOIN authorization ON orders.id_authorization = authorization.id
                                         INNER JOIN order_product ON orders.order_id = order_product.id_orders
                                         INNER JOIN stock ON order_product.id_goods = stock.stock_id
 					GROUP by orders.order_id					//запрос совместили по полю orders.order_id (по id заказа совместили запрос)
-                                        
+
+2) Тперь выводим с помощью фильтра ЗАКАЗ У КОТОРОГО СУММУ ЗАКАЗА РАВНА ВВЕДЕНОЙ В ФИЛЬТР
+
+
+SELECT orders.order_id,orders.customer,orders.order_status,orders.date_add,orders.date_modify,
+       authorization.email,authorization.tell,order_product.quantity,order_product.`sum` 
+FROM orders 
+INNER JOIN authorization ON orders.id_authorization = authorization.id 
+INNER JOIN (select order_product.quantity, order_product.id_orders, order_product.id_goods, (order_product.quantity * stock.price)as `sum` from order_product
+      join stock on stock.stock_id = order_product.id_goods GROUP by order_product.id_orders) as order_product ON orders.order_id = order_product.id_orders 
+where sum LIKE "105%" 
+GROUP by orders.order_id  
+
+
+
 
 
 ------------------------------------------------------------
+
+
+Удаление из нескольких таблиц
+
+
+
+DELETE t1, t2 FROM
+  orders as t1
+  INNER JOIN  order_product as t2 on t1.order_id = t2.id_orders
+  WHERE  t1.order_id= 5 AND t1.order_id=5;
+
 
 
 
