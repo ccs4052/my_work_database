@@ -520,6 +520,8 @@ SELECT SUM(seats) FROM buses                 // Выведет общее кол
 SELECT AVG(seats) FROM buses                 // Выведет среднее количество сидений
 SELECT COUNT(*) FROM buses                   // Выведет общее количество автобусов в таблице
 SELECT COUNT(*) FROM buses WHERE brand=”ЛАЗ” // Выведет количество автобусов ЛАЗ
+round(field,2)                               //Команда округляет число FLOAT до 2 символов
+TRUNCATE(field, 2)							 //ОБРЕЗАЕТ число FLOAT без ОКРУГЛЕНИЯ
 
 
 
@@ -818,6 +820,23 @@ INNER JOIN (select order_product.quantity, order_product.id_orders, order_produc
       join stock on stock.stock_id = order_product.id_goods GROUP by order_product.id_orders) as order_product ON orders.order_id = order_product.id_orders 
 where sum LIKE "105%" 
 GROUP by orders.order_id  
+
+3) В ЭТОМ ЗАПРОСЕ ПО ЗАКАЗУ есть поле суммы всех товаров заказа и это поле FLOAT что-бы округлить его до 2-х символов используеться ROUND
+(вот что нада добавить что-бы округлить сумму  round(SUM(order_product.quantity * stock.price),2))    
+
+SELECT orders.order_id,orders.customer,orders.order_status,orders.date_add,orders.date_modify, authorization.email,authorization.tell,order_product.quantity,stock.price, round(SUM(order_product.quantity * stock.price),2) FROM orders INNER JOIN authorization ON orders.id_authorization = authorization.id INNER JOIN order_product ON orders.order_id = order_product.id_orders INNER JOIN stock ON order_product.id_goods = stock.stock_id GROUP by orders.order_id 
+
+
+4) Выборка по 4 таблицам - товар -категория - цена - сума количества товара и т.п
+SELECT categories.name as categories, stock.name,order_product.quantity,stock.price,ROUND((order_product.quantity * stock.price),2) as total
+						FROM orders
+                        INNER JOIN order_product ON orders.order_id = order_product.id_orders
+                        INNER JOIN stock ON order_product.id_goods = stock.stock_id
+                        INNER JOIN categories on stock.category_id = categories.id
+                        WHERE orders.order_id = 9
+
+
+
 
 
 
