@@ -1,0 +1,20 @@
+.class_scale {
+    transform: scale(0.3);
+}
+/*first slide animate*/
+.animate_left {
+    left:0 !important;
+}
+.animate_top {
+    top:-100% !important;
+}
+.animate_left_left {
+    left:-100% !important;
+}
+.animate_right {
+    left:100% !important;
+}
+.animate_bottom {
+    top: 100% !important;
+}
+/*end first slide animate*/
