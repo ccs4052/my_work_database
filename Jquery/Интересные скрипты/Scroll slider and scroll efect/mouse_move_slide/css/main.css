@@ -1,0 +1,131 @@
+.class_scale {
+    transform: scale(0.3);
+}
+#id {
+    float: none;
+    margin: 0 auto;
+    background-color: burlywood;
+    height: 100%;
+    padding: 0;
+    overflow: hidden;
+}
+#profile_trafaret {
+    padding: 0px;
+    height: 100%;
+    z-index: 1500;
+    background-color: aqua;
+}
+
+/* #slide-block SLIDE ANIMATION CLASS*/
+/*  '#right slide' animate class*/
+#right-slide {
+    padding: 0px;
+    position: absolute;
+    top: 0px;
+    left: 100%;
+    background-color: darkgreen;
+    height: 100%;
+    z-index: 1600;
+}
+.right_animate_left {
+    left:0 !important;
+}
+.right_animate_top {
+    top:-100% !important;
+}
+.right_animate_left_left {
+    left:-100% !important;
+}
+.right_animate_right {
+    left:100% !important;
+}
+.right_animate_bottom {
+    top: 100% !important;
+}
+.low_z_index {
+    z-index: 800 !important;
+}
+/* /'#right slide' animate*/
+
+/* #left-slide animation class*/
+#left-slide {
+    padding: 0px;
+    position: absolute;
+    top: 0px;
+    right: 100%;
+    background-color: black;
+    height: 100%;
+    z-index: 1550;   /*у каждого следующего слайда z-index увеличиваеться из за блока #profile_trafaret*/
+}
+.g_invisible {   /*когда мыш заходит не с того края вешаем класс и он делает блок невидемым по отношению к родительскому блоку*/
+    z-index: 700 !important;
+}
+.left_animate_right {
+    right:0 !important;
+}
+.left_animate_top {
+    top:-100% !important;
+}
+.left_animate_right_right {
+    right:-100% !important;
+}
+.left_animate_bottom {
+    top: 100% !important;
+}
+.left_animate_left {
+    right:100% !important;
+}
+/* /#left-slide */
+
+/* #top-slide animation class*/
+#top-slide {
+    padding: 0px;
+    position: absolute;
+    bottom: 100%;
+    background-color: deeppink;
+    height: 100%;
+    z-index: 1600;   /*у каждого следующего слайда z-index увеличиваеться из за блока #profile_trafaret*/
+}
+.top_animate_bottom {
+    bottom: 0 !important;
+}
+.top_animate_bottom_bottom {
+    bottom: -100% !important;
+}
+.top_animate_top {
+    bottom: 100% !important;
+}
+.top_animate_right {
+    left: 100% !important;
+}
+.top_animate_left {
+    right: 100% !important;
+}
+/* /#top-slide*/
+
+/**/
+#bottom-slide {
+    padding: 0px;
+    position: absolute;
+    bottom: -100%;
+    background-color: gold;
+    height: 100%;
+    z-index: 1650;   /*у каждого следующего слайда z-index увеличиваеться из за блока #profile_trafaret*/
+}
+.bottom_animate_top {
+    bottom: 0 !important;
+}
+.bottom_animate_top_top {
+    bottom: 100% !important;
+}
+.bottom_animate_right {
+    left: 100% !important;
+}
+.bottom_animate_bottom {
+    bottom: -100% !important;
+}
+.bottom_animate_left {
+    right: 100% !important;
+}
+/**/
+/* #slide-block END SLIDE ANIMATION CLASS*/

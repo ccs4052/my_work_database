@@ -1,0 +1,12 @@
+<form action="" method="POST">
+    <input type="range" min="1" max="12" step="1" value="1" id="foo" name="passengers" onchange='document.getElementById("bar").value = "Slider Value = " + document.getElementById("foo").value;'/>
+<input type="text" name="bar" id="bar" value="Slider Value = 1" disabled />   //импут в котором показываем изменения из поля range
+<br />
+<input type=submit value=Submit />
+</form>
+
+
+
+
+
+http://www.developerdrive.com/2012/07/creating-a-slider-control-with-the-html5-range-input/ - пример работы с range

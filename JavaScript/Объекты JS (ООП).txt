@@ -1,6 +1,372 @@
-
+﻿
 
 -----------------------------------------Объекты в JavaScript ООП
+-----------------------------------------
+
+
+--------------ПРОТОТИПЫ - Если один объект имеет специальную ссылку __proto__ на другой объект, то при чтении свойства из него, если свойство отсутствует в самом объекте, оно ищется в объекте __proto__.
+В JavaScript есть встроенное «наследование» между объектами при помощи специального свойства __proto__.
+
+var animal = {
+  eats: true
+};
+var rabbit = {
+  jumps: true
+};
+
+rabbit.__proto__ = animal;             //rabbit имеет специальную ссилку __proto__    -сойство ищеться в указаном обєекте и потом в прототипе и так до бесконености
+
+// в rabbit можно найти оба свойства
+alert( rabbit.jumps ); // true
+alert( rabbit.eats ); // true
+
+
+-----------Метод hasOwnProperty   - находит метод в объекте
+var animal = {
+  eats: true
+};
+
+var rabbit = {
+  jumps: true,
+  __proto__: animal
+};
+
+alert( rabbit.hasOwnProperty('jumps') );    // true: jumps принадлежит rabbit
+
+
+Для того, чтобы перебрать свойства самого объекта, достаточно профильтровать key через hasOwnProperty:
+
+
+var animal = {
+  eats: true
+};
+
+var rabbit = {
+  jumps: true,
+  __proto__: animal
+};
+
+for (var key in rabbit) {
+  if (!rabbit.hasOwnProperty(key)) continue; // пропустить "не свои" свойства
+  alert( key + " = " + rabbit[key] ); // выводит только "jumps"
+
+
+-------------------Зачастую объекты используют для хранения произвольных значений по ключу, как коллекцию:
+
+Object.create(null)
+Зачастую объекты используют для хранения произвольных значений по ключу, как коллекцию:
+
+var data = {};
+data.text = "Привет";
+data.age = 35;
+
+При дальнейшем поиске в этой коллекции мы найдём не только text и age, но и встроенные функции:
+
+var data = {};
+alert(data.toString); // функция, хотя мы её туда не записывали
+
+
+Чтобы этого избежать, мы можем исключать свойства, не принадлежащие самому объекту:
+
+var data = Object.create(null);
+data.text = "Привет";
+
+alert(data.text); // Привет
+alert(data.toString); // undefined
+
+
+
+----------------Свойство F.prototype и создание объектов через new
+
+
+Например, если я хочу, чтобы у всех объектов, которые создаются new Rabbit, был прототип animal, я могу сделать так:
+
+var animal = {
+  eats: true
+};
+
+function Rabbit(name) {
+  this.name = name;
+}
+
+Rabbit.prototype = animal;
+
+var rabbit = new Rabbit("Кроль"); //  rabbit.__proto__ == animal
+
+alert( rabbit.eats ); // true
+
+
+
+----------------Свойство constructor
+
+
+
+У каждой функции по умолчанию уже есть свойство prototype.
+
+Оно содержит объект такого вида:
+
+function Rabbit() {}
+
+Rabbit.prototype = {
+  constructor: Rabbit
+};
+
+
+function Rabbit(name) {
+  this.name = name;
+  alert( name );
+}
+
+var rabbit = new Rabbit("Кроль");
+
+var rabbit2 = new rabbit.constructor("Крольчиха");
+
+
+Либо можно поступить аккуратно и добавить свойства к встроенному prototype без его замены:
+
+// сохранится встроенный constructor
+Rabbit.prototype.jumps = true
+
+
+
+---------------------------------------Встроенные "классы" в JavaScript
+
+В JavaScript есть встроенные объекты: Date, Array, Object и другие. Они используют прототипы и демонстрируют организацию «псевдоклассов» на JavaScript,
+ которую мы вполне можем применить и для себя.
+
+Вызов методов через call и apply из прототипа
+
+function showList() {
+  alert( [].join.call(arguments, " - ") );   //выводим все элементы массивава через разделитель ( - )
+}
+
+showList("Вася", "Паша", "Маша"); // Вася - Паша - Маша
+
+или так 
+
+function showList() {
+  alert( Array.prototype.join.call(arguments, " - ") );
+}
+
+showList("Вася", "Паша", "Маша"); // Вася - Паша - Маша
+
+
+
+------------------------------------------
+------------------------------------------Свои классы на прототипах
+
+	Деляться на 2 вида - ОБЫЧНЫЕ КЛАССЫ И НА ПРОТОТИПАХ
+
+
+Обычный конструктор---------------
+
+function Animal(name) {
+  this.speed = 0;
+  this.name = name;
+
+  this.run = function(speed) {					//ДОБАВЛЯЕМ МЕТОД ОБЫЧНЫМ СПОСОБОМ this
+    this.speed += speed;
+    alert( this.name + ' бежит, скорость ' + this.speed );
+  };
+
+  this.stop = function() {
+    this.speed = 0;
+    alert( this.name + ' стоит' );
+  };
+};
+
+var animal = new Animal('Зверь');
+
+alert( animal.speed ); // 0, начальная скорость
+animal.run(3); // Зверь бежит, скорость 3
+animal.run(10); // Зверь бежит, скорость 13
+animal.stop(); // Зверь стоит
+
+
+Класс через прототип--------------
+
+Чтобы объявить свой класс, нужно:
+
+    Объявить функцию-конструктор.
+    Записать методы и свойства, нужные всем объектам класса, в prototype.
+/ конструктор
+function Animal(name) {
+  this.name = name;
+  this.speed = 0;
+}
+
+// методы в прототипе
+Animal.prototype.run = function(speed) {              //ДОБАВЛЯЕМ МЕТОД В ОБЪЕКТ с помощью ПРОТОТИПА
+  this.speed += speed;
+  alert( this.name + ' бежит, скорость ' + this.speed );
+};
+
+Animal.prototype.stop = function() {                 //ДОБАВЛЯЕМ МЕТОД В ОБЪЕКТ с помощью ПРОТОТИПА
+  this.speed = 0;
+  alert( this.name + ' стоит' );
+};
+
+var animal = new Animal('Зверь');
+
+alert( animal.speed ); // 0, свойство взято из прототипа
+animal.run(5); // Зверь бежит, скорость 5
+animal.run(5); // Зверь бежит, скорость 10
+animal.stop(); // Зверь стоит
+
+
+
+СРАВНЕНИЯ ОБЫЧНОГО ООП СТИЛЯ И ПРОТОТИПНОГО-----------
+
+
+Достоинства
+
+    Функциональный стиль записывает в каждый объект и свойства и методы, а прототипный – только свойства. Поэтому прототипный стиль – быстрее и экономнее по памяти.
+
+Недостатки
+
+    При создании методов через прототип, мы теряем возможность использовать локальные переменные как приватные свойства, у них больше нет общей области видимости с конструктором.
+  
+    Таким образом, прототипный стиль – быстрее и экономнее, но немного менее удобен.
+
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------Наследование классов в JavaScript (наследование Rabbit.prototype = Object.create(Animal.prototype);)
+Есть 2 класса Enimal и Rabbit
+объявим класс Rabbit, который будет наследовать от Animal.
+
+1)класс
+
+function Animal(name) {
+  this.name = name;
+  this.speed = 0;
+}
+
+Animal.prototype.run = function(speed) {
+  this.speed += speed;
+  alert( this.name + ' бежит, скорость ' + this.speed );
+};
+
+Animal.prototype.stop = function() {
+  this.speed = 0;
+  alert( this.name + ' стоит' );
+};
+
+2) класс
+
+function Rabbit(name) {
+  this.name = name;
+  this.speed = 0;
+}
+
+Rabbit.prototype.jump = function() {
+  this.speed++;
+  alert( this.name + ' прыгает' );
+};
+
+var rabbit = new Rabbit('Кроль');
+
+
+
+
+Rabbit.prototype.__proto__ = Animal.prototype;  //rabbit наследуеться от Animal
+
+
+// задаём наследование
+Rabbit.prototype = Object.create(Animal.prototype); //тоже самое наследование но которое работает в IE10
+
+// и добавим свой метод (или методы...) в класс rabbit
+Rabbit.prototype.jump = function() { ... }; 
+
+
+
+Обратим внимание: Rabbit.prototype = Object.create(Animal.prototype) присваивается сразу после объявления конструктора, иначе он перезатрёт уже записанные в прототип методы.
+
+
+
+ЕСЛИ У НАС ЕСТЬ 2 Класса с одинаковыми переменными мы можем их не дублировать а сделать так -----------------------------
+
+function Animal(name) {
+  this.name = name;
+  this.speed = 0;
+}
+
+function Rabbit(name) {
+  this.name = name;
+  this.speed = 0;
+}
+
+Что-бы не дублировать переменные в классе Rabbit можно сделать так 
+
+function Rabbit(name) {
+  Animal.apply(this, arguments);
+}
+
+Такой вызов запустит функцию Animal в контексте текущего объекта, со всеми аргументами, она выполнится и запишет в this всё, что нужно.
+
+
+-----------------------------------------Вызов метода родителя внутри своего
+-----------------------------------------
+
+Для вызова метода родителя можно обратиться к нему напрямую, взяв из прототипа:
+
+ Rabbit.prototype.run = function() {
+   // вызвать метод родителя, передав ему текущие аргументы
+   Animal.prototype.run.apply(this, arguments);
+   this.jump();
+ }
+
+
+-----------------------------------------
+-----------------------------------------
+-----------------------------------------Структура наследования полностью:
+
+// --------- Класс-Родитель ------------
+// Конструктор родителя пишет свойства конкретного объекта
+function Animal(name) {
+  this.name = name;
+  this.speed = 0;
+}
+
+// Методы хранятся в прототипе
+Animal.prototype.run = function() {
+  alert(this.name + " бежит!")
+}
+
+// --------- Класс-потомок -----------
+// Конструктор потомка
+function Rabbit(name) {
+  Animal.apply(this, arguments);
+}
+
+// Унаследовать
+Rabbit.prototype = Object.create(Animal.prototype);
+
+// Желательно и constructor сохранить
+Rabbit.prototype.constructor = Rabbit;
+
+// Методы потомка
+Rabbit.prototype.run = function() {
+  // Вызов метода родителя внутри своего
+  Animal.prototype.run.apply(this);
+  alert( this.name + " подпрыгивает!" );
+};
+
+// Готово, можно создавать объекты
+var rabbit = new Rabbit('Кроль');
+rabbit.run();
+
+---------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+-------------------------------------------------------------------ЕШЕ ПРИМЕР ООП JS
+
 Один вид
 
 var phonebookEntry = {};

@@ -1,0 +1,21 @@
+https://github.com/digitalBush/jquery.maskedinput   - установили библиотеку
+
+
+
+<script src="jquery_maske/dist/jquery.maskedinput.js" type="text/javascript"></script> - подключили скачаную библиотеку к скрипту
+
+
+
+Форма 
+
+<form>
+      <input id="input_mask" type="text"/><br/>
+</form>
+
+
+JavaScript
+
+jQuery(function($){
+    $.mask.definitions['~']='[+-]';
+    $("#input_mask").mask("~9.99 ~9.99 999");
+});
