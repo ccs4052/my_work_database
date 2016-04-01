@@ -1,0 +1,7 @@
+ $(".b-service-item > p > .b-btn").html('sdfsdfsdfsdf');       //селектор один потом второй потом третий что-бы точнее выбрать элемент
+        $('.b-btn').click(function(e){
+            e.preventDefault(); //a href disabled
+            if ($(this).parents('.b-service-item').length == 1) {  //ЕСЛИ РОДИТЕЛЬ ЕСТЬ С КЛАССОМ b-service-item то TRUE
+                window.location.href = "http://remontsibiri.ru/uslugi/";
+            }
+        });

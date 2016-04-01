@@ -1,0 +1,8 @@
+$(document).click(function(event) {
+        if(!$(event.target).closest('#test').length &&
+            !$(event.target).is('#test')) {
+            if($('#test').is(":visible")) {
+                $('#test').hide()
+            }
+        }
+    })
