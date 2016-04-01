@@ -8,11 +8,22 @@
 
 
 --------------------------------------------------------------Безопасность Wordpress
+ ----МЕНЯЕМ ФРЕФИКС ВСЕХ ТАБЛИЦ
  1) ПРИ Создании сайта Wordpress нада изменить префикс таблиц в файле wp-config - $table_prefix  = 'df56_'; изменяем на любой
+ 	ПОТОМ ЗАХОДИМ В MyAdmin выделяем все таблици и выберием ИЗМЕНИТЬ ПРЕФИКС ТАКБЛИЦ И меняем его на тот который мы заменили в wp-config
+ 	ПОЛЕ ОТ какого префикса пишем старый wp_ и поле ДО пишем префикс который мы указали новый 'df56_';
+ 	Далее в MyAdmin делаем такой sql запрос SELECT * FROM w4533p_usermeta WHERE meta_key LIKE "wp_%" и в строках которых мы нашли меняем старый фрефикс wp_ на новый 'df56_'
+
+ 	Далее в MyAdmin делаем такой sql запрос SELECT * FROM `w4533p_options` WHERE `option_name` LIKE "%user_roles"   и в строках которых мы нашли меняем старый фрефикс wp_ на новый 'df56_'
+
  
- 2) Затем что-бы в ХЕДЕ сайта не писалось что сайт на вордпресс заходим в wp_content\themes\twentysixteen\function.php  и в файл добавляем remove_action('wp_head','wp_generator'); - теперь не будет писаться в ХЕДЕ что это ворпресс
+ -----СКРЫВАЕМ МЕТА ТЕГИ
+ 2) Затем что-бы в ХЕДЕ сайта не писалось что сайт на вордпресс заходим в wp_content\themes\twentysixteen\function.php  и в файл добавляем 
+ 	remove_action('wp_head','wp_generator'); - теперь не будет писаться в ХЕДЕ что это ворпресс
+ 	(убираем из хеда вот что <meta name="generator" content="WordPress 4.4.2" /> для безопасности нада скрыть)
+
  
- 3) Запретим удаленном наполнять сайт контентом  в файле (xmlrpc в корневой папке разместим) добавим в файл wp_content\themes\twentysixteen\function.php следущее
+ 3) Запретим удаленно наполнять сайт контентом  в файле (xmlrpc в корневой папке разместим) добавим в файл wp_content\themes\twentysixteen\function.php следущее
 																							add_filter('xmlrpc_enabled','__return_false');
 																							remove_action('wp_head','rsd_link');
 																							remove_action('wp_head','wlwmanifest_link');
@@ -56,4 +67,39 @@ deny from all
  User-agent: *
  Disallow: /
  
- 
+
+
+ 8) НАБОР ПОЛЕЗНЫХ ПЛАГИНОВ НА WORDPRESS
+
+ 	- Akismet  - Плагин против СПАМА
+ 	- Attachment page redirect - redirect after post 
+ 	- Contact Form 7 - конструктор контактных форм
+ 	- Easy FancyBox - плагин для Jquery plugin
+ 	- EWWW Image Optimizer  - оптимизатор изображений для wp
+ 	- Huge IT Slider - Для создания слайдеров
+ 	- RusToLat - Переводим Руские слова в Транслит
+ 	- Shortcodes Ultimate - плагин с набором готовых приколов
+ 	- All in One SEO Pack - плагин для продвижение сайта
+
+
+
+
+ --------------------------------------
+ --------------------------------------Далее базовые настройки страниц на WP
+
+ 1)Settings/General изменим Tagline - краткое описание сайта 
+
+ 2)Settings/Writing и выберем категорию куда сохранять ПОСТЫ Default Post Category select main - Категория создаеться в разделе Posts/category
+ 	и еще изменя Default Post Format на Image
+
+ 3)Settings/Reading     Search Engine Visibility  обязательно поставить галочку для поисковых систем
+  + создать файл в корней папке robot.txt с таким содержанием   
+		 User-agent: *
+		 Disallow: /
+ 4)Settings/Discussion    Allow people to post comments on new articles - Если оставить галочку то посетители смогут коментировать - Если например Интернет магазин то можно галочку убрать что-бы не коментировали
+ 	Далее Comments should be displayed with the older
+ 	Далее Comment must be manually approved  поставить галочку
+
+ 5)Settings/Media Тут можно выставить размеры загружаемых изображений если мы нехотим что-бы миниатюры создавались выставляем НУЛИ
+
+ 6)Settings/Permalink ставим галочку на  Custom Structure  и в строке прописываем /%postname%.html
