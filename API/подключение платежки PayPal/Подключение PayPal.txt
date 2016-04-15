@@ -1,0 +1,144 @@
+ОПЛАТА ЧЕРЕЗ Curl
+
+API CURL Manual - https://developer.paypal.com/docs/api/#look-up-a-sale
+
+1) Регистрируемся на https://www.paypal.com
+2) Логинимся на https://www.paypal.com  заходим Profile -> Profile Setting -> My Selling tools -> Update -> View API Certificate
+Создаем API User Name  нужны для создания аккаунта в SendBox на https://developer.paypal.com/
+
+3)Dashboar -> My Apps & Credentials и создаем Create App -> после чего оно появляеться ниже и там будет нам clientID и secret для произведения оплаты
+
+4) Заходим на https://developer.paypal.com/ -> DASHBOARD -> Sandbox -> Accounts и нажимаем Create Account
+
+5) Затем нажимаем на выбраный аккаунт + Profile -> API Credentials и для дальнейшей работы нам понадобиться Username + Signature
+
+6) Первый запрос мы делам что-бы получить секретный Token для дальнейшей оплаты
+
+мануал https://developer.paypal.com/docs/integration/web/web-checkout/
+
+$clientId и $secret  мы берем в пункте 3)
+
+$ch = curl_init();
+                    //$cliendId and $secret from my account in https://developer.paypal.com/developer/applications/
+                    $clientId = "ASDZgA3nFgVMzjuRpuG0nRvc6_N_TUal2OMo0qaH3XWO22wJVeT7n1COo0QHSgUIm_a_lbiAE7DSU07f";
+                    $secret = "EJTcemOiN6W853uRN8ieFTP-MvwYjKnofYgvcaRqCC66QWeTMAxbVM6HZbgCQoo1FdCBlQQ-bDwjOjvM";
+                    curl_setopt($ch, CURLOPT_URL, "https://api.sandbox.paypal.com/v1/oauth2/token");
+                    curl_setopt($ch, CURLOPT_HEADER, false);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch, CURLOPT_POST, true);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_USERPWD, $clientId.":".$secret);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, "grant_type=client_credentials");
+                    $result = curl_exec($ch);
+                    if(empty($result))die("Error: No response.");
+                    else
+                    {
+                        $json = json_decode($result);
+                        $pp_access_token = $json->access_token; //PayPal Access token for next pay step
+                    }
+                    curl_close($ch);
+
+7) Далее мы получаем секретный Token и отправляем запрос с суммой платежа и секретным токеном В ОТВЕТ НА ЗАПРОС МЫ ПОЛУЧАЕМ ССЫЛКУ КУДА ПРОИЗВОДИМ РЕДИРЕКТ КЛИЕНТА ДЛЯ ОПЛАТЫ
+
+мануал https://developer.paypal.com/docs/integration/web/accept-paypal-payment/
+
+//data => PayPal pay settings
+                    //return_url - url PayPal redirect after payment
+                    //Curl for getting paypal pay url for redirect client
+                    $pay_amount = $_POST['pay_for_order']; //payment amount
+                    $data = '{
+                              "intent":"sale",
+                              "redirect_urls":{
+                                "return_url":"http://localhost/bogdan/STORE/main/complete_pp",  //сылка куда PayPal будет делать редирект после завершения оплаты
+                                "cancel_url":"http://localhost/bogdan/STORE/main/order"
+                              },
+                              "payer":{
+                                "payment_method":"paypal"
+                              },
+                              "transactions":[
+                                {
+                                  "amount":{
+                                    "total":"'.$pay_amount.'",     //сумма оплаты
+                                    "currency":"USD"
+                                  },
+                                  "description":"This is the payment transaction description."
+                                }
+                              ]
+                            }';
+                    $ch1 = curl_init();
+                    curl_setopt($ch1, CURLOPT_URL, "https://api.sandbox.paypal.com/v1/payments/payment"); //PayPal pay url
+                    curl_setopt($ch1, CURLOPT_POST, true);
+                    curl_setopt($ch1, CURLOPT_HEADER, false);
+                    curl_setopt($ch1, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch1, CURLOPT_POSTFIELDS, $data);
+
+                    curl_setopt($ch1, CURLOPT_SSL_VERIFYPEER, false); //on local server
+                    curl_setopt($ch1, CURLOPT_SSL_VERIFYHOST, false); //on local server
+
+                    curl_setopt($ch1, CURLOPT_HTTPHEADER, array(
+                            "Content-Type: application/json",
+                            "Authorization: Bearer ".$pp_access_token, //PayPal access token
+                            "Content-length: ".strlen($data))
+                    );
+                    $result1 = curl_exec($ch1);
+                    if(empty($result1))die("Error: No response.");
+                    else
+                    {
+                        //if true create in buyer session variable with delivery address and payment method type
+                        $_SESSION['buyer_info']['buyer_delivery_address'] = $delivery_address;
+                        $_SESSION['buyer_info']['payment_method'] = $pay_payment_method;
+                        $_SESSION['buyer_info']['pay_access_token'] = $pp_access_token; //access token - need in complet order after pay
+                        $json1 = json_decode($result1,true);
+                        $error_arr[1] = $json1['links'][1]['href'];                     //ПОЛУЧАЕМ ССЫЛКУ КУДА НУЖНО ПРОИЗВЕСТИ РЕДИРЕКТ КЛИЕНТА ДЛЯ ОПЛАТЫ  send redirect link (to PayPal.com) to JS for PayPal payment
+                        $_SESSION['buyer_info']['pay_id'] = $json1['id'];               //buyer id - need in complet order after pay
+                        echo json_encode($error_arr);
+                    }
+                    curl_close($ch1);
+
+
+8) Если проплата прошла успешно PayPal переадресовует клиента на такую ссылку к нам на сайт и через GET мы получаем данные которые нас интересуют
+http://return_url?paymentId=PAY-6RV70583SB702805EKEYSZ6Y&token=EC-60U79048BN7719609&PayerID=7E7MGXCWTTKK2
+
+ссылка на PayPal мануал https://developer.paypal.com/docs/integration/web/accept-paypal-payment/
+
++Отправляем еще один запрос для проверки прошла оплата успешно или нет для этого используем Access_token оторый мы получили в начале (передаем еге через сессию) + paymentId для формирования правельной ссылки
+
+if(isset($_GET['paymentId']) && isset($_GET['token']) && isset($_GET['PayerID'])){ //true -> if valid GET value
+            if($_GET['paymentId'] == $_SESSION['buyer_info']['pay_id']) { //if true -> only true reference work
+                //$dara = array to send data in the view
+                $data['empty_data'] = 'change in the future';
+                $curl_data = '{ "payer_id" : "' . $_GET['PayerID'] . '" }'; //send OayerID to PayPal execut payment
+                $ch = curl_init();
+                $execute_url = 'https://api.sandbox.paypal.com/v1/payments/payment/' . $_GET['paymentId'] . '/execute/'; //PayPal execute pay url
+                curl_setopt($ch, CURLOPT_URL, $execute_url); //PayPal execute pay url
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HEADER, false);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $curl_data);
+
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); //on local server
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); //on local server
+
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                        "Content-Type: application/json",
+                        "Authorization: Bearer " . $_SESSION['buyer_info']['pay_access_token'], //PayPal access token
+                        "Content-length: " . strlen($curl_data))
+                );
+                $result = curl_exec($ch);
+                curl_close($ch);
+                if (empty($result)) {
+                    //if curl respons error
+                    $data['user_info'] = '<div class="form_error">The money is not gone from your account, please try again</div>';
+                    $this->load->view('store_pages/complete_pp', $data);
+                }
+                else {
+                    $json = json_decode($result, true);
+                    if(isset($json['state'])) {
+                        if ($json['state'] == 'approved') {
+				ЕСЛИ ОТВЕТ ПОЛОЖИТЕЛЬНЫЙ И ОПЛАТА ПРОШЛА УСПЕШНО СОВЕРШАЕМ ДЕЙСТВИЕ
+
+
+				}
+			}
+		}
+	}
