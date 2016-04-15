@@ -1,0 +1,9 @@
+https://currencylayer.com
+
+Your API Access Key  24448aa5789efb992b89e114345d2d34
+
+пример 
+
+http://www.apilayer.net/api/live?access_key=24448aa5789efb992b89e114345d2d34
+
+https://currencylayer.com/documentation - Документация
