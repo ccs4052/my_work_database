@@ -1,9 +1,21 @@
 
 Для установки Yii2 качаем файл composer с сайта http://www.yiiframework.com/download/
+
+https://getcomposer.org/doc/00-intro.md#installation-nix - качаем компосер 
+
+ - в командной строке CD:\
+ - потом в командной строке пишем composer
+
+
+
+
 потом в Windows в командной строке пишем composer global require "fxp/composer-asset-plugin:~1.1.1" - и композер устанавливаеться
+
+- если будет ошибка то в phh.ini нужно разкоментировать это extension=php_openssl.dll
+
 СОЗДАЕМ yii2 в папке в которой мы хотим делть проэкт на этом фрейворке
 	-(Запускаем CMD из папке в которой хотим создать проэкт )В windows командная строка запускаеться с путем к папке к которой нада - зайти в папку а нажать shift+right_mouse_click и открыть командную строку надпись
-	- Потом в командной строке пишем composer create-project yiisoft/yii2-app-basic basic 2.0.6 (текущая версия yii2 ссылка отсюда http://www.yiiframework.com/download/)
+	- Потом в командной строке пишем composer create-project yiisoft/yii2-app-basic basic 2.0.7 (текущая версия yii2 ссылка отсюда http://www.yiiframework.com/download/)
 	- При установке если запросит токент то сделать токен по ссылке (https://github.com/settings/tokens) и ввести в командную строку сгенерированый токен
 	- Если вы установили версию yii2 basic то проэкт запуститься из папки basic/web
 	

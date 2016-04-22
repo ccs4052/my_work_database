@@ -1,0 +1,16 @@
+https://www.youtube.com/watch?v=R-yQux1S63w - урок
+
+
+
+
+http://www.yiiframework.com/doc-2.0/guide-index.html - user guide
+
+https://yii2-cookbook.readthedocs.org/README/ - шпоргалки по Yii2
+
+
+http://www.sitepoint.com/yii-2-0-activerecord-explained/ - Связи между моделями актив рекорда
+
+
+http://www.bsourcecode.com/yiiframework2/select-query-joins/ - Join table
+
+http://www.sitepoint.com/rendering-data-in-yii-2-with-gridview-and-listview/ - GridView
