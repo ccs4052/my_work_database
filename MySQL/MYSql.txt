@@ -882,3 +882,17 @@ SELECT c1.id as childID, c1.name ChildName, c2.name as ParentName
 	from categories c1             -одной и той-же таблице даем 2 разных псевдонима что-бы 2 запроса по 1 таблице объединить в один
 	LEFT JOIN categories c2        -одной и той-же таблице даем 2 разных псевдонима что-бы 2 запроса по 1 таблице объединить в один
 	ON c1.parent_id = c2.id
+
+
+
+-------------------------------------------
+------------------------------------------- UPDATE Multiple STOCK DATABSE quantity after buy order (обновляем количество товара в базе по множеству строк одним запросов в цикл потом его поместить что-бы отмечать id и количество товара)
+
+
+update product A inner join             (id -> в какой ячейке - price -> на какую сумму)
+     (
+         SELECT 1 id,10 price UNION
+         SELECT 2   ,20       UNION
+         SELECT 3   ,30
+     ) B USING (id)
+     SET A.price = B.price;
