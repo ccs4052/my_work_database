@@ -1,0 +1,68 @@
+1) Регистрируемся на https://dashboard.stripe.com/register
+
+2) Acount -> Acount Settings -> Api нужно для настройки автолоада и подключения Stripe
+
+3) Подключаем в компосер библиотеку Stripe интегрированую для Yii2 и подключаем обычный Stripe для создания Stripe::Charge
+в composer подключаем лабы
+
+"require": {
+        "stripe/stripe-php": "dev-master", //стандартная лаба
+        "ruskid/yii2-stripe": "dev-master" //лаба интегрирования для yii2
+    },
+
+4) запускаем консоль и делаем composer update
+
+5) Включаем Stripe в автозагрузку common/config/main (for developer version)
+'stripe' => [ //autoload Stripe pay system
+            'class' => 'ruskid\stripe\Stripe',   //подключили лабу интегрированую под yii2
+            'publicKey' => "pk_test_jgmwLo0RtxV342m0e5sfmxwY",    //Публичный ключ
+            'privateKey' => "sk_test_Pmtiqut8msdIXyyZqGniDvBy",   //Приват ключ взяли с зарегестрированого акка https://dashboard.stripe.com/test/dashboard   accaunt/accaunt settings/API key
+        ],
+
+6) Далее в виде где будет расположена кнопка оплаты разместим следущий код
+
+use ruskid\stripe\StripeCheckout; //load Stripe
+
+ echo StripeCheckout::widget([
+        'action' => '',  //redirect to (In our case, redirect works on URL where payment began from)
+        'name' => 'Pay',
+        'description' => count($количество товара).'widgets ("'.$сумма.'")',
+        'amount' => сумма оплаты,
+    ]);
+
+
+7) В ответ на странице РЕДИРЕКТА ПРИХОДИТ ПОСТ И Там разметим этот код
+
+use Stripe\Stripe; //подключаем обычную библиотеку Stripe для дальнейшей проплаты
+
+ if (isset($_POST['stripeToken'])) {
+           
+            //start pay by object Stripe
+            Stripe::setApiKey("sk_test_Pmtiqut8msdIXyyZqGniDvBy"); //my api key
+            $token = $_POST['stripeToken'];
+            $customer = \Stripe\Customer::create(array(
+                'email' => $_POST['stripeEmail'],
+                'card' => $token
+            ));
+            \Stripe\Charge::create(array(
+                'customer' =>$customer->id, //id покупателя
+                'amount' => $total,
+                'currency' => 'usd'
+            ));
+}
+ $customer->id;  //ID покупателя который пришел с Stripe
+ $_POST['stripeToken']; //Токен покупателя
+ $_POST['stripeTokenType'];  // и метод которым оплатили в нашем случае будет написано 'card'
+
+
+
+
+
+
+
+
+https://stripe.com/docs/testing    - Stripe testing pay card
+
+https://stripe.com/docs/charges - мануал по оплате
+
+https://dashboard.stripe.com/test/dashboard - мой аккаун
