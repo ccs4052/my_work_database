@@ -1,7 +1,9 @@
-
+﻿
 Для установки Yii2 качаем файл composer с сайта http://www.yiiframework.com/download/
 
 https://getcomposer.org/doc/00-intro.md#installation-nix - качаем компосер 
+
+ДЛЯ НОРМАЛЬНОЙ УСТАНОВКИ yii2 после установки composer нужно поставить nodeJS (https://nodejs.org/en/download/) и Bower (http://bower.io/) потом в командной строке пишем  bower install
 
  - в командной строке CD:\
  - потом в командной строке пишем composer

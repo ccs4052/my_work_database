@@ -1,0 +1,986 @@
+-----------------	Порождающие шаблоны проектирования
+	ПОРОЖДАЮЩИЙ ШАБЛОН -  шаблоны проектирования, которые абстрагируют процесс наследовани.  Шаблон, порождающий классы, использует наследование.
+	
+		1) Реестр (Registry)
+		Он немного выбивается из общего ряда, потому что не является порождающим, но в дальнейшем нам потребуется его знание.
+		Итак, реестр – это хэш, доступ к данным у которого осуществляется через статические методы:
+		
+			ПРИМЕР 
+			
+			
+			<?php
+			/**
+			 * Реестр
+			 */
+			class Product
+			{
+
+				/**
+				 * @var mixed[]
+				 */
+				protected static $data = array();
+
+
+				/**
+				 * Добавляет значение в реестр
+				 *
+				 * @param string $key
+				 * @param mixed $value
+				 * @return void
+				 */
+				public static function set($key, $value)
+				{
+					self::$data[$key] = $value;
+				}
+
+				/**
+				 * Возвращает значение из реестра по ключу
+				 *
+				 * @param string $key
+				 * @return mixed
+				 */
+				public static function get($key)
+				{
+					return isset(self::$data[$key]) ? self::$data[$key] : null;
+				}
+
+				/**
+				 * Удаляет значение из реестра по ключу
+				 *
+				 * @param string $key
+				 * @return void
+				 */
+				final public static function removeProduct($key)
+				{
+					if (array_key_exists($key, self::$data)) {
+						unset(self::$data[$key]);
+					}
+				}
+			}
+
+			/*
+			 * =====================================
+			 *           USING OF REGISTRY
+			 * =====================================
+			 */
+
+			Product::set('name', 'First product');
+
+			print_r(Product::get('name'));
+			// First product
+			
+			----------------------------
+			
+		2) Пул объектов (Object pool)
+		
+		Этот шаблон, по сути, является частным случаем реестра. 
+		Пул объектов – это хэш, в который можно складывать инициализированные объекты и доставать их оттуда при необходимости:
+		
+		ПРИМЕР - ( СКЛАДІВАЕМ ДАННЫЕ И ДОСТАЕМ ИХ ИЗ КЛАССА )
+				<?php
+				/**
+				 * Пул объектов
+				 */
+				class Factory
+				{
+
+					/**
+					 * @var Product[]
+					 */
+					protected static $products = array();
+
+
+					/**
+					 * Добавляет продукт в пул
+					 *
+					 * @param Product $product
+					 * @return void
+					 */
+					public static function pushProduct(Product $product)
+					{
+						self::$products[$product->getId()] = $product;
+					}
+
+					/**
+					 * Возвращает продукт из пула
+					 *
+					 * @param integer|string $id - идентификатор продукта
+					 * @return Product $product
+					 */
+					public static function getProduct($id)
+					{
+						return isset(self::$products[$id]) ? self::$products[$id] : null;
+					}
+
+					/**
+					 * Удаляет продукт из пула
+					 *
+					 * @param integer|string $id - идентификатор продукта
+					 * @return void
+					 */
+					public static function removeProduct($id)
+					{
+						if (array_key_exists($id, self::$products)) {
+							unset(self::$products[$id]);
+						}
+					}
+				}
+
+				class Product
+				{
+
+					/**
+					 * @var integer|string
+					 */
+					protected $id;
+
+
+					public function __construct($id) {
+						$this->id = $id;
+					}
+
+					/**
+					 * @return integer|string
+					 */
+					public function getId()
+					{
+						return $this->id;
+					}
+				}
+
+				/*
+				 * =====================================
+				 *         USING OF OBJECT POOL
+				 * =====================================
+				 */
+
+				Factory::pushProduct(new Product('first'));
+				Factory::pushProduct(new Product('second'));
+
+				print_r(Factory::getProduct('first')->getId());
+				// first
+				print_r(Factory::getProduct('second')->getId());
+				// second
+				
+				--------------------------------------
+				
+				
+		3) Наверное, один из самых популярных шаблонов. Как правило, его все запоминают первым.
+			Для того, чтобы обеспечить существование только одного экземпляра класса Product, мы закрыли все магические методы для создания экземпляра класса, клонирования и сериализации.
+			Единственный возможный способ получить объект – воспользоваться статическим методом Product::getInstance().
+			При первом обращении класс сам создаст экземпляр себя и положит его в статическое свойство Product::$instance. 
+			При последующих обращениях, в рамках выполнения скрипта, метод будет нам возвращать тот же, ранее созданный, экземпляр класса.
+			
+			
+				<?php
+				/**
+				 * Class Database
+				 */
+				class Database
+				{
+					private static $_host = "localhost";
+					private static $_username = "user";
+					private static $_password = "11111";
+					private static $_database = "bogdan";
+					private static $instance;
+					private function __construct() { }
+					private function __clone() { }
+					 private function __sleep(){}
+					 private function __wakeup(){}
+					/**
+					 * @return MySQLi
+					 * @throws Exception
+					 */
+					public static function connect ()
+					{
+						if(!isset(self::$instance)) {
+							self::$instance = new MySQLi(self::$_host, self::$_username, self::$_password, self::$_database);
+							if(self::$instance->connect_error) {
+								throw new Exception('MySQL connection failed: ' . self::$instance->connect_error);
+							}
+						}
+						return self::$instance;
+					}
+				}
+
+				$firstProduct = Product::getInstance();
+
+				
+				-----------------------------------
+				
+				
+		4) Пул одиночек (Multiton)
+		
+		Возможно, кому-то захочется использовать множество различных синглтонов в своём проекте. 
+		Тогда, наверное, стоит отделить логику шаблона от конкретной реализации.
+		
+		
+		
+				<?php
+					/**
+					 * Общий интерфейс пула одиночек
+					 */
+					abstract class FactoryAbstract
+					{
+
+						/**
+						 * @var array
+						 */
+						protected static $instances = array();
+
+
+						/**
+						 * Возвращает экземпляр класса, из которого вызван
+						 *
+						 * @return static
+						 */
+						public static function getInstance()
+						{
+							$className = static::getClassName();
+							if (!(self::$instances[$className] instanceof $className)) {
+								self::$instances[$className] = new $className();
+							}
+							return self::$instances[$className];
+						}
+
+						/**
+						 * Удаляет экземпляр класса, из которого вызван
+						 *
+						 * @return void
+						 */
+						public static function removeInstance()
+						{
+							$className = static::getClassName();
+							if (array_key_exists($className, self::$instances)) {
+								unset(self::$instances[$className]);
+							}
+						}
+
+						/**
+						 * Возвращает имя экземпляра класса
+						 *
+						 * @return string
+						 */
+						final protected static function getClassName()
+						{
+							return get_called_class();
+						}
+
+						/**
+						 * Конструктор закрыт
+						 */
+						protected function __construct()
+						{
+						}
+
+						/**
+						 * Клонирование запрещено
+						 */
+						final protected function __clone()
+						{
+						}
+
+						/**
+						 * Сериализация запрещена
+						 */
+						final protected function __sleep()
+						{
+						}
+
+						/**
+						 * Десериализация запрещена
+						 */
+						final protected function __wakeup()
+						{
+						}
+					}
+
+					/**
+					 * Интерфейс пула одиночек
+					 */
+					abstract class Factory extends FactoryAbstract
+					{
+
+						/**
+						 * Возвращает экземпляр класса, из которого вызван
+						 *
+						 * @return static
+						 */
+						final public static function getInstance()
+						{
+							return parent::getInstance();
+						}
+
+						/**
+						 * Удаляет экземпляр класса, из которого вызван
+						 *
+						 * @return void
+						 */
+						final public static function removeInstance()
+						{
+							parent::removeInstance();
+						}
+					}
+
+					/*
+					 * =====================================
+					 *           USING OF MULTITON
+					 * =====================================
+					 */
+
+					/**
+					 * Первый одиночка
+					 */
+					class FirstProduct extends Factory
+					{
+						public $a = [];
+					}
+
+					/**
+					 * Второй одиночка
+					 */
+					class SecondProduct extends FirstProduct
+					{
+					}
+
+					// Заполняем свойства одиночек
+					FirstProduct::getInstance()->a[] = 1;
+					SecondProduct::getInstance()->a[] = 2;
+					FirstProduct::getInstance()->a[] = 3;
+					SecondProduct::getInstance()->a[] = 4;
+
+					print_r(FirstProduct::getInstance()->a);
+					// array(1, 3)
+					print_r(SecondProduct::getInstance()->a);
+					// array(2, 4)
+					
+					
+					---------------------------------------------------
+					
+					
+					
+			5) Допустим, мы знаем, что бывают фабрики, производящие какой-то свой продукт. 
+			Нам не важно, как именно фабрика делает этот продукт, но мы знаем, что у любой фабрики есть один универсальный способ попросить его:
+			
+			
+			ПРИМЕР -
+			
+			
+			<?php
+				/**
+				 * Фабрика
+				 */
+				interface Factory
+				{
+
+					/**
+					 * Возвращает продукт
+					 *
+					 * @return Product
+					 */
+					public function getProduct();
+				}
+
+				/**
+				 * Продукт
+				 */
+				interface Product
+				{
+
+					/**
+					 * Возвращает название продукта
+					 *
+					 * @return string
+					 */
+					public function getName();
+				}
+
+				/**
+				 * Первая фабрика
+				 */
+				class FirstFactory implements Factory
+				{
+
+					/**
+					 * Возвращает продукт
+					 *
+					 * @return Product
+					 */
+					public function getProduct()
+					{
+						return new FirstProduct();
+					}
+				}
+
+				/**
+				 * Вторая фабрика
+				 */
+				class SecondFactory implements Factory
+				{
+
+					/**
+					 * Возвращает продукт
+					 *
+					 * @return Product
+					 */
+					public function getProduct()
+					{
+						return new SecondProduct();
+					}
+				}
+
+				/**
+				 * Первый продукт
+				 */
+				class FirstProduct implements Product
+				{
+
+					/**
+					 * Возвращает название продукта
+					 *
+					 * @return string
+					 */
+					public function getName()
+					{
+						return 'The first product';
+					}
+				}
+
+				/**
+				 * Второй продукт
+				 */
+				class SecondProduct implements Product
+				{
+
+					/**
+					 * Возвращает название продукта
+					 *
+					 * @return string
+					 */
+					public function getName()
+					{
+						return 'Second product';
+					}
+				}
+
+				/*
+				 * =====================================
+				 *        USING OF FACTORY METHOD
+				 * =====================================
+				 */
+
+				$factory = new FirstFactory();
+				$firstProduct = $factory->getProduct();
+				$factory = new SecondFactory();
+				$secondProduct = $factory->getProduct();
+
+				print_r($firstProduct->getName());
+				// The first product
+				print_r($secondProduct->getName());
+				// Second product
+				
+				
+				
+				
+			6) Абстрактная фабрика (Abstract Factory)
+			Бывает ситуация, когда у нас есть несколько однотипных фабрик и мы хотим инкапсулировать логику выбора, какую из фабрик использовать для той или иной задачи.
+			Тут-то нам на помощь и приходит этот шаблон.
+			Как видно из примера, нам не приходится заботится о том, какую фабрику взять.
+			Абстрактная фабрика сама проверяет настройки конфигурации и возвращает подходящую фабрику.
+			
+			
+			
+			
+			ПРИМЕР - 
+			
+			
+			<?php
+				/**
+				 * Какой-нибудь файл конфигурации
+				 */
+				class Config
+				{
+					public static $factory = 1;
+				}
+
+				/**
+				 * Какой-то продукт
+				 */
+				interface Product
+				{
+
+					/**
+					 * Возвращает название продукта
+					 *
+					 * @return string
+					 */
+					public function getName();
+				}
+
+				/**
+				 * Абстрактная фабрика
+				 */
+				abstract class AbstractFactory
+				{
+
+					/**
+					 * Возвращает фабрику
+					 *
+					 * @return AbstractFactory - дочерний объект
+					 * @throws Exception
+					 */
+					public static function getFactory()
+					{
+						switch (Config::$factory) {
+							case 1:
+								return new FirstFactory();
+							case 2:
+								return new SecondFactory();
+						}
+						throw new Exception('Bad config');
+					}
+
+					/**
+					 * Возвращает продукт
+					 *
+					 * @return Product
+					 */
+					abstract public function getProduct();
+				}
+
+				/*
+				 * =====================================
+				 *             FIRST FAMILY
+				 * =====================================
+				 */
+
+				class FirstFactory extends AbstractFactory
+				{
+
+					/**
+					 * Возвращает продукт
+					 *
+					 * @return Product
+					 */
+					public function getProduct()
+					{
+						return new FirstProduct();
+					}
+				}
+
+				/**
+				 * Продукт первой фабрики
+				 */
+				class FirstProduct implements Product
+				{
+
+					/**
+					 * Возвращает название продукта
+					 *
+					 * @return string
+					 */
+					public function getName()
+					{
+						return 'The product from the first factory';
+					}
+				}
+
+				/*
+				 * =====================================
+				 *             SECOND FAMILY
+				 * =====================================
+				 */
+
+				class SecondFactory extends AbstractFactory
+				{
+
+					/**
+					 * Возвращает продукт
+					 *
+					 * @return Product
+					 */
+					public function getProduct()
+					{
+						return new SecondProduct();
+					}
+				}
+
+				/**
+				 * Продукт второй фабрики
+				 */
+				class SecondProduct implements Product
+				{
+
+					/**
+					 * Возвращает название продукта
+					 *
+					 * @return string
+					 */
+					public function getName()
+					{
+						return 'The product from second factory';
+					}
+				}
+
+				/*
+				 * =====================================
+				 *       USING OF ABSTRACT FACTORY
+				 * =====================================
+				 */
+
+				$firstProduct = AbstractFactory::getFactory()->getProduct();
+				Config::$factory = 2;
+				$secondProduct = AbstractFactory::getFactory()->getProduct();
+
+				print_r($firstProduct->getName());
+				// The first product from the first factory
+				print_r($secondProduct->getName());
+				// Second product from second factory
+				
+				
+				
+				
+		7) Отложенная инициализация (Lazy Initialization)
+		
+		А вот вам ещё одна интересная ситуация. Представьте, что у вас есть фабрика, но вы не знаете, какая часть её функционала вам потребуется, а какая – нет.
+		В таких случаях необходимые операции выполнятся только если они нужны и только один раз:
+		
+		
+		<?php
+			/**
+			 * Какой-то продукт
+			 */
+			interface Product
+			{
+
+				/**
+				 * Возвращает название продукта
+				 *
+				 * @return string
+				 */
+				public function getName();
+			}
+
+			class Factory
+			{
+
+				/**
+				 * @var Product
+				 */
+				protected $firstProduct;
+
+				/**
+				 * @var Product
+				 */
+				protected $secondProduct;
+
+
+				/**
+				 * Возвращает продукт
+				 *
+				 * @return Product
+				 */
+				public function getFirstProduct()
+				{
+
+					if (!$this->firstProduct) {
+						$this->firstProduct = new FirstProduct();
+					}
+					return $this->firstProduct;
+				}
+
+				/**
+				 * Возвращает продукт
+				 *
+				 * @return Product
+				 */
+				public function getSecondProduct()
+				{
+
+					if (!$this->secondProduct) {
+						$this->secondProduct = new SecondProduct();
+					}
+					return $this->secondProduct;
+				}
+			}
+
+			/**
+			 * Первый продукт
+			 */
+			class FirstProduct implements Product
+			{
+
+				/**
+				 * Возвращает название продукта
+				 *
+				 * @return string
+				 */
+				public function getName()
+				{
+					return 'The first product';
+				}
+			}
+
+			/**
+			 * Второй продукт
+			 */
+			class SecondProduct implements Product
+			{
+
+				/**
+				 * Возвращает название продукта
+				 *
+				 * @return string
+				 */
+				public function getName()
+				{
+					return 'Second product';
+				}
+			}
+
+			/*
+			 * =====================================
+			 *      USING OF LAZY INITIALIZATION
+			 * =====================================
+			 */
+
+			$factory = new Factory();
+
+			print_r($factory->getFirstProduct()->getName());
+			// The first product
+			print_r($factory->getSecondProduct()->getName());
+			// Second product
+			print_r($factory->getFirstProduct()->getName());
+			// The first product
+			
+			---------------------------------------------------
+			
+			
+			
+		8) Некоторые объекты приходится создавать многократно. Есть смысл сэкономить на их инициализации, особенно, если инициализация требует времени и ресурсов.
+		Прототип – это заранее инициализированный и сохранённый объект.
+		
+		
+		<?php
+			/**
+			 * Какой-то продукт
+			 */
+			interface Product
+			{
+			}
+
+			/**
+			 * Какая-то фабрика
+			 */
+			class Factory
+			{
+
+				/**
+				 * @var Product
+				 */
+				private $product;
+
+
+				/**
+				 * @param Product $product
+				 */
+				public function __construct(Product $product)
+				{
+					$this->product = $product;
+				}
+
+				/**
+				 * Возвращает новый продукт путём клонирования
+				 *
+				 * @return Product
+				 */
+				public function getProduct()
+				{
+					return clone $this->product;
+				}
+			}
+
+			/**
+			 * Продукт
+			 */
+			class SomeProduct implements Product
+			{
+				public $name;
+			}
+
+			/*
+			 * =====================================
+			 *          USING OF PROTOTYPE
+			 * =====================================
+			 */
+
+			$prototypeFactory = new Factory(new SomeProduct());
+
+			$firstProduct = $prototypeFactory->getProduct();
+			$firstProduct->name = 'The first product';
+
+			$secondProduct = $prototypeFactory->getProduct();
+			$secondProduct->name = 'Second product';
+
+			print_r($firstProduct->name);
+			// The first product
+			print_r($secondProduct->name);
+			// Second product
+			
+			
+			-----------------------------------------------
+			
+			
+			9) Строитель (Builder)
+			
+			 Он полезен, когда мы хотим инкапсулировать создание сложного объекта. 
+			 Мы просто расскажем фабрике, какому строителю доверить создание продукта:
+			 
+			 
+			 <?php
+			/**
+			 * Какой-то продукт
+			 */
+			class Product
+			{
+
+				/**
+				 * @var string
+				 */
+				private $name;
+
+
+				/**
+				 * @param string $name
+				 */
+				public function setName($name) {
+					$this->name = $name;
+				}
+
+				/**
+				 * @return string
+				 */
+				public function getName() {
+					return $this->name;
+				}
+			}
+
+			/**
+			 * Какая-то фабрика
+			 */
+			class Factory
+			{
+
+				/**
+				 * @var Builder
+				 */
+				private $builder;
+
+
+				/**
+				 * @param Builder $builder
+				 */
+				public function __construct(Builder $builder)
+				{
+					$this->builder = $builder;
+					$this->builder->buildProduct();
+				}
+
+				/**
+				 * Возвращает созданный продукт
+				 *
+				 * @return Product
+				 */
+				public function getProduct()
+				{
+					return $this->builder->getProduct();
+				}
+			}
+
+			/**
+			 * Какой-то строитель
+			 */
+			abstract class Builder
+			{
+
+				/**
+				 * @var Product
+				 */
+				protected $product;
+
+
+				/**
+				 * Возвращает созданный продукт
+				 *
+				 * @return Product
+				 */
+				final public function getProduct()
+				{
+					return $this->product;
+				}
+
+				/**
+				 * Создаёт продукт
+				 *
+				 * @return void
+				 */
+				public function buildProduct()
+				{
+					$this->product = new Product();
+				}
+			}
+
+			/**
+			 * Первый строитель
+			 */
+			class FirstBuilder extends Builder
+			{
+
+				/**
+				 * Создаёт продукт
+				 *
+				 * @return void
+				 */
+				public function buildProduct()
+				{
+					parent::buildProduct();
+					$this->product->setName('The product of the first builder');
+				}
+			}
+
+			/**
+			 * Второй строитель
+			 */
+			class SecondBuilder extends Builder
+			{
+
+				/**
+				 * Создаёт продукт
+				 *
+				 * @return void
+				 */
+				public function buildProduct()
+				{
+					parent::buildProduct();
+					$this->product->setName('The product of second builder');
+				}
+			}
+
+			/*
+			 * =====================================
+			 *            USING OF BUILDER
+			 * =====================================
+			 */
+
+			$firstDirector = new Factory(new FirstBuilder());
+			$secondDirector = new Factory(new SecondBuilder());
+
+			print_r($firstDirector->getProduct()->getName());
+			// The product of the first builder
+			print_r($secondDirector->getProduct()->getName());
+			// The product of second builder
+			
+			-----------------------
+			------------------------
+
+																					
