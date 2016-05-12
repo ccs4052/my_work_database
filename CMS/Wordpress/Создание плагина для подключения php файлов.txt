@@ -1,0 +1,10 @@
+http://www.sitepoint.com/how-to-develop-a-php-file-include-plugin-for-wordpress/
+
+
+или так 
+
+<?php
+/*
+Plugin Name: Function for all installs
+*/
+include_once 'some/path/to/myfile.php';
