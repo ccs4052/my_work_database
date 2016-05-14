@@ -1,0 +1,143 @@
+<?php
+if ( get_query_var('paged') ) {
+	$paged = get_query_var('paged');
+} else if ( get_query_var('page') ) {
+	$paged = get_query_var('page');
+} else {
+	$paged = 1;
+}
+
+query_posts( array( 'post_type' => 'post','posts_per_page' => 1,'category_name' => 'help_info', 'paged' => $paged ) );
+
+while ( have_posts() ) : the_post();
+	echo '<li>';
+	the_title();
+	echo '</li>';
+endwhile; ?>
+
+
+
+<!-- СТАНДАРТНАЯ ПГИНАЦИЯ 1.2.3.4 -->
+<?php
+$args = array(
+	'base'               => '%_%',
+	'format'             => '?paged=%#%',
+	//'total'              => 1,
+	//'current'            => 0, show Next and Previous
+	'show_all'           => false,
+	'end_size'           => 1,
+	'mid_size'           => 2,
+	'prev_next'          => true,
+	'prev_text'          => __('« Previous'),
+	'next_text'          => __('Next »'),
+	'type'               => 'plain',
+	'add_args'           => false,
+	'add_fragment'       => '',
+	'before_page_number' => '',
+	'after_page_number'  => ''
+);
+?>
+<div id="pagination">
+	<?php
+	echo paginate_links( $args );
+	?>
+</div>
+
+
+
+
+
+
+
+<?php
+wp_reset_query();
+?>
+
+
+
+
+
+
+
+
+
+
+ВОТ ЕЩЕ РАЗНОВИДНОСТИ ССЫЛОК НА ПАГИНАЦИЮ 
+
+<?php
+/* Создание ссылок на ПАГИНАЦИЮ
+ *
+ *
+ * paginate_links Эту пагинацию можно настроить очень сложно смотреть мануал https://codex.wordpress.org/Function_Reference/paginate_links
+global $wp_query;
+$total = $wp_query->max_num_pages;
+
+if ( $total > 1 )  {
+
+	if ( !$current_page = get_query_var('paged') )
+		$current_page = 1;
+
+	$format = empty( get_option('permalink_structure') ) ? '&page=%#%' : 'page/%#%/';
+	echo paginate_links(array(
+		'base' => get_pagenum_link(1) . '%_%',
+		'format' => $format,
+		'current' => $current_page,
+		'total' => $total,
+		'mid_size' => 4,
+		'type' => 'list'
+	));
+}
+*/
+
+
+
+
+/*
+the_posts_pagination( array(
+	'mid_size'  => 2,
+	'prev_text' => __( 'Back', 'textdomain' ),
+	'next_text' => __( 'Onward', 'textdomain' ),
+) );
+*/
+
+	?>
+
+
+
+<!-- ПАГИНАЦИЯ Одно слово листает в одну стороно как доходит до конца появляеться другое листать обратно
+	<div style="text-align:center;">
+		<?php //posts_nav_link( ' &#183; ', 'previous page', 'next page' ); ?>
+	</div>
+	-->
+
+
+
+<!-- ПАГАНИЦИЯ ИЗ СЛОВ Одно слово переключять в лево другое в право
+	<div class="navigation">
+		<div class="alignleft"><?php // previous_posts_link( '&laquo; Previous Entries' ); ?></div>
+		<div class="alignright"><?php// next_posts_link( 'Next Entries &raquo;', '' ); ?></div>
+	</div>
+-->
+
+
+<!--ПАГИНАЦИЯ ПО КАРТИНКАМ -->
+<?php //posts_nav_link( ' ', '<img src="' . get_bloginfo( 'stylesheet_directory' ) . '/images/prev.jpg" />', '<img src="' . get_bloginfo( 'stylesheet_directory' ) . '/images/next.jpg" />' ); ?>
+
+
+
+<?php
+/* ПАГИНАЦИЯ МОЖНО ДОБАВИТЬ СЛОВО + Номер Пагинации
+	global $wp_query;
+
+	$big = 999999999; // need an unlikely integer
+	$translated = __( 'Page', 'mytextdomain' ); // Supply translatable string
+
+	echo paginate_links( array(
+	'base' => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
+	'format' => '?paged=%#%',
+	'current' => max( 1, get_query_var('paged') ),
+	'total' => $wp_query->max_num_pages,
+	'before_page_number' => '<span class="screen-reader-text">'.$translated.' </span>'
+	) );
+*/
+?>
