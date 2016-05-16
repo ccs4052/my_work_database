@@ -1,0 +1,47 @@
+- ÄÅËÀÅÌ ÝÒÎ ÂÑÅ ÄËß Àêòèâàöèè Accordian â MENU - ñêîëüêî äîëæíî áûòü îòêðûâàþùèõñÿ àêòèâíûõ àêîðäèîíîâ ñòîëüêî ìåíþ ñîçäàåì 
+
+Â Function.php
+
+/*Register new menu*/
+function register_my_menus() {
+	register_nav_menus(
+		array(
+			'corporate clients' => __( 'Corporate clients' ),
+			'private clients' => __( 'Private Clients' ),
+			'check policy' => __( 'Check Policy' )
+		)
+	);
+}
+add_action( 'init', 'register_my_menus' );
+
+
+Òåïåðü ñïèñîê ýòèõ ìåíþ ïîÿâèëñÿ â íàñòðîéêàõ ìåíþ è êîãäà ìû ñîçäàåì ìåíþ â Menu Settings ìû óêàçûâàåì ãàëî÷êó ê êàêîìó çàðåãåñòðèðîâàíîìó
+ìåíþ îòñîñèòüñÿ ñîçäàíîå ìåíþ ÷òî-áû ìîæíî áûëî ðàñïå÷àòàòü ñïèñîê ìåíþ ôóíêöèåé
+
+$menus = get_registered_nav_menus();         ÏÎËÓ×ÀÅÌ ÑÏÈÑÎÊ ÂÑÅÕ ÇÀÐÅÃÈÑÒÐÈÐÎÂÀÍÛÕ ÌÅÍÞ!!!!
+                       
+
+                        foreach ( $menus as $location => $description ) {
+
+                            echo $location . ': ' . $description . '<br />';
+                        }
+
+--------ÏÎËÓ×ÀÅÌ ÌÀÑÑÈÂ Â ÊÎÒÎÐÎÌ ÌÀÑÑÈÂ ÍÀÇÂÀÍÈÅ ÌÅÍÞ È Â ÍÅÌ ÌÍÎÃÎÌÅÐÍÛÉ ÌÀÑÑÈÂ Ñ ÍÀÇÂÀÍÈÅÌ ÑÒÐÀÍÈÖ 
+
+  $menus = get_registered_nav_menus();
+                        $curent_menu_elem = array();
+                        foreach ( $menus as $location => $description ) {
+                            // echo $location . ': ' . $description . '<br />';
+                            $menu_elements = wp_get_nav_menu_items ($location);
+                            //if (isset($menu_elements)) {
+                                foreach ($menu_elements as $row) {
+                                    //array_push($curent_menu_elem,$row->title);
+                                    $curent_menu_elem[$location][$row->title] = ''; //= $row->title;
+                                }
+
+                           // }
+
+                        }
+                        echo '<pre>';
+                        print_r($curent_menu_elem);
+                        echo '</pre>';
