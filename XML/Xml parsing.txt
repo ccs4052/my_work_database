@@ -1,0 +1,43 @@
+xml file - xml_test
+
+<notepad>
+    <note id="1" date="12/04/99" time="13:40">
+        <subject>Важная деловая встреча</subject>
+        <importance/>
+        <text>
+            Надо встретиться с <person id="1625">Иваном Ивановичем</person>,
+            предварительно позвонив ему по телефону <tel>123-12-12</tel>
+        </text>
+    </note>
+    ...
+    <note id="2" date="12/04/99" time="13:58">
+        <subject>Позвонить домой</subject>
+        <text>
+            <tel>124-13-13</tel>
+        </text>
+    </note>
+</notepad>
+------------------
+php file
+
+<?php
+$xml_file = file_get_contents("xml_test");
+$xml = simplexml_load_string($xml_file, "SimpleXMLElement", LIBXML_NOCDATA);
+$json = json_encode($xml);
+$array = json_decode($json,TRUE);
+foreach ($array['note'] as $element) {
+    echo '-----------';
+    echo '<br>';
+    foreach($element as $key => $val) {
+        if(is_array($val)){
+            foreach ($val as $key1 => $val1){
+                echo "{$key1}: {$val1}";
+                echo '<br>';
+            }
+        } else {
+            echo "{$key}: {$val}";
+            echo '<br>';
+        }
+    }
+}
+?>

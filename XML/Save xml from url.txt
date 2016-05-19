@@ -1,0 +1,4 @@
+
+$dom = new DOMDocument();
+$dom->load('http://www.intasunhomes.com/xml/kyero.php?f=527a077cc7152'); -> url with xml
+$dom->save('xml.php');
