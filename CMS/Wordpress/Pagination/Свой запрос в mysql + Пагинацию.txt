@@ -1,0 +1,101 @@
+$sql = "SELECT p.* from $wpdb->posts p
+		WHERE p.post_type = 'post'
+		AND p.post_status = 'publish'
+		ORDER by p.post_title";
+$mypages = $wpdb->get_results($sql);
+
+if ($mypages) :
+	$limit = 1;  // The number of posts per page
+	$range = 5;   // The number of page links to show in the middle
+	$mypage = (isset($_GET['mypage'])) ? $mypage = $_GET['mypage'] : 1;
+	$start = ($mypage - 1) * $limit;
+	for ($i=$start;$i<($start + $limit);++$i) {
+		if ($i < sizeof($mypages)) {
+			// Process each element of the result array here
+			$post = $mypages[$i];
+			setup_postdata($post);
+			echo '<h2>';the_title();echo '</h2>';
+		}
+	}
+	echo '<br />';
+	echo _mam_paginate(sizeof($mypages),$limit,$range); //call function pagination from function.php
+else:
+	echo '<h2>Sorry, There are no Pages to list</h2>';
+endif;?>
+
+
+
+И в фйле Function нужно разместить такую функцию 
+
+
+/*Pagination link*/
+function _mam_paginate($numrows,$limit=10,$range=7) {
+
+	$pagelinks = "<div class=\"pagelinks\">";
+	$currpage = $_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING'];
+	if ($numrows > $limit) {
+		if(isset($_GET['mypage'])){
+			$mypage = $_GET['mypage'];
+		} else {
+			$mypage = 1;
+		}
+		$currpage = $_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING'];
+		$currpage = str_replace("&mypage=".$mypage,"",$currpage); // Use this for non-pretty permalink
+		$currpage = str_replace("?mypage=".$mypage,"",$currpage); // Use this for pretty permalink
+		if($mypage == 1){
+			$pagelinks .= "<span class=\"pageprevdead\">&laquo PREV </span>";
+		}else{
+			$pageprev = $mypage - 1;
+			$pagelinks .= "<a class=\"pageprevlink\" href=\"" . $currpage .
+				"&mypage=" . $pageprev . "\">&laquo PREV </a>";
+		}
+		$numofpages = ceil($numrows / $limit);
+		if ($range == "" or $range == 0) $range = 7;
+		$lrange = max(1,$mypage-(($range-1)/2));
+		$rrange = min($numofpages,$mypage+(($range-1)/2));
+		if (($rrange - $lrange) < ($range - 1)) {
+			if ($lrange == 1) {
+				$rrange = min($lrange + ($range-1), $numofpages);
+			} else {
+				$lrange = max($rrange - ($range-1), 0);
+			}
+		}
+		if ($lrange > 1) {
+			$pagelinks .= "<a class=\"pagenumlink\" " .
+				"href=\"" . $currpage . "&mypage=" . 1 .
+				"\"> [1] </a>";
+			if ($lrange > 2) $pagelinks .= "&nbsp;...&nbsp;";
+		} else {
+			$pagelinks .= "&nbsp;&nbsp;";
+		}
+		for($i = 1; $i <= $numofpages; $i++){
+			if ($i == $mypage) {
+				$pagelinks .= "<span class=\"pagenumon\"> [$i] </span>";
+			} else {
+				if ($lrange <= $i and $i <= $rrange) {
+					$pagelinks .= "<a class=\"pagenumlink\" " .
+						"href=\"" . $currpage . "&mypage=" . $i .
+						"\"> [" . $i . "] </a>";
+				}
+			}
+		}
+		if ($rrange < $numofpages) {
+			if ($rrange < $numofpages - 1) $pagelinks .= "&nbsp;...&nbsp;";
+			$pagelinks .= "<a class=\"pagenumlink\" " .
+				"href=\"" . $currpage . "&mypage=" . $numofpages .
+				"\"> [" . $numofpages . "] </a>";
+		} else {
+			$pagelinks .= "&nbsp;&nbsp;";
+		}
+		if(($numrows - ($limit * $mypage)) > 0){
+			$pagenext = $mypage + 1;
+			$pagelinks .= "<a class=\"pagenextlink\" href=\"" . $currpage .
+				"&mypage=" . $pagenext . "\"> NEXT &raquo;</a>";
+		} else {
+			$pagelinks .= "<span class=\"pagenextdead\"> NEXT &raquo;</span>";
+		}
+
+	}
+	$pagelinks .= "</div>";
+	return $pagelinks;
+}

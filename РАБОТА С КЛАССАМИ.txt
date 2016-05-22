@@ -1,4 +1,4 @@
---------------------------------------ФУНКЦИИ ДЛЯ РАБОТЫ С КЛАССАМИ 
+﻿--------------------------------------ФУНКЦИИ ДЛЯ РАБОТЫ С КЛАССАМИ 
 
 		get_class_methods() -  возвращает массив имен методов класса с заданным именем
 		
@@ -1174,3 +1174,38 @@ $b->Test();
 			
 ---------------------------------------------------------------END OF Gbook class
 ---------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+-------------------------------МАГИЧЕСКИЕ МЕТОДЫ 
+
+1) Пример использования __get __set  
+
+__set - кладет значение в переменную
+__get - возвращаем значение из переменной
+
+class MyClass {
+    private $firstField;
+    private $secondField;
+    public function __get($property) {
+        if (property_exists($this, $property)) {
+            return $this->$property;
+        }
+    }
+    public function __set($property, $value) {
+        if (property_exists($this, $property)) {
+            $this->$property = $value;
+        }
+    }
+}
+$myClass = new MyClass();
+$myClass->firstField = "This is a foo line";
+$myClass->secondField = "This is a bar line";
+echo $myClass->firstField;
+echo '<br>';
+echo $myClass->secondField;

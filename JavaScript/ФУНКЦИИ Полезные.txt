@@ -1,4 +1,4 @@
---------ФУНКЦИИ JavaScript
+﻿--------ФУНКЦИИ JavaScript
 prompt - выводит табличку с надписью которую мы спрашиваем и можно вести какое нибуть значение и потом с ним работать
 		var color = prompt("What's your favorite primary color?","Type your favorite color here");
 
@@ -134,5 +134,19 @@ toLowerCase - конвертирует буквы в маленькие
 
 <div id="xx">dfdff</div>  
 
+
+
+
+--------------------------------
+------------------------------- функция факториала числа (число 4 = 4*3*2*1)
+
+var f = [];
+function factorial (n) {
+  if (n == 0 || n == 1)
+    return 1;
+  if (f[n] > 0)
+    return f[n];
+  return f[n] = factorial(n-1) * n;
+}  
 
 
