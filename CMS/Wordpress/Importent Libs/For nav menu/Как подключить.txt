@@ -1,0 +1,27 @@
+function.php 
+//includ nav wolker lib
+require_once('libs/wp_bootstrap_navwalker.php');
+
+
+
+<!--
+						<ul class="nav navbar-nav">
+							<li class="active"><a href="#">EMS Training</a></li>
+							<li><a href="#">Hoe werkt het</a></li>
+							<li><a href="#">Voordelen</a></li>
+							<div class="header-second-m" style="display: none">
+								<li><a href="#">121212</a></li>
+								<li><a href="#">567657</a></li>
+							</div>
+						</ul>
+						-->
+						<?php
+						wp_nav_menu( array(
+							'menu' => 'h-bottom-menu',   -> название меню в Wordpress
+							//'depth' => 2,
+							'container' => false,
+							'menu_class' => 'nav navbar-nav',
+							//Process nav menu using our custom nav walker
+							'walker' => new wp_bootstrap_navwalker()) //libs/wp-bootstrap
+						);
+						?>

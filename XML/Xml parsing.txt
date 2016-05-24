@@ -18,7 +18,7 @@ xml file - xml_test
     </note>
 </notepad>
 ------------------
-php file
+php file   //получаем все значения атрибутов xml документа
 
 <?php
 $xml_file = file_get_contents("xml_test");

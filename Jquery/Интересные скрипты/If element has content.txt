@@ -1,0 +1,3 @@
+if( $.trim( $('#info-body').html() ).length ) {
+                $('#w-info').modal('show');
+            }
