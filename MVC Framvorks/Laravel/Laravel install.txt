@@ -1,0 +1,14 @@
+1) composer global require "laravel/installer"
+
+2) composer create-project --prefer-dist laravel/laravel blog - blog имя папки в которой будет создан проект Laravel
+
+
+
+--------Если установить проэкт с Gut hub
+
+1) 
+git clone https://github.com/laravel/quickstart-basic quickstart
+cd quickstart
+composer install
+
+(можно без этого) php artisan migrate
