@@ -3,7 +3,20 @@
 
 php artisan make:migration create_tasks_table --create=tasks
 
-2) И в папке Database/Migration появиться класс миграции 
+2) php artisan migrate - Создаеться таблица с миграцией
+
+
+3) Если migrate пишет ошибку проверить файл .env в корневой папке и поменять там название базы данных
+
+DB_HOST=localhost
+DB_DATABASE=laravel-test
+DB_USERNAME=user
+DB_PASSWORD=11111
+
+
+
+
+4) И в папке Database/Migration появиться класс миграции 
 
 пример класса 
 

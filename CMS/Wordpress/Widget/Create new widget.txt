@@ -1,0 +1,47 @@
+
+1) Регистрируем виджет в function.php
+
+/* registr side_bar*/
+function arphabet_widgets_init() {
+
+
+	register_sidebar( array(
+		'name' => __( 'header-cont', 'quince' ), //quince название темы
+		'id' => 'sidebar-1',
+		'description' => __( 'Widgets in this area will be shown on all posts and pages.', 'quince' ),
+		'before_widget' => '',
+		'after_widget'  => '',
+		'before_title'  => '<p class="widgettitle">',
+		'after_title'   => '</p>',
+	) );
+
+	register_sidebar( array(
+		'name' => __( 'header-cont-email', 'quince' ),
+		'id' => 'sidebar-2',
+		'description' => __( 'Widgets in this area will be shown on all posts and pages.', 'quince' ),
+		'before_widget' => '',
+		'after_widget'  => '',
+		'before_title'  => '<p class="widgettitle">',
+		'after_title'   => '</p>',
+	) );
+
+}
+add_action( 'widgets_init', 'arphabet_widgets_init' );
+/* ./registr side_bar*/
+
+2) Виджеты появились в закладке Widget с названиями которые мы указали  header-cont и header-cont-email
+ - Теперь можно виджеты наполнить контентом в закладке виджеты!
+
+
+3) Вызываем виджет в нужном файле в нужном месте 
+
+<?php if ( ! dynamic_sidebar('header-cont') ) : ?>
+	<h3 class="widgettitle">Footer Widget Area 4</h3>
+	<p><a href="<?php echo admin_url('widgets.php'); ?>">Assign a widget to this area now.</a></p>
+<?php endif; // end widget area ?>
+
+и второй
+
+<?php if ( ! dynamic_sidebar('header-cont-email') ) : ?>
+	<p><a href="<?php echo admin_url('widgets.php'); ?>">Assign a widget to this area now.</a></p>
+<?php endif; // end widget area ?>
