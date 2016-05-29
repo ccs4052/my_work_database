@@ -1,3 +1,10 @@
+Мой аккаунт на Paypal https://www.paypal.com/cgi-bin/webscr?cmd=_profile-api-cert-download
+			
+Moй аккаунт на SendBox PayPal https://developer.paypal.com/developer/applications/
+
+
+
+
 ОПЛАТА ЧЕРЕЗ Curl
 
 API CURL Manual - https://developer.paypal.com/docs/api/#look-up-a-sale

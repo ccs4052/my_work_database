@@ -7,3 +7,18 @@ Your API Access Key  24448aa5789efb992b89e114345d2d34
 http://www.apilayer.net/api/live?access_key=24448aa5789efb992b89e114345d2d34
 
 https://currencylayer.com/documentation - Äîêóìåíòàöèÿ
+
+
+
+ÏĞÈÌÅĞ ---------------
+
+//ÊÓĞÑ ÃĞÈÂÍÛ Ê ÄÎËÀĞÓ Â ÏÎÍÅÄÅËÜÍÈÊ ÍÀÄÀ ÑÄÅËÀÒÜ ×ÒÎ_ÁÛ ÍÀ PayPal îòïğàâëÿëî ÑÓÌÌÓ ÇÀÊÀÇÀ Â ÄÎËÀĞÀÕ À ÍÅ Â ÃĞÈÂÍÀß
+// initialize CURL:
+$ch = curl_init('http://apilayer.net/api/live?access_key=24448aa5789efb992b89e114345d2d34');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+// get the (still encoded) JSON data:
+$json = curl_exec($ch);
+curl_close($ch);
+// Decode JSON response:
+$conversionResult = json_decode($json, true);
+//echo($conversionResult['quotes']['USDUAH']);
