@@ -1,0 +1,29 @@
+//Layout для вывода ошибок
+
+1) Folder resources/views/common/errors.blade.php
+
+контент файла ------
+
+@if (count($errors) > 0)
+    <!-- Form Error List -->
+    <div class="alert alert-danger">
+        <strong>Whoops! Something went wrong!</strong>
+
+        <br><br>
+
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+2) Выводить блок с ошибками так ---------
+
+В файле с видом выводим в нужном месте блок с ошибкой
+
+<div class="error">
+<!-- Display Validation Errors -->
+@include('common.errors')
+</div>

@@ -1,0 +1,31 @@
+1) routes.php
+
+Route::get('/', function () {
+        $tasks = Task::orderBy('created_at', 'asc')->get();     //display all data from table Task
+        return view('tasks', [
+            'tasks' => $tasks
+        ]);
+    });
+
+
+2) Выводим данные в виде tasks.blade.php
+
+@if (count($tasks) > 0)  <!-- if $tasks have data -->
+                @foreach ($tasks as $task) <!-- loop array to display data-->
+                        <tr>
+                             <td class="table-text"><div>{{ $task->name }}</div></td>
+
+                               <!-- Task Delete Button -->
+                               <td>
+                                   <form action="/task/{{ $task->id }}" method="POST"> <!-- send post id to url and delete data -->
+                                        {{ csrf_field() }}
+                                        {{ method_field('DELETE') }}
+
+                                        <button type="submit" class="btn btn-danger">
+                                             <i class="fa fa-btn fa-trash"></i>Delete
+                                        </button>
+                                   </form>
+                              </td>
+                      </tr>
+               @endforeach
+@endif

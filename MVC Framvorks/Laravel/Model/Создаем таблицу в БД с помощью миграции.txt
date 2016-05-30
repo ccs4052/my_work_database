@@ -1,0 +1,8 @@
+1) php artisan make:migration create_test_table --create=test
+
+
+
+
+4) —оздаем таблици которые есть в миграции  (Ќапример при установке проекта на новом сервере)
+
+php artisan migrate

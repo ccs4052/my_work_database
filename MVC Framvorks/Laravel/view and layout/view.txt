@@ -1,0 +1,11 @@
+1) resources/views/task.blade.php
+
+Пример кода в файле 
+
+@extends('layouts.app')   //одеваем вид на layout из папки resources/views/layout/app.blade.php
+
+@section('content')
+    <div class="container">
+
+    </div>
+@endsection

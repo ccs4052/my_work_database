@@ -1,0 +1,4 @@
+1) Add active class to need url routed
+
+<li {{ (Request::is('/') ? 'class=active' : '') }}><a href="<?php echo Config::get('app.url'); ?>">Main</a></li> //defoult URL
+<li {{ (Request::is('test-url') ? 'class=active' : '') }}><a href="<?php echo Config::get('app.url'); ?>test-url">New controller</a></li> //new controller url

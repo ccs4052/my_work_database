@@ -1,0 +1,26 @@
+1) Create new controller -> Http/Controller/TestController.php
+
+2) Inside TestController
+
+<?php
+
+
+namespace quickstart\Http\Controllers;
+use quickstart\Task;				//load model
+use quickstart\Http\Controllers\Controller;
+
+
+class TestController extends Controller
+{
+    public function showProfile()
+    {
+        $tasks = Task::orderBy('created_at', 'asc')->get();     //display all data from table Task
+        return view('tasks', [
+            'tasks' => $tasks                                  //send array with data to database
+        ]);
+    }
+}
+
+3) Settings new routes for new controller 
+
+Route::get('test-url', 'TestController@showProfile'); // add new routes for new controller -> test-url new controller url
