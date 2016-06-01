@@ -962,6 +962,59 @@
 				
 				
 		--------НЕ СТАТИЧНЫЕ КЛАССЫ
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------
+------------------------------- ТИПАЖИ  - (Traits) 
+
+	- это великолепное дополнение, появившееся в PHP 5.4, позволяющее добавлять классу поведение без необходимости расширения
+	 родительского класса через наследование (до версии 5.4 это можно было реализовать с помощью паттерна примесь).
+
+	ПРИМЕР:
+
+trait Movement {
+    public function topSpeed() {
+        $this->speed = 100;
+        echo "Running at 100 %!" . PHP_EOL;
+    }
+    public function stop() {
+        $this->speed = 0;
+        echo "Stopped moving!" . PHP_EOL;
+    }
+}
+
+trait Speak {
+    public function makeSound(){
+        echo $this->sound . PHP_EOL; 
+    }
+}
+
+
+Теперь воспользуемся ключевым словом use, но не для импорта пространства имён, а для включение типажей в определение класса:
+
+class Dog {
+    use Movement, Speak;  // теперь у класса Dog есть функционал из этих типажей
+    protected $sound;
+    
+    function __construct() {
+        $this->sound = 'bark';
+    }
+}
+
+$dog = new Dog();
+$dog->topSpeed();  // из типажа Movement
+$dog->stop();      // из типажа Movement
+$dog->makeSound(); // из типажа Speak
+
 		
 		
 		
