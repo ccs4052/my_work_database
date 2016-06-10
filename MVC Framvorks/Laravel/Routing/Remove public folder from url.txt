@@ -1,0 +1,1 @@
+1) Rename the server.php in the your Laravel root folder to index.php and copy the .htaccess file from /public directory to your Laravel root folder. -- Thats it !! :)
