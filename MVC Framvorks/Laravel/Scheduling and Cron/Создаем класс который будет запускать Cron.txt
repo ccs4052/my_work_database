@@ -1,0 +1,13 @@
+1) «апускаем консоль из корневой папки проекта и создаем класс который будет запускать Cron
+
+- php artisan make:console AuctionEndEmail --command=auction:end      //auction:end это команда по которой Cron будет запускать класс
+
+2)  ласс по€вилс€ в папке App\Console\Command\AuctionEndEmail -> в методе handle описываем что класс будет делать его функционал
+
+3) ƒалее регистрируем наш класс дл€ Artisan консоли - 
+ќткрываем класс Console\Kerner и в массив $commands добавл€ем эту строку 
+ \App\Console\Commands\AuctionEndEmail::class,
+
+теперь пишем php artisan list и в списке команд отображаетьс€ наш класс 
+
+4)
