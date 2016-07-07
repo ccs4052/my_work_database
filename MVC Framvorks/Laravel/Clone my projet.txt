@@ -1,0 +1,12 @@
+1) Клонировали проект
+
+2) composer update   - (бывает не работает если отключено это в PHP.ini extension=php_fileinfo.dll)
+
+3) composer install
+
+4) .env.example - меняем на .env -> php artisan key:generate (или перед этой командой php artisan env)
+
+5) Ну и еще базу экспортировать и все работает!!!!!!!!!!!!!!!
+
+
+
