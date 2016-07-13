@@ -1,0 +1,35 @@
+1) https://github.com/thephpleague/flysystem 
+
+устанавливаем composer require league/flysystem
+
+2) устанавливаем https://github.com/GrahamCampbell/Laravel-Flysystem
+
+{
+    "require": {
+        "graham-campbell/flysystem": "^3.0"
+    }
+}
+
+Once Laravel Flysystem is installed, you need to register the service provider. Open up config/app.php and add the following to the providers key.
+
+    'GrahamCampbell\Flysystem\FlysystemServiceProvider'
+
+
+    $ php artisan vendor:publish
+
+
+    Далее в файле config/dropbox пишем настройки нашего аккаунта в dropbox
+
+     'main' => [
+            'token'  => 'kQvxk2zc3yAAAAAAAAAAGBVzy0-a8Qs3i5x0C6lwzlOnBcjgs9STYDD3SStlmFEt',   //token
+            'app'    => 'mybogtestd',                                                         //название приложения
+        ],
+
+
+
+3) устанавливаем https://github.com/thephpleague/flysystem-dropbox
+
+
+
+4) Вот еще мануал http://devartisans.com/articles/working-with-dropbox-laravel-5
+
