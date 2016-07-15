@@ -1,0 +1,103 @@
+
+Подключаем в хеде     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+
+
+
+
+1) Пример вывода текста в определенный контролер + Умножение числа из Инпута и вывод его на экран
+
+<div ng-app="myApp" style="float: none;margin: 0 auto" class="col-xs-6">
+    <div ng-controller="GreetingController">
+        @{{ greeting }}  <!-- выводит то что написано в $scope.greeting -->
+    </div>
+    <div ng-controller="DoubleController">
+       Two times <input ng-model="num"> выводим ответ @{{ double(num) }}  <!-- num -> это число из input(тоесть параметр который мы передаем в функцию duble), double -> Angular функция input умножает на * 2 и выводит -->
+    </div>
+</div>
+
+<script type="text/javascript">
+	
+	var myApp = angular.module('myApp',[]);  // ng-app="myApp" название модели вешаем на Блок
+
+	myApp.controller('GreetingController', ['$scope', function($scope) {   //ng-controller="GreetingController"  -> создаем контролер в нутри модели
+	    $scope.greeting = 'Hola!';
+	}]);
+
+	myApp.controller('DoubleController', ['$scope', function($scope) {
+    $scope.double = function(value) {           //теперь аргумент который мы передали в функцию double -> это value умножаем на 2
+        if(typeof (value) == 'undefined') {
+            return 'Введите число в поле!';
+        } else {
+            return value * 2;
+        }
+    };
+	}]);
+</script>
+
+
+2) Выводим информацию в нужном теге
+
+<div ng-app="myApp">
+	<div ng-controller="SpicyController">
+        <button ng-click="chiliSpicy()">Chili</button>
+        <button ng-click="jalapenoSpicy()">Jalapeño</button>
+        <p>The food is @{{spice}} spicy!</p>   <!--место где выводиться функция spice -->
+    </div>
+</div>
+
+<script type="text/javascript">
+	var myApp = angular.module('myApp',[]);
+	myApp.controller('SpicyController', ['$scope', function($scope) {
+    $scope.spice = 'very';               //выводим информацию в дефолтном состоянии
+
+    $scope.chiliSpicy = function() {    //если нажимаем на эту функцию выводим
+        $scope.spice = 'chili';
+    };
+
+    $scope.jalapenoSpicy = function() {
+        $scope.spice = 'jalapeño';
+    };
+}]);
+
+</script>
+
+
+
+3) (Services - услуги)  Внедрение ЗАВИСИМОСТЕЙ (По нажатию кнопки запускает метод factory который запускает логику проверки услови СРАБАТЫВАЕТ ЕСЛИ В ИНТУП ПОПАЛО 3 надписи и выводим их на экран)
+
+
+ <div ng-app="myApp" style="float: none;margin: 0 auto" class="col-xs-6">
+    <div id="simple" ng-controller="MyController">
+         <p>Let's try this simple notify service, injected into the controller...</p>
+        <input placeholder="введи слово" ng-model="message" >
+        <button ng-click="callNotify(message);">NOTIFY</button>  <!--Запускаем функцию по КЛИКУ и передаем в нее аргумента ИНПУТА -->
+        <p>(you have to click 3 times to see an alert)</p>
+        <p ng-bind="message"></p>     <!--Выводим то что написано в ИНТУПЕ -->
+    </div>
+</div>
+
+<script type="text/javascript">
+	
+var myApp = angular.module('myApp', []);
+myApp.controller('MyController', ['$scope', 'notify', function ($scope, notify) {
+    $scope.callNotify = function(msg) {
+    if(typeof (msg) !== 'undefined') //check if input !empty
+        if(msg.length !== 0) {       //check if input !empty
+            notify(msg);           //передаем аргумен ИНТУПА в метод factory который называеться notify
+            $scope.message = '';  //clear input field
+        }
+    };
+}]);
+myApp.factory('notify', ['$window', function(url) {    //регистрация УСЛУГИ notify в МОДУЛЕ
+    var msgs = [];
+    return function (msg) {    //ловим аргумент который передали
+        msgs.push(msg);
+        if (msgs.length == 3) { // если 3 элемента в массиве то выводим сообщение с массивом
+            url.alert(msgs.join("\n")); //alert elements of array in new row
+            msgs = []; //reset array
+        }
+    }
+}]);
+
+</script>
+
