@@ -1,0 +1,39 @@
+1) Scopes - Событие родительских и дочерних элементов МЕТОДЫ $on $emit $broadcast
+
+
+Выводим переменную $count счетчик на кнопку 1 нажимаем считается счетчик родителских директорий
+На кнопку 2 нажимаем  считаеться родительский и все дочерние счетчики count 
+
+<div ng-app="myApp" style="float: none;margin: 0 auto" class="col-xs-6">
+    <div ng-controller="EventController">
+        Root scope count: @{{count}}   //Родителский счетчик
+        <ul>
+            <li ng-repeat="i in [1]" ng-controller="EventController">
+                        <button ng-click="$emit('MyEvent')">$bottom one</button>   <!-- $emit (Событие начинаеться на уровне гже обозначили $emit) The event life cycle starts at the scope on which $emit was called.  -->
+                        <button ng-click="$broadcast('MyEvent')">$bottom two</button> <!-- $broadcast (Dispatches an event name downwards to all child scopes  Отправляет имя события вниз для всех дочерних областей)  -->
+                        <br>
+                        Middle root scope count: @{{count}}  //Родителский счетчик
+                <ul>
+                    <li ng-repeat="item in [1, 2]" ng-controller="EventController">   <!-- -->
+                        Leaf scope count: @{{count}}        //Дети счетчика
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+	
+var myApp = angular.module('myApp', []);
+myApp.controller('EventController', ['$scope', function($scope) {
+    $scope.count = 0;                    //создаем счетчик
+    
+    $scope.$on('MyEvent', function() {   //прослушиваем событие
+        $scope.count++;                  //увеличиваем счетчик
+    });
+
+}]);
+
+</script>

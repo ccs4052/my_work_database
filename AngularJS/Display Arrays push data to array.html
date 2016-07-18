@@ -1,0 +1,61 @@
+1) Display array
+
+
+<div ng-app="myApp" style="float: none;margin: 0 auto" class="col-xs-6">
+
+    <div class="show-scope-demo">
+        <div ng-controller="GreetController">
+            Hello @{{name}}!
+        </div>
+        <div ng-controller="ListController">
+             <ol>
+               <li ng-repeat="name in names">@{{name}} from @{{department}}</li> <!--ng-repeat работает почти также как foreach -->
+            </ol>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+	
+var myApp = angular.module('myApp', []);
+myApp.controller('GreetController', ['$scope', '$rootScope', function($scope, $rootScope) {
+    $scope.name = 'World';
+    $rootScope.department = 'Angular';
+}]);
+myApp.controller('ListController', ['$scope', function($scope) {
+    $scope.names = ['Igor', 'Misko', 'Vojta'];
+}]);
+
+</script>
+
+
+
+2) Push data from form to array
+
+
+ <div ng-controller="EventController">
+                    <input type="text" ng-model="name">
+                    <input type="number" ng-model="age">
+                    <button ng-click="retrive(name,age)">click</button>
+ </div>
+
+ <script type="text/javascript">
+ 	
+var myApp = angular.module('myApp', []);
+myApp.controller('EventController', ['$scope','getdata', function($scope, getdata) {
+    $scope.retrive = function(name,age) {
+        getdata(name, age); //передаем параметры в метод добавления данных в массив
+        $scope.name = '';   //обнуляем инпуты
+        $scope.age = '';
+    };
+}]);
+myApp.factory('getdata', ['$interval', '$log', function($interval, $log) {
+    var formdata = [];
+
+    return function(name,age) {
+        formdata.push([name+':'+age]);  //помещаем данные в многомерный массив
+    }
+}]);
+
+ </script>
