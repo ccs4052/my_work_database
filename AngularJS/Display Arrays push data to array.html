@@ -59,3 +59,43 @@ myApp.factory('getdata', ['$interval', '$log', function($interval, $log) {
 }]);
 
  </script>
+
+
+ 3) Помещаем числа из формы в массив и выводим сумму этих числе с помощью Eval
+
+ 			<div ng-app="myApp" style="float: none;margin: 0 auto" class="col-xs-6">
+                <div ng-controller="ExampleController" class="expressions">
+                    Expression:
+                    <input type='text' ng-model="expr" size="80"/>
+                    <button ng-click="addExp(expr)">Evaluate</button>
+                    <ul>
+                        <li ng-repeat="expr in exprs track by $index">    <!--ng-repeat помогает перебрать все элемента массива exprs -->
+                            [ <button href="" ng-click="removeExp($index)">X</button> ]  <!--Кнопка удаление ячейки массива -->
+                            <code>@{{expr}}</code> => <span ng-bind="$parent.$eval(expr)"></span> <!-- parent позволяет обратиться к родительскому елементу -> eval (суммирует числа которые мы ввели в интуп) --> и ТУТ ОТОБРАЖАЮТЬСЯ ВСЕ ЭЛЕМЕНТА МАССИВА В Новом <li> элементе
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <script type="text/javascript">
+            	
+            	var module = angular.module('myApp', []);
+
+				module.controller('ExampleController', ['$scope', function($scope) {
+				    $scope.exprs = []; //array containes all sum data
+				    $scope.addExp = function(expr) {
+				        $scope.exprs.push(expr);          //push data into array
+				        $scope.expr = '';
+				    };
+				    $scope.removeExp = function(index) {
+				        $scope.exprs.splice(index, 1); //remove item from array by index -> index (array column number) and second is number of remove column
+				    };
+				}]);
+
+            </script>
+
+
+
+
+    

@@ -1,0 +1,32 @@
+1)  Использование фильров
+
+
+			<div ng-app="myApp" style="float: none;margin: 0 auto" class="col-xs-6">
+                <div ng-controller="FilterController">
+                    <div>
+                        All entries:
+                        <span ng-repeat="entry in array">@{{entry.name}} </span>			//ВЫВОДИТ ВСЕ СЛОВА МАССИВА
+                    </div>
+                    <div>
+                        Entries that contain an "a":
+                        <span ng-repeat="entry in filteredArray">@{{entry.name}} </span>  //выводит все слова из массива с Буквой А
+                    </div>
+                </div>
+            </div>
+
+<script type="text/javascript">
+	
+var module = angular.module('myApp', []);
+module.controller('FilterController', ['$scope','filterFilter', function($scope,filterFilter) {
+    $scope.array = [
+        {name: 'Tobias'},
+        {name: 'Jeff'},
+        {name: 'Brian'},
+        {name: 'Igor'},
+        {name: 'James'},
+        {name: 'Brad'}
+    ];
+    $scope.filteredArray = filterFilter($scope.array, 'a');   //выводит все слова в масиве которые имеют будку А
+}]);
+
+</script>

@@ -1,0 +1,21 @@
+1) Добавление данных в Attribute
+
+			<div ng-app="myApp" style="float: none;margin: 0 auto" class="col-xs-6">
+
+                <div ng-controller="EventController">
+                    <input type="text" ng-model="sometext">
+                    <button ng-click="clickMe()">Click Me</button>
+                    <a ng-href="img/@{{username}}.jpg">Hello @{{username}}!</a>   <!--Добавляем в АТРИБУТ значение -->
+                </div>
+
+            </div>
+
+<script type="text/javascript">
+var module = angular.module('myApp', []);
+module.controller('EventController', ['$scope', function($scope) {
+    $scope.clickMe = function() {
+        $scope.username = $scope.sometext;  //добавляем в АТРИБУТ значение
+      
+    };
+}]);
+</script>
