@@ -1,0 +1,64 @@
+npm install - to update npm library
+
+GULP Это компилятор для SASS и много чего еще !
+
+1) Установка Gulp https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md
+
++ установить Node.js
+
+2) Еще полезные мануалы 
+
+http://ryanchristiani.com/getting-started-with-gulp-and-sass/
+https://css-tricks.com/gulp-for-beginners/
+
+С корневой папки проекта запускает Terminal Screen
+
+a) npm init //This will run through creating the package.json file
+b) npm install -g gulp //If you haven't installed gulp globally before 
+v) npm install --save-dev gulp
+g) npm install --save-dev gulp-sass 
+
+2)
+
+ |- SASS/
+      |- css/
+      |- js/
+      |- scss/
+	   |-style.scss   //main Sass file
+	   |-header.scss	
+       
+      |- index.html
+      
+      
+      |- dist/
+      |- gulpfile.js
+      |- node_modules/
+      |- package.json
+
+3.1) style.scss - пишем стили которые нада и подключаем еще разные файлы Sass например
+@import "header.scss";
+
+3) Создаем в корневой папке файл gulpfile.js
+
+
+в нем пишем код 
+
+var gulp = require('gulp');
+var sass = require('gulp-sass');
+
+
+gulp.task('styles', function() {
+    gulp.src('scss/style.scss')
+        .pipe(sass().on('error', sass.logError))
+        .pipe(gulp.dest('./css/'));
+});
+gulp.task("styles:watch", function() {
+    gulp.watch('scss/**/*.scss', ["styles"]);
+});
+
+
+
+
+4) Далее открываем терминал и запускаем компилятор Sass файлов
+
+gulp style:watch
