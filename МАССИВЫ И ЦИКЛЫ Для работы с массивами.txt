@@ -1,3 +1,43 @@
+﻿------------------ВЫТАСКИВАЕМ ИЗ МАССИВА СЛОВА Четные Не етные по номеру Ключа
+
+$strings = [
+    'apple' => [
+        1 => 'Яблоко',
+        2 => 'Яблока',
+        5 => 'Яблок',
+    ],
+    'glasses' => [
+        1 => 'Очки',
+        2 => 'Очков'
+    ]
+];
+
+//
+
+function getString($strings,$string,$count)
+{
+    $words = $strings[$string];
+    end($words);
+    if (key($words) >= $count) { //check max key value
+      return emptyKey($words,$count);
+    }
+}
+function emptyKey($array,$count){ //if empty key
+    if(array_key_exists($count,$array)){
+        return $array[$count];
+    } else {
+        return emptyKey($array,$count-1);
+    }
+}
+var_dump(getString($strings,'apple',3));
+
+
+
+
+
+
+
+
 -------------------- СОРТИРОВКА МАССИВА НА четній и нечетній
 <?php
 $i = range(1,100);

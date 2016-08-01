@@ -16,6 +16,21 @@ Route::post('spaycheck','Payment\StripeController@store');                //pay 
 STRIPE_PK = pk_test_IAd9DWUnAPZUIDf0YRKTFOS8
 STRIPE_SK = sk_test_0CMfVj116torUNyLq67ZOwJr
 
+вызывать с .env так {!! env('STRIPE_PK') !!}
+
+
+либо сохранить ключи в config/services.php 
+
+'stripe' => [
+        'model'  => App\User::class,
+        //'key'    => env('STRIPE_KEY'),
+        //'secret' => env('STRIPE_SECRET'),
+        'key'    => 'pk_test_IAd9DWUnAPZUIDf0YRKTFOS8',
+        'secret' => 'sk_test_0CMfVj116torUNyLq67ZOwJr',
+    ],
+и вызывать так config('services.paypal.client_id')
+
+
 4) 
 в Хеде подключаем так 
 
