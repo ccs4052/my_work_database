@@ -1,0 +1,184 @@
+@import "header.scss";
+.clearfix:after {
+  content: '';
+  display: table;
+  height: 0;
+  clear: both;
+}
+.clearfix:before {
+  content: '';
+  display: table;
+  height: 0;
+  clear: both;
+}
+
+.input {
+  border-radius: 3px;
+  border: 4px solid #ddd;
+  color: #555;
+  font-size: 17px;
+  padding: 10px 20px;
+  display: inline-block;
+  outline: 0;
+}
+
+.error-input {
+  @extend .input;             //УНАСЛЕДОВАЛ СТИЛИ Класса .input
+  border:4px solid #e74c3c;
+}
+$font-size:1.4rem;            //переменная
+.first-component {            //родитель
+  .text { font-size: $font-size; }
+  .button { font-size: 1.7rem; }
+  .second-component {        //дочерний блок
+    .text { font-size: 1.2rem; }
+    .button { font-size: $font-size; }
+  }
+}
+
+
+//НАСЛЕДУЕМ СТИЛЬ КОТОРЫЙ САМ НЕ КОМПИЛИРУЕТЬСЯ ИЗ-ЗА % знака и его стили применяем в другом классе
+%p {
+  font-size: 24px;
+  font-family: Dotum;
+}
+.p {
+  @extend %p;
+  color: greenyellow;
+}
+
+//функция mixin позволяет передать в нее аргументы и применить их вот примеры ниже
+/******************************************/
+@mixin media($queryString){ //media запрос добавили в container
+  @media #{$queryString} {
+    @content;
+  }
+}
+.container {
+  width: 900px;
+  @include media("(max-width: 767px)"){ //media запрос добавили в container
+      width: 100%;
+  }
+}
+@mixin container-child($c-width){
+  width:$c-width;
+  float: left;
+  position:relative;
+}
+.child-one {
+  @include container-child(50%);
+}
+.child-two {
+  @include  container-child(50%);
+}
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  -ms-border-radius: $radius;
+  border-radius: $radius;
+}
+.box { @include border-radius(10px); }
+/****************************************/
+
+
+
+/***************************/ //Function Directives
+
+@function getColumnWidth($width, $columns,$margin){ //функция расчета ширины колонки
+  @return ($width / $columns) - ($margin * 2);
+}
+
+$container-width: 100%; //container
+$column-count: 4;       //количество колонок
+$margin: 1%;            //margin
+
+.container {
+  width: $container-width;
+}
+
+.column {
+  background: #1abc9c;
+  height: 200px;
+  display: block;
+  float: left;
+  width: getColumnWidth($container-width,$column-count,$margin);
+  margin: 0 $margin;
+}
+
+/********************************End function*/
+
+
+@mixin background-color($color) {
+  background-color: $color;
+}
+%full-w-column {        //класс который хотим унаследовать но не хотим что-бы он сам компелировался обозначаем %
+  width: 100%;
+  height: 50%;
+  display: table;
+}
+.ff-full-column {
+  @extend %full-w-column;
+  @include background-color(rgb(111,223,332))
+}
+.ff-full-column-next {
+  @extend %full-w-column;
+  @include background-color(rgb(155,203,032))
+}
+
+
+
+/****************************/
+
+
+
+
+
+
+
+
+
+
+//СОЗДАЕМ СВОЙ КАСТОМНЫЕ ПОЛЯ С ПОМОШЬЮ Sass
+
+
+
+
+// grid variables
+$grid-columns: 12;  //переменные с колонками
+$grid-max-width: 65em; // максимальный размер поля
+
+
+// breakpoints
+$breakpoint-small: "only screen and (min-width: 20em)";
+$breakpoint-medium: "only screen and (max-width: 600px)";
+
+
+.container {
+  display: table;
+  width: 100%;
+}
+
+
+@for $i from 1 through $grid-columns {  //Делаем 12 колонок классов в цикле Sass
+
+  .column-#{$i} {
+    width: 100% / $grid-columns * $i;
+    float: left;
+    display: table;
+  }
+
+}
+
+@media #{$breakpoint-medium} {
+    .column-1 {
+      width: 25%; }
+
+    .column-2 {
+      width: 50%; }
+
+    .column-3 {
+      width: 75%; }
+
+    .column-4 {
+      width: 100%; }
+}

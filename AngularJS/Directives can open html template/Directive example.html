@@ -1,0 +1,622 @@
+1) Directive это своеобразный маркер в DOM елементов
+
+
+
+1)
+
+			 <div ng-app="myApp" style="float: none;margin: 0 auto" class="col-xs-6">
+
+                <div ng-controller="Controller">
+                    <div newdirective>   //Название директивы
+
+                    </div>
+                </div>
+
+            </div>
+
+
+            <script type="text/javascript">
+
+            	var module = angular.module('myApp', []);
+
+				module.controller('Controller', ['$scope','$log', function($scope,$log) {
+				    $scope.customer = {                       //создали объект со значениями
+				        name: 'Naomi',
+				        address: '1600 Amphitheatre'
+				    };
+				}]);
+				module.directive('newdirective', function() {
+				    return {
+				        template: 'Name: {{customer.name}} Address: {{customer.address}}'   //выкгружаем контент в Директиву     (newdirective)
+				    };
+				});
+
+            </script>
+
+
+2) Выгружем HTML ФАЙЛ В Директиву - HTML Тот-же
+
+
+<script type="text/javascript">
+
+	var module = angular.module('myApp', []);
+
+		module.controller('Controller', ['$scope','$log', function($scope,$log) {
+		    $scope.customer = {
+		        name: 'Naomi',
+		        address: '1600 Amphitheatre'
+		    };
+		}]);
+		module.directive('newdirective', function() {
+		    return {
+		        templateUrl: 'resources/views/main/angular-template/test.blade.php'   //URL html который мы загружаем в Дирктиу
+		    };
+		});
+
+</script>       
+
+
+     test.blade.php  такого содержания 
+
+     Name: {{customer.name}} Address: {{customer.address}}
+
+
+
+
+3) Заружаем в Директивы HTML файлы которые соотвецтвуют имени АТРИБУДА Директивы 
+
+
+
+			<div ng-app="myApp" style="float: none;margin: 0 auto" class="col-xs-6">
+
+                <div ng-controller="Controller">
+                    <div newdirective type="test">   // тут выгрузим файл с названием test
+
+                    </div>
+                    <div newdirective type="nexttest">  // тут выгрузим файл с названием nexttest
+
+                    </div>
+                </div>
+
+            </div>
+
+
+
+            HTML файлы customer-test.php and customer-nexttest.php
+
+            содержимое файлов Name: {{customer.name}} и Name: {{customer.address}}
+
+            <script type="text/javascript">
+
+            	var module = angular.module('myApp', []);
+
+					module.controller('Controller', ['$scope','$log', function($scope,$log) {
+					    $scope.customer = {
+					        name: 'Naomi',
+					        address: '1600 Amphitheatre'
+					    };
+					}]);
+					module.directive('newdirective', function() {     //у нас 2 Директиви с одним именнем но с разным именем АТРИБУТА и мы запускаем в директие файл с именем атрибату в ДИРЕКТИВЕ
+					    return {
+					        templateUrl: function(elem, attr){
+					            return 'resources/views/main/angular-template/customer-'+attr.type+'.php';
+					        }
+					    };
+					});
+
+            </script>
+
+
+
+            -------------------------
+            ------------------------- Restrict 
+
+
+
+
+    4) Для того, чтобы создать директивы, которые вызваны имнем класса например, вы должны использовать параметр restrict.
+
+    The restrict option is typically set to:
+
+    'A' - only matches attribute name
+    'E' - only matches element name
+    'C' - only matches class name
+    'M' - only matches comment
+
+    Можно и комбинировать 
+
+    'AEC' - matches either attribute or element or class name
+
+
+
+    		<div ng-app="myApp" style="float: none;margin: 0 auto" class="col-xs-6">
+
+                <div ng-controller="Controller">
+                    <my-customer></my-customer>
+                </div>
+
+            </div>
+
+
+           <script type="text/javascript">
+           		var module = angular.module('myApp', []);
+
+				module.controller('Controller', ['$scope','$log', function($scope,$log) {
+				    $scope.customer = {
+				        name: 'Naomi',
+				        address: '1600 Amphitheatre'
+				    };
+				}]);
+				module.directive('myCustomer', function() {
+				    return {
+				        restrict: 'E', //only matches element name
+				        templateUrl: 'resources/views/main/angular-template/my-customer.php'
+				    };
+				});
+           </script>
+
+
+           //resources/views/main/angular-template/my-customer.php
+
+           Name: {{customer.name}} Address: {{customer.address}}
+
+
+
+
+           6)  Isolating the Scope of a Directive - Изоляция облостей применения Директивы
+
+
+
+           <div ng-app="myApp" style="float: none;margin: 0 auto" class="col-xs-6">
+
+                <div ng-controller="NaomiController">
+                    <my-customer></my-customer>
+                </div>
+                <hr>
+                <div ng-controller="IgorController">
+                    <my-customer></my-customer>
+                </div>
+
+            </div>
+
+            <script type="text/javascript">
+            	var module = angular.module('myApp', []);
+
+				module.controller('NaomiController', ['$scope','$log', function($scope,$log) {
+				    $scope.customer = {
+				        name: 'Naomi',
+				        address: '1600 Amphitheatre'
+				    };
+				}]);
+				module.controller('IgorController', ['$scope','$log', function($scope,$log) {
+				    $scope.customer = {
+				        name: 'Igor',
+				        address: 'Igor Address Amphitheatre'
+				    };
+				}]);
+				module.directive('myCustomer', function() {     //выведем в каждом контролере свой $scope.customer array
+				    return {
+				        restrict: 'E', //only matches element name
+				        templateUrl: 'resources/views/main/angular-template/my-customer.php'
+				    };
+				});
+            </script>
+
+ 			html template resources/views/main/angular-template/my-customer.php
+
+
+            Name: {{customer.name}} Address: {{customer.address}}
+
+
+
+
+
+            -----------------еще Один пример который лучьше использовать
+            ------------------------------------------------------------
+
+            we can use a directive's scope option:
+
+
+            <div ng-app="myApp" style="float: none;margin: 0 auto" class="col-xs-6">
+
+                <div ng-controller="Controller">
+                    <my-customer info="naomi"></my-customer>
+                    <hr>
+                    <my-customer info="igor"></my-customer>
+                </div>
+
+            </div>
+
+
+            <script type="text/javascript">
+
+            	var module = angular.module('myApp', []);
+
+					module.controller('Controller', ['$scope','$log', function($scope,$log) {
+					    $scope.naomi = { name: 'Naomi', address: '1600 Amphitheatre' };
+					    $scope.igor = { name: 'Igor', address: '123 Somewhere' };
+					}]);
+
+					module.directive('myCustomer', function() {
+					    return {
+					        restrict: 'E',              // по имени атрибута выбирараем элемент
+					        scope: {
+					            customerInfo: '=info'   //customerInfo = будет равно имени info атрибута элемента
+					        },
+					        templateUrl: 'resources/views/main/angular-template/my-customer.php'
+					    };
+					});
+
+            </script>
+
+
+            html template  resources/views/main/angular-template/my-customer.php
+
+            Name: {{customerInfo.name}} Address: {{customerInfo.address}}    //customerInfo = развно имени атрибута html элемента info="naomi" и info="igor"
+
+
+
+
+
+
+
+
+
+
+
+
+
+            ------------------------------------------------------------------
+
+            Creating a Directive that Manipulates the DOM
+            ------------------------------------------------------------------
+
+
+
+            1) Пример КАК ИДЕТ ЧАСЫ - обновление ремени на сайте 
+
+
+             <div ng-app="myApp" style="float: none;margin: 0 auto" class="col-xs-6">
+
+                <div ng-controller="Controller">
+                    Date format: <input ng-model="format"> <hr/>
+                    Current time is: <span name="test" my-current-time="format"></span><br>
+                    input data @{{format}}
+                </div>
+
+            </div>
+
+
+            <script type="text/javascript">
+
+            	var module = angular.module('myApp', []);
+				module.controller('Controller', ['$scope', function($scope) {
+				    $scope.format = 'M/d/yy h:mm:ss a';
+				}]);
+				//используем $interval $log и 'dateFilter' в функции link
+				module.directive('myCurrentTime', ['$interval','$log', 'dateFilter', function($interval,$log, dateFilter) {
+				    //scope - The scope to be used by the directive for registering watches.
+				    //elemet -  The element where the directive is to be used. (myCurrentTime) = my-current-time
+				    //attrs - Normalized list of attributes declared on this element shared between all directive linking functions
+				    function link(scope, element, attrs) {
+
+				        var format,
+				            timeoutId;
+				        
+				        function updateTime() {   //update time by format
+				           element.text(dateFilter(new Date(), format));
+
+				        }
+
+				        scope.$watch(attrs.myCurrentTime, function(value) { //detect if attrs.myCurrentTime is change
+				            format = value; //value containe format of time from input ng-model="format"
+				            updateTime();   //create new time of "format" format time
+				        });
+				        
+				        element.on('$destroy', function() {    //special angular events "$destroy"
+				            $interval.cancel(timeoutId); //stop time
+				        });
+
+				        // start the UI update process; save the timeoutId for canceling
+				        timeoutId = $interval(function() { //update time change every one second
+				            updateTime(); // update DOM    //function to call
+
+				        }, 1000);							//in what interval
+
+				        function log(data) { //for testing
+				            $log.log(data);
+				        }
+				    }
+				    return {   //directive return function "link"
+				        link: link            //properti link is update DOM
+				    };
+				}]);
+            </script>
+
+
+
+            --------------------------------
+
+            Creating a Directive that Wraps Other Elements (Директивы которые обертывают другие элементы)
+
+            --------------------------------
+
+            we need to use the transclude option. in directive
+
+            1) Контент отдного блока - открываем в другом файле 
+
+            transclude makes the contents of a directive with this option have access to the scope outside of the directive rather than inside.
+
+            <div ng-app="myApp" style="float: none;margin: 0 auto" class="col-xs-6">
+
+                <div ng-controller="Controller">
+                    <!--Контент этого элемента запускаем в файле my-dialog.php -->
+                    <my-dialog>Check out the contents from my-dialog.php, @{{name}}!</my-dialog>
+                </div>
+
+            </div>
+
+            <script type="text/javascript">
+
+            	var module = angular.module('myApp', []);
+				module.controller('Controller', ['$scope', function($scope) {
+				    $scope.name = 'Tobias';
+				}]);
+				module.directive('myDialog', function() {
+				    return {
+				        restrict: 'E',     //выбрали элемент с названием как название Директивы
+				        transclude: true,  //есть доступ за пределами ДИРЕКТИВЫ
+				        scope: {},
+				        templateUrl: 'resources/views/main/angular-template/my-dialog.php'
+				    };
+				});
+
+            </script>
+
+            laoute html file resources/views/main/angular-template/my-dialog.php
+
+            <div class="alert" ng-transclude>
+
+            		<!--В этом месте откроеться элемент из блока <my-dialog> -->
+            </div>
+
+
+
+
+
+            2) Еще пример Директоривы контент которой открываеться в другом файле
+
+
+            <div ng-app="myApp" style="float: none;margin: 0 auto" class="col-xs-6">
+
+                <div ng-controller="Controller">
+                    @{{message}}
+                    <a ng-hide="goBack" ng-click="back()" href class="close" style="float:left">&times;</a> <!--кнопка для закрытия окна с сообщением и делаем видимым контент директивы -->
+                    <my-dialog ng-hide="dialogIsHidden" on-close="hideDialog(message)"> <!--Атрибут on-close для использования в Директиве -->
+                        Check out the contents, @{{name}}!
+                    </my-dialog>
+                </div>
+
+            </div>
+
+
+            <script type="text/javascript">
+
+            	var module = angular.module('myApp', []);
+				module.controller('Controller', ['$scope', '$timeout', function($scope, $timeout) { //подключем функцию Timeout
+				    $scope.name = 'Tobias';
+				    $scope.message = '';
+				    $scope.goBack = true;
+
+
+				    $scope.hideDialog = function(message) { //функция которая прячет контент директории и отображает сообщение а потом снова показывает контент директивы
+				        $scope.message = message;
+				        $scope.dialogIsHidden = true;    //функция для появления и исчезания блока - висит на событии ng-hide
+				        $scope.goBack = false;
+				      //  $timeout(function() {
+				            //$scope.message = '';        //удаляем текс сообщения
+				            //$scope.dialogIsHidden = false; //делаем блок не видимым
+				      //  }, 2000);  // делаем блок невидимым через 2 секунды
+				    };
+				    $scope.back = function() { // метод закрывет окно появившееся в методе hideDialog
+				        $scope.dialogIsHidden = false;
+				        $scope.goBack =true;
+				        $scope.message = '';
+				    };
+				}]);
+				module.directive('myDialog', function() {
+				    return {
+				        restrict: 'E',        //обратились к имени элемента
+				        transclude: true,     //Контент Директивы с именем атрибута my-dialog отображаем в файле my-dialog.php
+				        scope: {
+				            'close': '&onClose'//функцию hideDialog положили в атрибут on-close и в директиве значение этот атрибута переали
+				        },
+				        templateUrl: 'resources/views/main/angular-template/my-dialog.php'
+				    };
+				});
+
+            </script>
+
+
+            ---my-dialog.php 
+
+            <div class="alert">
+			    <a href class="close" ng-click="close({message: 'closing for now'})">&times;</a> <!--кнопка для закрытия окна -->
+
+			    <div ng-transclude>  <!--Блок в котором открываем контент нужной нам директивы -->
+
+			    </div>
+			</div>
+
+
+
+
+            -----------------------------------------------
+
+            ДОБАВЛЯЕМ СОБЫТИЯ В ДИРЕКТИВУ  mousemove mouseup
+            -----------------------------------------------
+
+            1)
+
+            <div ng-app="myApp" style="float: none;margin: 0 auto" class="col-xs-6">
+
+                <span my-draggable>Drag Me</span>   <!--Директива -->
+
+            </div>
+
+
+            <script type="text/javascript">
+
+            var module = angular.module('myApp', []);
+			module.directive('myDraggable', ['$document','$log', function($document,$log) { //все что делаем с директивой выгружаем в директиву с помощью link
+			    return {
+			        link: function(scope, element, attr) {
+			            var startX = 0, startY = 0, x = 0, y = 0;
+
+			            element.css({    //add style to block
+			                position: 'relative',
+			                border: '1px solid red',
+			                backgroundColor: 'lightgrey',
+			                cursor: 'pointer'
+			            });
+
+			            element.on('mousedown', function(event) {
+			                // Prevent default dragging of selected content
+			                event.preventDefault();
+			                startX = event.pageX - x; //event.pageX return x mouse position // start block position
+			                startY = event.pageY - y; // start block position
+			                $document.on('mousemove', mousemove); //add event
+			                $document.on('mouseup', mouseup);
+			            });
+
+			            function mousemove(event) {
+			                y = event.pageY - startY; //return mouse Y move position
+			                x = event.pageX - startX; //return mouse X move position
+
+			                element.css({
+			                    top: y + 'px',
+			                    left:  x + 'px'
+			                });
+			            }
+
+			            function mouseup() {
+			                $document.off('mousemove', mousemove); //remove event
+			                $document.off('mouseup', mouseup);
+			            }
+			        }
+			    };
+			}]);
+
+            </script>
+
+
+
+
+            ---------------------------------------
+            Создание ДИРЕКТИ КОТОРЫЕ ВЗАИМОДЕЙСТВУЮТ ДРУГ С ДРУГОМ  (Например по нажатию на меню менять страници)
+
+            По нажатию на навигацию менять контент панели с низу!!!
+
+            ---------------------------------------
+
+            1)
+
+            <div ng-app="myApp" style="float: none;margin: 0 auto" class="col-xs-6">
+
+                <my-tabs>   <!-- parent directive -->
+                    <my-pane title="Hello">    <!--directive 1 -->
+                        <p>Lorem ipsum dolor sit amet</p>
+                    </my-pane>
+                    <my-pane title="World">   <!--directive 2 -->
+                        <em>Mauris elementum elementum enim at suscipit.</em>
+                        <p><a href ng-click="i = i + 1">counter: @{{i || 0}}</a></p>
+                    </my-pane>
+                </my-tabs>
+
+            </div>
+
+
+            <script type="text/javascript">
+
+            	var module = angular.module('myApp', []);
+
+				module.directive('myTabs', function() {
+				    return {
+				        restrict: 'E', //element name
+				        transclude: true,
+				        scope: {},
+				        controller: ['$scope','$log', function MyTabsController($scope,$log) {
+				            var panes = $scope.panes = []; //array to push parent directive object
+				            $scope.select = function(pane) {   //function load if click on <a href></a> и передаем обїект pane
+				                angular.forEach(panes, function(pane) {
+				                    pane.selected = false; //pane.selected -  объекту pane убираем метод selected и делаем его false'
+				                });
+
+				                pane.selected = true; //делаем метод selected true - что-бы повесить класс active на панель на которую нажали
+				            };
+
+				            this.addPane = function(pane) { //add directive panel object to array
+				                if (panes.length === 0) {
+				                    $scope.select(pane);
+				                }
+				                panes.push(pane); //push parent directive object to array
+				            };
+
+
+				        }],
+				        templateUrl: 'resources/views/main/angular-template/my-tabs.php' //tabs template
+				    };
+				});
+				module.directive('myPane', function() {
+				    return {
+				        require: '^^myTabs', //The ^^ prefix means that this directive searches for the controller on its parents.
+				        restrict: 'E',      //обращаемся по имени Директории
+				        transclude: true,
+				        scope: {
+				            title: '@'  //display directive title name (элемент атрибут name)
+				        },
+				        link: function(scope, element, attrs, tabsCtrl) {
+				            tabsCtrl.addPane(scope);  //передаем объект методу addPane
+				        },
+				        templateUrl: 'resources/views/main/angular-template/my-pane.php' //panel template
+				    };
+				});
+
+            </script>
+
+
+            my-tabs.php 
+
+				<div class="tabbable">
+				    <ul class="nav nav-tabs">
+				        <li ng-repeat="pane in panes" ng-class="{active:pane.selected}"> <!--add class 'active' if isset method pane.selected -->
+				            <a href="" ng-click="select(pane)">{{pane.title}}<!--pane.title --></a>  <!--click load function select -->
+				                                    <!-- pane.title display parent directive title name -->
+				        </li>
+				    </ul>
+				    <div class="tab-content" ng-transclude></div>
+				</div>
+
+
+			my-pane.php
+
+				<div class="tab-pane" ng-show="selected">
+				    <h4>{{title}}</h4>   <!--display tab title - > from directive name   title: '@' (Directive element name)-->
+				    <div ng-transclude></div>
+				</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+           

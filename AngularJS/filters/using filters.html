@@ -30,3 +30,42 @@ module.controller('FilterController', ['$scope','filterFilter', function($scope,
 }]);
 
 </script>
+
+
+2) Фильтр на изменение строки введенной в инпут 
+
+
+            <div ng-app="myApp" style="float: none;margin: 0 auto" class="col-xs-6">
+                <div ng-controller="MyController">
+                    <input ng-model="greeting" type="text"><br>
+                    No filter: @{{greeting}}<br>
+                    Reverse: @{{greeting|reverse}}<br>
+                    Reverse + uppercase: @{{greeting|reverse:true}}<br>
+                    Reverse, filtered in controller: @{{filteredGreeting}}<br>
+                </div>
+            </div>
+
+
+            <script type="text/javascript">
+
+                var module = angular.module('myApp', []);
+                module.filter('reverse', function() {
+                    return function(input, uppercase) {
+                        input = input || '';
+                        var out = "";
+                        for (var i = 0; i < input.length; i++) {
+                            out = input.charAt(i) + out;       //перебираем все буквы строки из поля input (charAt())
+                        }
+                        // conditional based on optional argument
+                        if (uppercase) {              //если передали true то делаем БОЛЬШИМИ БУКВАМИ (reverse:true)
+                            out = out.toUpperCase();  //делем строку с большой буквы
+                        }
+                        return out;
+                    };
+                });
+                module.controller('MyController', ['$scope', 'reverseFilter', function($scope, reverseFilter) {
+                    $scope.greeting = 'hello'; //default input value
+                    $scope.filteredGreeting = reverseFilter($scope.greeting);
+                }]);
+
+            </script>
