@@ -70,3 +70,6 @@ xdebug.trace_output_dir = "%sprogdir%/userdata/temp/xdebug/"
 F9 - start x_debug
 f8 - next string
 alt + f8 - open debug screen
+
+
+3) Нужно еще установить Postman и в браузер установить Interceptor - это позволит с помошью Postman и прилодения Interceptor тестировать разные свои API 
