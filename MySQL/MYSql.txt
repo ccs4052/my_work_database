@@ -896,3 +896,36 @@ update product A inner join             (id -> в какой ячейке - pric
          SELECT 3   ,30
      ) B USING (id)
      SET A.price = B.price;
+
+
+
+
+
+
+
+
+
+
+
+
+ ------------------------------------------
+ ------------------------------------------ WHERE IS  - Помогает запихнуть дополнительное условие в WHERE
+
+
+ SELECT * FROM clout_v1_3cron.promotions
+LEFT JOIN promotions_custom_categories AS categories ON categories.id=clout_v1_3cron.promotions.custom_category_id
+LEFT JOIN promotions_categories_levels AS connections ON categories.id=connections.category_id
+WHERE clout_v1_3cron.promotions.custom_category_id IS NOT NULL AND clout_v1_3cron.promotions.custom_category_id!=0 AND connections.level_id='_LEVEL_ID_'
+AND clout_v1_3cron.promotions.owner_id='_OWNER_ID_' AND clout_v1_3cron.promotions.owner_type='_OWNER_TYPE_'
+AND clout_v1_3cron.promotions.amount>=connections.amount
+
+
+
+
+-------------------------------------------
+------------------------------------------- Conver birthday to age 
+
+
+
+
+SELECT city,state,zipcode as zip, country_code as country,gender, SUBSTRING_INDEX(DATEDIFF(CURRENT_DATE, STR_TO_DATE(birthday, '%Y-%m-%d'))/365, '.', 1)   AS age FROM clout_v1_3.users
