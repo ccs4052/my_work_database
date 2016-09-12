@@ -1,0 +1,10 @@
+1 ) Устанавливаем SSH клиент putty
+
+
+2) Настроиваем 
+
+
+SSH- Config putty (ssh client)
+dev.clout.com       Host 
+ubuntu              Login
+r00t4m3             Pass
