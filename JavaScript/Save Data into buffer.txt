@@ -1,0 +1,29 @@
+
+
+
+1) Качаем библиотеку  https://clipboardjs.com/
+
+
+2) Подключаем JS файл библиотеки     <script src="<?php echo base_url();?>assets/clipboard/dist/clipboard.min.js"></script>
+
+
+3) Элемент текст которого хотим засунуть в буфер 
+
+ <a href="#"  class="btn-clipboard"  data-clipboard-text="<?php echo $token->token;?>" class="btn btn-primary">Copy</a>
+
+
+ 4) JS Файл 
+
+ var clipboard = new Clipboard('.btn-clipboard');// Не забываем инициализировать библиотеку на нашей кнопке
+    clipboard.on('success', function(e) {
+        console.info('Action:', e.action);
+        console.info('Text:', e.text);
+        console.info('Trigger:', e.trigger);
+
+        e.clearSelection();
+    });
+
+    clipboard.on('error', function(e) {
+        console.error('Action:', e.action);
+        console.error('Trigger:', e.trigger);
+    });
