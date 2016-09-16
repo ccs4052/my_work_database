@@ -1,0 +1,45 @@
+
+
+ 					<tr>
+                        <th>ID</th>
+                        <th><a class="glyphicon glyphicon-arrow-down sort-pos <?php if (isset($_GET['field']) && $_GET['field'] == 'name' && $_GET['sort'] == 'desc'){ echo 'rotate_sort';} ?>" data-field="name"  href="<?php echo base_url('admin/customers?field=name&sort="');?>"></a>Name</th>
+                        <th>Address line 1</th>
+                        <th>Address line 2</th>
+                        <th>Town</th>
+                        <th>Post code</th>
+                        <th><a class="glyphicon glyphicon-arrow-down sort-pos <?php if (isset($_GET['field']) && $_GET['field'] == 'country' && $_GET['sort'] == 'desc'){ echo 'rotate_sort';} ?>" data-field="country"  href="<?php echo base_url('admin/customers?field=country&sort="');?>"></a>Country</th>
+                        <th><a class="glyphicon glyphicon-arrow-down sort-pos <?php if (isset($_GET['field']) && $_GET['field'] == 'created' && $_GET['sort'] == 'desc'){ echo 'rotate_sort';} ?>" data-field="created" href="<?php echo base_url('admin/customers?field=created&sort="');?>"></a>Created</th>
+                        <th></th>
+                    </tr>
+
+
+
+
+                    <script type="text/javascript">
+                    	
+                    	 $(".sort-pos").click(function(event){
+			                event.preventDefault();
+			                var new_field = $(this).attr('data-field');
+			                var old_field = localStorage.getItem('old_field');
+			                if(new_field !== old_field){ //if click into new field
+			                    localStorage.removeItem('sort');
+			                }
+			                var l = localStorage.getItem('sort');
+			                if(l !== null){
+			                    if (localStorage.getItem('sort') == 'asc') {
+			                        localStorage.setItem('sort', 'desc');
+			                        var link = $(this).attr('href');
+			                        window.location.href = link + localStorage.getItem('sort');
+			                    } else {
+			                        localStorage.setItem('sort', 'asc');
+			                        var link = $(this).attr('href');
+			                        window.location.href = link + localStorage.getItem('sort');
+			                    }
+			                } else {
+			                    localStorage.setItem('sort', 'desc');      //save sort direction into localstorage
+			                    localStorage.setItem('old_field',new_field);
+			                    var link = $(this).attr('href');
+			                    window.location.href = link+localStorage.getItem('sort'); //a href with GET DATA
+			                }
+			            });
+                    </script>
