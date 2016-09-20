@@ -2,13 +2,14 @@
 
  					<tr>
                         <th>ID</th>
-                        <th><a class="glyphicon glyphicon-arrow-down sort-pos <?php if (isset($_GET['field']) && $_GET['field'] == 'name' && $_GET['sort'] == 'desc'){ echo 'rotate_sort';} ?>" data-field="name"  href="<?php echo base_url('admin/customers?field=name&sort="');?>"></a>Name</th>
+                         <th><a id="s_name" class="glyphicon glyphicon-arrow-down sort-pos" data-field="name"  href="<?php echo base_url('admin/customers?field=name&sort=');?>"></a>Name</th>
                         <th>Address line 1</th>
                         <th>Address line 2</th>
                         <th>Town</th>
                         <th>Post code</th>
-                        <th><a class="glyphicon glyphicon-arrow-down sort-pos <?php if (isset($_GET['field']) && $_GET['field'] == 'country' && $_GET['sort'] == 'desc'){ echo 'rotate_sort';} ?>" data-field="country"  href="<?php echo base_url('admin/customers?field=country&sort="');?>"></a>Country</th>
-                        <th><a class="glyphicon glyphicon-arrow-down sort-pos <?php if (isset($_GET['field']) && $_GET['field'] == 'created' && $_GET['sort'] == 'desc'){ echo 'rotate_sort';} ?>" data-field="created" href="<?php echo base_url('admin/customers?field=created&sort="');?>"></a>Created</th>
+                        <th><a id="s_country" class="glyphicon glyphicon-arrow-down sort-pos" data-field="country"  href="<?php echo base_url('admin/customers?field=country&sort=');?>"></a>Country</th>
+                        <th><a id="s_created" class="glyphicon glyphicon-arrow-down sort-pos" data-field="created" href="<?php echo base_url('admin/customers?field=created&sort=');?>"></a>Created</th>
+                        <th></th>
                         <th></th>
                     </tr>
 
@@ -17,29 +18,61 @@
 
                     <script type="text/javascript">
                     	
-                    	 $(".sort-pos").click(function(event){
-			                event.preventDefault();
-			                var new_field = $(this).attr('data-field');
-			                var old_field = localStorage.getItem('old_field');
-			                if(new_field !== old_field){ //if click into new field
-			                    localStorage.removeItem('sort');
-			                }
-			                var l = localStorage.getItem('sort');
-			                if(l !== null){
-			                    if (localStorage.getItem('sort') == 'asc') {
-			                        localStorage.setItem('sort', 'desc');
-			                        var link = $(this).attr('href');
-			                        window.location.href = link + localStorage.getItem('sort');
-			                    } else {
-			                        localStorage.setItem('sort', 'asc');
-			                        var link = $(this).attr('href');
-			                        window.location.href = link + localStorage.getItem('sort');
-			                    }
-			                } else {
-			                    localStorage.setItem('sort', 'desc');      //save sort direction into localstorage
-			                    localStorage.setItem('old_field',new_field);
-			                    var link = $(this).attr('href');
-			                    window.location.href = link+localStorage.getItem('sort'); //a href with GET DATA
-			                }
-			            });
+                    	 sorting_customers: function () { //sorting customers
+				            var l = localStorage.getItem('sort');
+				            var f = localStorage.getItem('field');
+				            if(l !== null && f !== null) { //change sort arrow direction
+				                if (f == 'name') {
+				                    if(l == 'asc'){
+				                        $('#s_name').addClass("rotate_sort");
+				                    } else {
+				                        $('#s_name').removeClass("rotate_sort");
+				                    }
+				                }
+				                if (f == 'country') {
+				                    if (l == 'asc') {
+				                        $('#s_country').addClass("rotate_sort");
+				                    } else  {
+				                        $('#s_country').removeClass("rotate_sort");
+				                    }
+				                }
+				                if (f == 'created') {
+				                    if (l == 'asc') {
+				                        $('#s_created').addClass("rotate_sort");
+				                    } else  {
+				                        $('#s_created').removeClass("rotate_sort");
+				                    }
+				                }
+				            }
+
+				            $(".sort-pos").click(function(event){ //sorting data via get -> controller admin/customers
+				                event.preventDefault();
+				                var field = $(this).attr('data-field');
+				                if(f !== null) { //clear local storage for correct change sort direction
+				                    if (field !== f) {
+				                        localStorage.clear();
+				                    }
+				                }
+				                var link = $(this).attr('href');
+				                if(l !== null && field !==null){ //if sort click
+
+				                    if (localStorage.getItem('sort') == 'asc') {
+
+				                        localStorage.setItem('sort', 'desc');
+				                        localStorage.setItem('field',field);
+				                        window.location.replace(link + localStorage.getItem('sort'));
+				                    } else {
+				                        localStorage.setItem('sort', 'asc');
+				                        localStorage.setItem('field',field);
+				                        window.location.replace(link + localStorage.getItem('sort'));
+				                    }
+				                } else {
+				                    localStorage.setItem('field',field);
+				                    localStorage.setItem('sort', 'asc');
+				                    window.location.replace(link+localStorage.getItem('sort'));
+
+				                }
+
+				            });
+				        }
                     </script>
