@@ -1,0 +1,6 @@
+
+
+
+1) Очистить кеш 
+
+	php app/console cache:clear --env=prod

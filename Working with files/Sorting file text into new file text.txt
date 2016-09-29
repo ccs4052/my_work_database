@@ -1,0 +1,33 @@
+        
+
+
+
+
+
+
+
+
+        $lines=array();
+        //my first text file with lines what need to sort
+        $fp=fopen(base_url().'assets/test.txt', 'r'); //Файл со строками из которых нужно убрать лишние слова
+        $new_array = array();
+        while (!feof($fp))
+        {
+            $line=fgets($fp);
+            
+            $line=trim($line);
+            $pieces = explode(", ", $line);
+            $lines[]=$pieces[3].'|'.$pieces[4];
+
+        }
+        fclose($fp);
+       
+        foreach ($lines as $k=>$v){ //new lines save into array
+            $pieces1 = explode("|", $v);
+            $new_array[] = '('.$pieces1[0].','.$pieces1[1].')'.',';
+        }
+        //new array save into file
+        $str = implode(PHP_EOL, $new_array);
+        $file = base_url().'assets/new.txt';
+        //new file with new sort data
+        file_put_contents('new.txt', $str);

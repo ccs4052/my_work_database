@@ -47,3 +47,25 @@ LIMIT 5
 
 
 
+
+--------------------------------- Если результат одного селектора не NULL то Выполняеться следующее условие и так 3 Условия в Одном запросе
+
+SELECT (case when (SELECT clout_v1_3.user_geo_tracking.source FROM clout_v1_3.user_geo_tracking
+                  
+               	
+            where clout_v1_3.user_geo_tracking._user_id = user_id and clout_v1_3.user_geo_tracking.source = 'checkin' GROUP BY clout_v1_3.user_geo_tracking._user_id ) IS NULL
+           
+            then NULL
+            else (case when (SELECT clout_v1_3cron.promotions.id FROM clout_v1_3cron.promotions WHERE clout_v1_3cron.promotions.owner_id = user_id and clout_v1_3cron.promotions.promotion_type='perk' GROUP BY clout_v1_3cron.promotions.owner_id) IS NULL
+            		then (SELECT CONCAT(clout_v1_3.user_geo_tracking.tracking_time, '|', 'no_perk') FROM clout_v1_3.user_geo_tracking WHERE clout_v1_3.user_geo_tracking._user_id = user_id GROUP BY clout_v1_3.user_geo_tracking._user_id)
+            		else 
+						(case when (SELECT clout_v1_3cron.promotions.id FROM clout_v1_3cron.promotions WHERE clout_v1_3cron.promotions.owner_id = user_id and clout_v1_3cron.promotions.promotion_type='perk' and clout_v1_3cron.promotions.status <> 'active' GROUP BY clout_v1_3cron.promotions.owner_id) IS NULL
+            			then (SELECT CONCAT(clout_v1_3.user_geo_tracking.tracking_time, '|', 'perk_active') FROM clout_v1_3.user_geo_tracking WHERE clout_v1_3.user_geo_tracking._user_id = user_id GROUP BY clout_v1_3.user_geo_tracking._user_id)
+            			else (SELECT CONCAT(clout_v1_3.user_geo_tracking.tracking_time, '|', 'perk_not_active') FROM clout_v1_3.user_geo_tracking WHERE clout_v1_3.user_geo_tracking._user_id = user_id GROUP BY clout_v1_3.user_geo_tracking._user_id)
+            			end)
+            		end)
+            end) as here_now_clock
+
+
+
+

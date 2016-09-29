@@ -1,0 +1,10 @@
+
+
+1) Создание таблици 
+
+	php app/console doctrine:generate:entity
+
+
+2) Добавление созданой таблици в базу данных
+
+	php app/console doctrine:schema:update --force
