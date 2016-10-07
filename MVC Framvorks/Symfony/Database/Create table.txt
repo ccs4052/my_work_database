@@ -8,3 +8,8 @@
 2) Добавление созданой таблици в базу данных
 
 	php app/console doctrine:schema:update --force
+
+
+
+
+3) php bin/console doctrine:generate:entities AppBundle обновить изменения в таблице в конкретной папке
