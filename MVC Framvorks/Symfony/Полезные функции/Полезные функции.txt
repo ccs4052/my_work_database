@@ -7,3 +7,39 @@
 	array(
             'base_dir' => realpath($this->container->getParameter('kernel.root_dir').'/..').DIRECTORY_SEPARATOR,
         )
+
+
+
+
+
+ 2)  Check if user login 
+
+ 		 $securityContext = $this->container->get('security.authorization_checker');
+        if ($securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            $user = $this->getUser();
+            echo $user->getId();
+        }
+
+
+
+ 3) Получить данные залогиневшегося юзера 
+
+ 		$user = $this->getUser();
+        echo $user->getId();
+
+
+        в TWIG - не передавая аргументы из Контролера
+
+         <p>user id = {{ app.user.id }}</p>
+   		 <p>user name = {{ app.user.username }}</p>
+
+
+  4) Цикл из объекта в twig 
+
+  
+
+		  {% for article in prevArticles %}
+
+		   {{ article.top_logo_advert }}
+
+		{% endfor %}

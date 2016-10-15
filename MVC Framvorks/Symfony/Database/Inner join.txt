@@ -1,0 +1,14 @@
+
+
+
+
+1) 
+
+
+ $repository = $this->getDoctrine()
+            ->getRepository('AppBundle:User')
+            ->createQueryBuilder('e')
+            ->select('e.id,e.username,co.name')
+            ->leftJoin('AppBundle:Country', 'co', 'WITH', 'co.id = e.country')
+            ->getQuery()
+            ->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
