@@ -1,15 +1,20 @@
-
+﻿
 
 1) Создание таблици 
 
-	php app/console doctrine:generate:entity
+	php bin/console doctrine:generate:entity
 
 
 2) Добавление созданой таблици в базу данных
 
-	php app/console doctrine:schema:update --force
+	php bin/console doctrine:schema:update --force
 
 
 
 
 3) php bin/console doctrine:generate:entities AppBundle обновить изменения в таблице в конкретной папке
+
+
+4) Когда создали новую Сушьность Entity можно автоматически добавить все гетеры и сетеры с этой командой 
+
+	php bin/console doctrine:generate:entities AppBundle/Entity/Product

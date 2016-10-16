@@ -1,0 +1,396 @@
+
+
+
+1) Dependency injection
+
+Компонент DependencyInjection позволяет стандартизировать и централизовать способ создания объектов в вашем приложении.
+
+		Dependency injection service autoload 
+		a) C помощью service.yml (Лучьше делать так)
+		service.yml  регистрируем нужный класс 
+
+						services:
+						    twitter_client:
+						        class:    Acme\TwitterClient
+						        autowire: true
+		  		
+		  		вызываем класс из services  $this->get('twitter_client')->tweet($user, $key, $status);    //tweet метод класса TwitterClient
+
+		b) С помошью ContainerBuilder();
+
+		use Symfony\Component\DependencyInjection\ContainerBuilder;
+
+		$container = new ContainerBuilder();
+		$container->setParameter('mailer.transport', 'sendmail'); // дали значение праметру transport класса mailer
+		$container
+				->register('mailer', 'Mailer');                   //зарегистрировали класс Mailer
+		 		->addArgument('%mailer.transport%');
+
+
+
+		далее в каком-то другом классе можно использовать зарегистрированый в контейнере класс
+
+		use Symfony\Component\DependencyInjection\ContainerBuilder;
+		$container = new ContainerBuilder();
+		$newsletterManager = $container->get('mailer');
+
+
+2) Rest API Methods
+	(POST http://www.example.com/customers/12345/orders)
+	POST  - Create - return 201 (false 404(Not Found) / 409 (Conflict for example if exist data))
+
+	GET   - Read - 200 (false 404 (Not Found))
+
+	PUT - Update/Replace - 200 (ok) (изменение полностью данных) 204(No Content) , 404 (Not Found)
+
+	PATCH - Update/Modify (изменение частями) - 200 (ok) 204(No Content) , 404 (Not Found)
+
+	DELETE - Delete -  	200 (OK). 404 (Not Found), if ID not found or invalid.
+
+	HEAD -  check if the resource exists or not -  A 200 means "yes" and a 404 means "no":
+
+
+	respones code
+
+	100 - Infirmation
+		100 - continue
+		101 - switch protocol
+
+	200 - Success
+		204 - no content
+		202 - accepted
+
+	300 - redirection
+		300 - multiple choices
+
+	400 - client error
+		400 - Bad request
+		403 - Forbidden (запрещено)
+		404 - not Found
+		402 - Payment request
+		429 - to many request
+
+	500 - server error
+		500 - internal server error
+
+
+3) Bundle (комплект классов например doctrine-bundle) - > new Bundle need to be regist in app/AppKernel.php
+	пример регистрации Пакета в файле AppKernel
+	 new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
+
+--------------------------
+4) ORM Doctrine
+
+
+
+
+			1) Создание таблици 
+
+				php bin/console doctrine:generate:entity
+
+
+			2) Добавление созданой таблици в базу данных
+
+				php bin/console doctrine:schema:update --force
+
+
+
+
+			3) php bin/console doctrine:generate:entities AppBundle обновить изменения в таблице в конкретной папке
+
+
+			4) Когда создали новую Сушьность Entity можно автоматически добавить все гетеры и сетеры с этой командой 
+
+				php bin/console doctrine:generate:entities AppBundle/Entity/Product
+
+
+5) Tags services
+Все это работает в 3 этапа
+	- Создаем КЛАСС
+	- регистрируем его в service
+	- создаем compiler class (Compiler дает озможность задействовать класс зарегистрированый в service)
+
+используються такие классы
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\Reference;
+
+
+	В контейнере услуг, метка означает, что служба предназначена для конкретной цели
+
+	# app/config/services.yml
+	services:
+	    foo.twig.extension:
+	        class: AppBundle\Extension\FooExtension
+	        public: false
+	        tags:
+	            -  { name: twig.extension }
+
+
+	пример :
+			a)Способ первый 
+			-создаем класс
+
+			namespace AppBundle\Mail;
+
+			class TransportChain
+			{
+			    private $transports;
+
+			    public function __construct()
+			    {
+			        $this->transports = array();
+			    }
+
+			    public function addTransport(\Swift_Transport $transport)
+			    {
+			        $this->transports[] = $transport;
+			    }
+			}
+
+			-Регистрируем класс в service
+
+
+			services:
+			    app.mailer_transport_chain:
+			        class: AppBundle\Mail\TransportChain
+
+			b)Способ второй Define Services with a Custom Tag
+				//Регистрируем 2 класса под одним именем tags (это код будем использовать в компиляторе)
+				services:
+				    app.smtp_transport:
+				        class: \Swift_SmtpTransport
+				        arguments: ['%mailer_host%']
+				        tags:
+				            -  { name: app.mail_transport }
+
+				    app.sendmail_transport:
+				        class: \Swift_SendmailTransport
+				        tags:
+				            -  { name: app.mail_transport }
+
+
+			с) Create a Compiler Pass (Используем компилер для использования классов зарегистрированніх в servie)
+
+
+			class Test implement Test {
+
+				 public function process(ContainerBuilder $container)
+				    {
+				    	//находим service в первом примере
+				        // always first check if the primary service is defined
+				        if (!$container->has('app.mailer_transport_chain')) {
+				            return;
+				        }
+				        //вызыаем servie в первом примере
+				        $definition = $container->findDefinition('app.mailer_transport_chain');
+
+				        // find all service IDs with the app.mail_transport tag
+				        //находим все service во втором примере - по скольку их 2 на одно имя foreach перебирает все service на это имя
+				        $taggedServices = $container->findTaggedServiceIds('app.mail_transport');
+
+				        foreach ($taggedServices as $id => $tags) {
+				            // add the transport service to the ChainTransport service
+				            $definition->addMethodCall('addTransport', array(new Reference($id)));
+				        }
+				    }
+			}
+
+			Добавление дополнительных атрибутов в TAGS
+
+
+
+			class TransportChain
+				{
+				    private $transports;
+
+				    public function __construct()
+				    {
+				        $this->transports = array();
+				    }
+				    //В парметрах передаем 2 аргумента объект и переменную
+				    //нужно добавить изменения и в service
+				    public function addTransport(\Swift_Transport $transport, $alias)
+				    {
+				        $this->transports[$alias] = $transport;
+				    }
+
+				    public function getTransport($alias)
+				    {
+				        if (array_key_exists($alias, $this->transports)) {
+				            return $this->transports[$alias];
+				        }
+				    }
+				}
+
+			Добавляем класс в service
+
+			services:
+			    app.smtp_transport:
+			        class: \Swift_SmtpTransport
+			        arguments: ['%mailer_host%']
+			        tags:
+			            -  { name: app.mail_transport, alias: foo }
+
+			    app.sendmail_transport:
+			        class: \Swift_SendmailTransport
+			        tags:
+			            -  { name: app.mail_transport, alias: bar }
+
+
+			Create compiler class 
+
+				use Symfony\Component\DependencyInjection\ContainerBuilder;
+				use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+				use Symfony\Component\DependencyInjection\Reference;
+
+				class TransportCompilerPass implements CompilerPassInterface
+				{
+				    public function process(ContainerBuilder $container)
+				    {
+				        if (!$container->hasDefinition('app.mailer_transport_chain')) {
+				            return;
+				        }
+
+				        $definition = $container->getDefinition('app.mailer_transport_chain');
+				        $taggedServices = $container->findTaggedServiceIds('app.mail_transport');
+
+				        foreach ($taggedServices as $id => $tags) {
+				            foreach ($tags as $attributes) {
+				                $definition->addMethodCall('addTransport', array(
+				                    new Reference($id),
+				                    $attributes["alias"]
+				                ));
+				            }
+				        }
+				    }
+				}
+
+
+6) Migration Bundle (возможность программно развернуть новые версии схемы базы данных безопасным, простым путем)
+
+	-установка composer require doctrine/doctrine-migrations-bundle "^1.0"
+
+	- далее регистрируем новый класс в AppKernel.php
+
+	a) Config iration
+
+	# app/config/config.yml
+		doctrine_migrations:
+		    dir_name: "%kernel.root_dir%/DoctrineMigrations"
+		    namespace: Application\Migrations
+		    table_name: migration_versions
+		    name: Application Migrations
+
+	b) php bin/console doctrine:migrations:status - проверяем статус миграции
+
+	c) php bin/console doctrine:migrations:generate  - generate bew migration
+	d) php bin/console doctrine:migrations:status     --show-versions of new migration
+
+	e) php bin/console doctrine:migrations:migrate 20100621140655 (цыфры номер миграции виден когда делаем status)
+
+
+7) Entity 
+
+    //пример
+ 	$product = new Product();
+    $product->setName('Keyboard');
+    $product->setPrice(19.99);
+    $product->setDescription('Ergonomic and stylish!');
+
+    $em = $this->getDoctrine()->getManager();
+
+    // tells Doctrine you want to (eventually) save the Product (no queries yet)
+    $em->persist($product);
+
+    // actually executes the queries (i.e. the INSERT query)
+    $em->flush();
+
+
+    //отображаем объект 
+
+      $product = $this->getDoctrine()
+        ->getRepository('AppBundle:Product')
+        ->find($productId);
+        //display name
+      $product->getName()
+
+
+      //inner join 
+       $repository = $this->getDoctrine()
+            ->getRepository('AppBundle:User')
+            ->createQueryBuilder('e')
+            ->select('e.id,e.username,co.name')
+            ->leftJoin('AppBundle:Country', 'co', 'WITH', 'co.id = e.country')
+            ->getQuery()
+            ->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+
+        echo '<pre>';
+        print_r($repository);
+        echo '</pre>';
+
+
+
+8) MongoDB
+ mongodb попадает в группу документно-ориентированных nosql баз данных.
+//connection
+ $connecting_string =  sprintf('mongodb://%s:%d/%s', $hosts, $port,$database),
+$connection=  new Mongo($connecting_string,array('username'=>$username,'password'=>$password));
+
+//select Db
+$dbname = $connection->selectDB('dbname');
+//create DB
+$collection = $dbname->collection;
+
+//create collection posts
+$posts = $dbname->posts
+
+$post = array(
+        'title'     => 'What is MongoDB',
+        'content'   => 'MongoDB is a document database that provides high performance...',
+        'saved_at'  => new MongoDate() 
+    );
+  //save ata in collection posts  
+ $posts->insert($post);
+
+
+
+ 	READ DATA
+
+ 		 // all records
+	    $result = $posts::find();
+	    // one record
+	    $id = '52d68c93cf5dc944128b4567';
+	    $results = $posts::findOne(array('_id' => new MongoId($id)));
+
+
+
+9) Query Builder 
+
+		 $em = $this->getDoctrine()->getManager();
+
+	        $qb = $em->createQueryBuilder();
+
+	        $qb->select('u')
+	            ->from('User', 'u')
+	            ->orderBy('u.name', 'ASC');
+
+
+	        $query = $qb->getQuery();
+	        $result = $query->getResult();
+
+
+	      --  helper for building expressions. This class is called Expr (Class hekper for query builder)
+
+	      	$qb->add('select', new Expr\Select(array('u')))
+		   ->add('from', new Expr\From('User', 'u'))
+		   ->add('where', $qb->expr()->orX(
+		       $qb->expr()->eq('u.id', '?1'),
+		       $qb->expr()->like('u.nickname', '?2')
+		   ))
+		   ->add('orderBy', new Expr\OrderBy('u.name', 'ASC'));
+
+
+
+10)Mupping Entity
+
