@@ -371,7 +371,7 @@ use Symfony\Component\DependencyInjection\Reference;
 
 	- далее регистрируем новый класс в AppKernel.php
 
-	a) Config iration
+	a) Config Migration
 
 	# app/config/config.yml
 		doctrine_migrations:
@@ -382,7 +382,7 @@ use Symfony\Component\DependencyInjection\Reference;
 
 	b) php bin/console doctrine:migrations:status - проверяем статус миграции
 
-	c) php bin/console doctrine:migrations:generate  - generate bew migration
+	c) php bin/console doctrine:migrations:generate  - generate new migration
 	d) php bin/console doctrine:migrations:status     --show-versions of new migration
 
 	e) php bin/console doctrine:migrations:migrate 20100621140655 (цыфры номер миграции виден когда делаем status)
@@ -666,6 +666,86 @@ http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/inher
 		// должны быть указаны в аннотации верхнего класса КОТОРЫЙ ЯВЛЯЕТЬСЯ ЧАСТЬЮ САПОСТОВЛЕНИЯ ИЕРАРХИИ СУЩНОСТИ
 		 * @InheritanceType("SINGLE_TABLE")                                   
 		 * @DiscriminatorColumn(name="discr", type="string")
+
+		 -------ЛУЧЬШЕ ПРИМЕР 
+
+		 /**
+			 * This class represents a LabLog item, either a BlogPost or an Event.
+			 * It is abstract because we never have a LabLog entity, it's either an event or a blog post.
+			 * @ORMEntity
+			 * @ORMTable(name="lablog")
+			 * @ORMInheritanceType("SINGLE_TABLE")
+			 * @ORMDiscriminatorColumn(name="type", type="string")
+			 * @ORMDiscriminatorMap( {"event" = "Event", "blogpost" = "BlogPost"} )
+			 */
+			abstract class Event
+			{
+			    /**
+			     * @ORMId
+			     * @ORMColumn(type="integer")
+			     * @ORMGeneratedValue(strategy="AUTO")
+			     */
+			    protected $id;
+			 
+			    /**
+			     * @ORMColumn(type="date")
+			     */
+			    protected $date;
+			 
+			    /**
+			     * @ORMColumn(type="string")
+			     */
+			    protected $title;
+			 
+			    /**
+			     * @ORMColumn(type="text")
+			     */
+			    protected $description;
+			 
+			    /***** Getters and setters *****/
+			 
+			    public function getId()
+			    {
+			        return $this->id;
+			    }
+			 
+			    public function setDate($date)
+			    {
+			        $this->date = $date;
+			    }
+			 
+			    public function getDate()
+			    {
+			        return $this->date;
+			    }
+			 
+			    // And so on...
+			}
+
+
+			/**
+			 * Represent a blog post item.
+			 * Note that this class extends LabLogItem
+			 */
+			class BlogPost extends Event
+			{
+			    /**
+			     * @ORMColumn(type="text")
+			     */
+			    protected $content;
+			 
+			    /***** Getters and setters *****/
+			 
+			    public function getContent()
+			    {
+			        return $this->content;
+			    }
+			 
+			    public function setContent($content)
+			    {
+			        $this->content = $content;
+			    }
+			}
 
 
 
@@ -1076,7 +1156,7 @@ Template
 		PHP, Codeigniter, MySQL, jQuery, HTTP
 
 
-	6) SMS sending system (2 UA) ( Sending system gateway atompark)
+	6) SMS sending system (2 UA) ( Sending system gateway http://www.bulksms.com)
 
 	Создание приложения для отправки SMS - сообщений, Формат, выбранный с загружаемыми списками и шаблонами.
 
