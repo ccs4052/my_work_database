@@ -1,3 +1,28 @@
+------------------
+Стандартный пакет БАНДЛОВ которые входят в Symfony  при установке 
+
+$bundles = [
+            new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
+            new Symfony\Bundle\SecurityBundle\SecurityBundle(),
+            new Symfony\Bundle\TwigBundle\TwigBundle(),
+            new Symfony\Bundle\MonologBundle\MonologBundle(),
+            new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
+            new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
+            new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
+            new AppBundle\AppBundle(),
+
+        ];
+
+        if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
+            $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
+            $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
+            $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
+            $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
+        }
+
+----------------------------------        
+
+
 
 
 
@@ -5,23 +30,28 @@
 
 Компонент DependencyInjection позволяет стандартизировать и централизовать способ создания объектов в вашем приложении.
 
-		Dependency injection service autoload 
-		a) C помощью service.yml (Лучьше делать так)
-		service.yml  регистрируем нужный класс 
+		НАПРИМЕР У НАС ЕСТЬ КЛАСС
+			class Mailer
+			{
+			    private $transport;
 
-						services:
-						    twitter_client:
-						        class:    Acme\TwitterClient
-						        autowire: true
-		  		
-		  		вызываем класс из services  $this->get('twitter_client')->tweet($user, $key, $status);    //tweet метод класса TwitterClient
+			    public function __construct()
+			    {
+			        $this->transport = 'sendmail';
+			    }
 
-		b) С помошью ContainerBuilder();
+			    // ...
+			}
+
+
+
+	
+		a) С помошью ContainerBuilder();
 
 		use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 		$container = new ContainerBuilder();
-		$container->setParameter('mailer.transport', 'sendmail'); // дали значение праметру transport класса mailer
+		$container->setParameter('mailer.transport', 'sendmail'); // дали значение параметру transport класса mailer
 		$container
 				->register('mailer', 'Mailer');                   //зарегистрировали класс Mailer
 		 		->addArgument('%mailer.transport%');
@@ -35,37 +65,93 @@
 		$newsletterManager = $container->get('mailer');
 
 
-2) Rest API Methods
+
+			Setting up the Container with Configuration Files
+		b) 
+
+
+
+
+		service.yml  регистрируем нужный класс 
+
+						parameters:
+							   
+							    mailer.transport: sendmail
+
+							services:
+							    mailer:
+							        class:     Mailer
+							        arguments: ['%mailer.transport%']
+							    newsletter_manager:
+							        class:     NewsletterManager
+							        calls:
+							            - [setMailer, ['@mailer']]
+		  		
+		  	use Symfony\Component\DependencyInjection\ContainerBuilder;
+			use Symfony\Component\Config\FileLocator;
+			use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
+			$container = new ContainerBuilder();
+			$loader = new YamlFileLoader($container, new FileLocator(__DIR__));
+			$loader->load('services.yml');
+
+
+
+1.1) Service 
+Классы заранее созданы
+
+# app/config/services.yml
+services:
+    app.mailer:
+        # ...
+
+    app.newsletter_manager:
+        class:     AppBundle\Newsletter\NewsletterManager
+        calls:
+            - [setMailer, ['@app.mailer']] //передаем экземпляр класса в метод setMailer
+
+
+    //вызываем service
+    $mailer = $this->get('app.mailer');
+    $newsletter = $this->get('app.newsletter_manager');
+
+
+2) Rest API Methods - Status Code
 	(POST http://www.example.com/customers/12345/orders)
-	POST  - Create - return 201 (false 404(Not Found) / 409 (Conflict for example if exist data))
+	1) POST  - Create - return 201 (false 404(Not Found) / 409 (Conflict for example if exist data))
 
-	GET   - Read - 200 (false 404 (Not Found))
+	2) GET   - Read - 200 (false 404 (Not Found))
 
-	PUT - Update/Replace - 200 (ok) (изменение полностью данных) 204(No Content) , 404 (Not Found)
+	3) PUT - Update/Replace - 200 (ok) (изменение полностью данных) 204(No Content) , 404 (Not Found)
 
-	PATCH - Update/Modify (изменение частями) - 200 (ok) 204(No Content) , 404 (Not Found)
+	4) DELETE - Delete -  	200 (OK). 404 (Not Found), if ID not found or invalid.
 
-	DELETE - Delete -  	200 (OK). 404 (Not Found), if ID not found or invalid.
+	-PATCH - Update/Modify (изменение частями) - 200 (ok) 204(No Content) , 404 (Not Found)
+
+
 
 	HEAD -  check if the resource exists or not -  A 200 means "yes" and a 404 means "no":
 
 
 	respones code
 
-	100 - Infirmation
+	100 - Information
 		100 - continue
 		101 - switch protocol
 
 	200 - Success
 		204 - no content
 		202 - accepted
+		203 - Non-Authoritative Information
 
 	300 - redirection
 		300 - multiple choices
+		301 - перемещено навсегда
+		302 - перемещено временно или найдено
 
 	400 - client error
 		400 - Bad request
-		403 - Forbidden (запрещено)
+		403 - Forbidden (запрещен доступ)
 		404 - not Found
 		402 - Payment request
 		429 - to many request
@@ -78,37 +164,49 @@
 	пример регистрации Пакета в файле AppKernel
 	 new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
 
---------------------------
-4) ORM Doctrine
 
 
 
 
-			1) Создание таблици 
-
-				php bin/console doctrine:generate:entity
+	 
 
 
-			2) Добавление созданой таблици в базу данных
-
-				php bin/console doctrine:schema:update --force
-
-
-
-
-			3) php bin/console doctrine:generate:entities AppBundle обновить изменения в таблице в конкретной папке
-
-
-			4) Когда создали новую Сушьность Entity можно автоматически добавить все гетеры и сетеры с этой командой 
-
-				php bin/console doctrine:generate:entities AppBundle/Entity/Product
 
 
 5) Tags services
+--------------
+ИСПОЛЬЗОВАНИЕ Service
+
+services:
+    app.mailer:
+        class:        AppBundle\Mailer
+        arguments:    [sendmail]
+
+ //Вызываем сервис
+ $mailer = $this->get('app.mailer');
+ $mailer->send('ryan@foobar.net', ...);
+
+ ---------------
+
+
+ -------------------------
+передаем экземпляр класса аргументов в service
+
+services:
+    app.mailer:
+        # ...
+
+    app.newsletter_manager:
+        class:     AppBundle\Newsletter\NewsletterManager
+        calls:
+            - [setMailer, ['@app.mailer']]  //метод класса в который передаем экземпляр класса
+ -------------------------
+
+
 Все это работает в 3 этапа
 	- Создаем КЛАСС
 	- регистрируем его в service
-	- создаем compiler class (Compiler дает озможность задействовать класс зарегистрированый в service)
+	- используем
 
 используються такие классы
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -290,7 +388,43 @@ use Symfony\Component\DependencyInjection\Reference;
 	e) php bin/console doctrine:migrations:migrate 20100621140655 (цыфры номер миграции виден когда делаем status)
 
 
-7) Entity 
+7) Entity  (Config BD находиться в файле parameters.yml)
+
+			-создание базыданных- php bin/console doctrine:database:create
+
+			-Создание таблици  - php bin/console doctrine:generate:entity
+
+			-Добавление созданой таблици в базу данных - php bin/console doctrine:schema:update --force
+
+			- Создать все гетеры и сетеры для Entity - 	php bin/console doctrine:generate:entities AppBundle/Entity/Product
+
+
+				ПРИМЕР 
+
+				/**
+				 * @ORM\Entity
+				 * @ORM\Table(name="product")
+				 */
+				class Product
+				{
+				    /**
+				     * @ORM\Column(type="integer")
+				     * @ORM\Id
+				     * @ORM\GeneratedValue(strategy="AUTO")
+				     */
+				    private $id;
+
+				    /**
+				     * @ORM\Column(type="string", length=100)
+				     */
+				    private $name;
+
+				    /**
+				     * @ORM\Column(type="decimal", scale=2)
+				     */
+				    private $price;
+				}
+	
 
     //пример
  	$product = new Product();
@@ -299,10 +433,8 @@ use Symfony\Component\DependencyInjection\Reference;
     $product->setDescription('Ergonomic and stylish!');
 
     $em = $this->getDoctrine()->getManager();
-
     // tells Doctrine you want to (eventually) save the Product (no queries yet)
     $em->persist($product);
-
     // actually executes the queries (i.e. the INSERT query)
     $em->flush();
 
@@ -313,7 +445,7 @@ use Symfony\Component\DependencyInjection\Reference;
         ->getRepository('AppBundle:Product')
         ->find($productId);
         //display name
-      $product->getName()
+      $product->getName() //display name
 
 
       //inner join 
@@ -330,8 +462,115 @@ use Symfony\Component\DependencyInjection\Reference;
         echo '</pre>';
 
 
+         return $this->render('default/test.html.twig', array(
+                'data' => $repository,
+               
+         ));
+        Отобраджение данных в twig
+        {% for key, value in data %} 
+		    <p>{{ value }} : {{ key }}</p>
+		{% endfor %}
 
-8) MongoDB
+
+		DELETE
+
+		$em->remove($product);
+		$em->flush();
+
+			-DQL
+		$em = $this->getDoctrine()->getManager();
+		$query = $em->createQuery(
+		    'SELECT p
+		    FROM AppBundle:Product p
+		    WHERE p.price > :price
+		    ORDER BY p.price ASC'
+		)->setParameter('price', 19.99);
+
+		$products = $query->getResult();
+
+		---query builder
+
+		$repository = $this->getDoctrine()
+		    ->getRepository('AppBundle:Product');
+
+		// createQueryBuilder automatically selects FROM AppBundle:Product
+		// and aliases it to "p"
+		$query = $repository->createQueryBuilder('p')
+		    ->where('p.price > :price')
+		    ->setParameter('price', '19.99')
+		    ->orderBy('p.price', 'ASC')
+		    ->getQuery();
+
+		$products = $query->getResult();
+
+
+---------------------------ПРИМЕР ЗАПРОСОВ ОРМ
+$repository = $this->getDoctrine()->getRepository('AppBundle:Product');
+
+// query for a single product by its primary key (usually "id")
+$product = $repository->find($productId);
+
+// dynamic method names to find a single product based on a column value
+$product = $repository->findOneById($productId);
+$product = $repository->findOneByName('Keyboard');
+
+// dynamic method names to find a group of products based on a column value
+$products = $repository->findByPrice(19.99);
+
+// find *all* products
+$products = $repository->findAll();
+----------------------------
+
+
+
+----------------Entity Relation
+Связб продукта с категорией
+
+// src/AppBundle/Entity/Product.php
+
+// ...
+class Product
+{
+    // ...
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Category", inversedBy="products")
+     * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
+     */
+    private $category;
+}
+
+
+// src/AppBundle/Entity/Category.php
+
+// ...
+use Doctrine\Common\Collections\ArrayCollection;
+
+class Category
+{
+    // ...
+
+    /**
+     * @ORM\OneToMany(targetEntity="Product", mappedBy="category")
+     */
+    private $products;
+
+    public function __construct()
+    {
+        $this->products = new ArrayCollection();
+    }
+}
+
+Запрос
+$product = $this->getDoctrine()
+        ->getRepository('AppBundle:Product')
+        ->find($productId);
+
+    $categoryName = $product->getCategory()->getName();
+
+
+
+8) MongoDB (Объектно ориентирования BD)
  mongodb попадает в группу документно-ориентированных nosql баз данных.
 //connection
  $connecting_string =  sprintf('mongodb://%s:%d/%s', $hosts, $port,$database),
@@ -392,5 +631,457 @@ $post = array(
 
 
 
-10)Mupping Entity
+
+11) Table Inheritance (Все классы иерархии представлены в одной или нескольких таблицах)
+http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/inheritance-mapping.html
+	ТИПЫ Наследования Таблиц :
+		-SINGLE_TABLE - все классы иерархии представлены в одной таблице
+		-JOINED - каждый класс отображаеться в нескольких таблицах
+
+	- Для того что-бы понять какая строка представляет, какой тип в иерархии нужно в Анотации использовать  @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})
+
+		<?php
+		namespace MyProject\Model;
+
+		/**
+		 * @Entity
+		 * @InheritanceType("SINGLE_TABLE")                                   // тип наследования таблиц (ОДИНОЧНЫЙ)
+		 * @DiscriminatorColumn(name="discr", type="string")
+		 * @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})  // все класы которые используются в иерархии должны быть перечислены сдесь
+		 */
+		class Person
+		{
+		    // ...
+		}
+
+		/**
+		 * @Entity
+		 */
+		class Employee extends Person //Сушность наследует класс
+		{
+		    // ...
+		}
+
+
+		// должны быть указаны в аннотации верхнего класса КОТОРЫЙ ЯВЛЯЕТЬСЯ ЧАСТЬЮ САПОСТОВЛЕНИЯ ИЕРАРХИИ СУЩНОСТИ
+		 * @InheritanceType("SINGLE_TABLE")                                   
+		 * @DiscriminatorColumn(name="discr", type="string")
+
+
+
+
+
+12) Создание форм  FORM Create
+
+
+//create form
+        $form = $this->createFormBuilder($user)
+
+            ->add('username', TextType::class,array(
+                'required' => true,
+                'attr' => array(
+                    'maxlength' => 4,
+                    'class' => 'form-control'
+                )
+            ))
+
+            ->add('email', EmailType::class,array(
+                'required' => true,
+                'attr' => array(
+                    'maxlength' => 30,
+                    'class' => 'form-control'
+                )
+            ))
+            ->add('country', ChoiceType::class, array(
+                'choices' => $sort_country//$country
+
+            ))
+            ->add('password', PasswordType::class,array(
+                'required' => true,
+                'attr' => array(
+                    'maxlength' => 20,
+                    'class' => 'form-control'
+                )
+            ))
+            ->add('save', SubmitType::class, array('label' => 'Create Task'))
+            ->getForm();
+        $form->handleRequest($request);
+        $validator = $this->get('validator');
+        $errors = $validator->validate($user);
+
+
+            return $this->render('default/test.html.twig', array(
+                'reg_form' => $form->createView(),
+                'errors' => $errors
+            ));
+
+
+            ------in view
+
+             {% if reg_form  %}
+		        {{ form_start(reg_form) }}
+		        <div class="form-group">
+		            {{ form_label(reg_form.username) }}
+		            {{ form_errors(reg_form.username) }}
+		            {{ form_widget(reg_form.username) }}
+		        </div>
+		        <div class="form-group">
+		            {{ form_label(reg_form.email) }}
+		            {{ form_errors(reg_form.email) }}
+		            {{ form_widget(reg_form.email) }}
+		        </div>
+		        <div class="form-group">
+		            {{ form_label(reg_form.country) }}
+		            {{ form_errors(reg_form.country) }}
+		            {{ form_widget(reg_form.country) }}
+		        </div>
+		        <div class="form-group">
+		            {{ form_label(reg_form.password) }}
+		            {{ form_errors(reg_form.password) }}
+		            {{ form_widget(reg_form.password) }}
+		        </div>
+		        <div class="form-group">
+
+		            {{ form_widget(reg_form.save) }}
+		        </div>
+		        {{ form_end(reg_form) }}
+		    {% endif %}
+
+
+
+
+13) Authorization   (security.yml)
+
+security:
+
+    encoders:   #user password encoding
+                AppBundle\Entity\User:
+                          algorithm: bcrypt
+                          cost: 12
+
+    providers:
+        our_db_provider:
+                    entity:
+                        class: AppBundle:User
+                        property: username
+                        # if you're using multiple entity managers
+                        # manager_name: customer
+
+
+
+
+    firewalls:
+     
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            anonymous: ~
+            #user login and logout config
+            form_login:
+                            login_path: login
+                            check_path: login
+            logout:
+                        path:   logout
+                        target: _homepage
+            provider: our_db_provider
+
+    access_control:
+                                   - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+
+          
+
+  --------Создаем контролер который будет иметь определенные роутинги для авторизации 
+  
+  /**
+     * @Route("/login", name="login")
+     */
+    public function loginAction(Request $request)
+    {
+
+
+		$authenticationUtils = $this->get('security.authentication_utils');
+
+		// get the login error if there is one
+		$error = $authenticationUtils->getLastAuthenticationError();
+
+		// last username entered by the user
+		$lastUsername = $authenticationUtils->getLastUsername();
+
+		return $this->render('security/login.html.twig', array(
+			'last_username' => $lastUsername,
+			'error'         => $error,
+		));
+
+
+    }
+
+
+    /**
+     * @Route("/logout", name="logout")
+     */
+    public function logoutAction() //logout actiov -> symfony core method
+    {
+
+    }        
+
+
+
+    -------------Проверяем права пользователя вот таким образом 
+
+      $authorizationChecker = $this->get('security.authorization_checker');
+
+        // check for auth user access
+        if (false === $authorizationChecker->isGranted('ROLE_USER')) {
+            //throw new AccessDeniedException();
+            $request->getSession()
+                ->getFlashBag()
+                ->add('error', 'You have no permission!')
+            ;
+            return $this->redirectToRoute('_homepage');
+        }
+
+        //check if user login
+
+        $securityContext = $this->container->get('security.authorization_checker');
+        if ($securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            $user = $this->getUser();
+           // echo $user->getId();
+        }
+
+
+
+
+
+14) Event Listener (Ваше приложение может слушать эти уведомления и отвечать на них, выполнять любую часть кода.)
+
+Например создадим класс который будет ловит Exeptional
+
+// src/AppBundle/EventListener/ExceptionListener.php
+namespace AppBundle\EventListener;
+
+use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+
+class ExceptionListener
+{
+    public function onKernelException(GetResponseForExceptionEvent $event)
+    {
+        // You get the exception object from the received event
+        $exception = $event->getException();
+        $message = sprintf(
+            'My Error says: %s with code: %s',
+            $exception->getMessage(),
+            $exception->getCode()
+        );
+
+        // Customize your response object to display the exception details
+        $response = new Response();
+        $response->setContent($message);
+
+        // HttpExceptionInterface is a special type of exception that
+        // holds status code and header details
+        if ($exception instanceof HttpExceptionInterface) {
+            $response->setStatusCode($exception->getStatusCode());
+            $response->headers->replace($exception->getHeaders());
+        } else {
+            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        // Send the modified response object to the event
+        $event->setResponse($response);
+    }
+}
+
+- РЕГИСТРИРУЕМ КЛАСС В Services
+
+# app/config/services.yml
+services:
+    app.exception_listener:
+        class: AppBundle\EventListener\ExceptionListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }     //название метода класса который будет вызываться автоматически
+
+
+- Теперь класс отлавливание exeption работает автоматически
+
+
+
+
+
+
+
+
+16) Mysql Transaction 
+
+mysql_query("START TRANSACTION");
+
+$a1 = mysql_query("INSERT INTO rarara (l_id) VALUES('1')");
+$a2 = mysql_query("INSERT INTO rarara (l_id) VALUES('2')");
+
+if ($a1 and $a2) {
+    mysql_query("COMMIT");
+} else {        
+    mysql_query("ROLLBACK");
+}
+
+
+
+
+INSERT INTO table_name (column1,column2,column3,...)
+VALUES (value1,value2,value3,...);
+
+
+UPDATE table_name
+SET column1=value, column2=value2,...
+WHERE some_column=some_value 
+
+
+17) ПРОСТО ПОЛЕЗНЫЕ ВЕЩИ
+1) Base path 
+
+
+	array(
+            'base_dir' => realpath($this->container->getParameter('kernel.root_dir').'/..').DIRECTORY_SEPARATOR,
+        )
+
+
+
+
+
+ 2)  Check if user login 
+
+ 		 $securityContext = $this->container->get('security.authorization_checker');
+        if ($securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            $user = $this->getUser();
+            echo $user->getId();
+        }
+
+
+
+ 3) Получить данные залогиневшегося юзера 
+
+ 		$user = $this->getUser();
+        echo $user->getId();
+
+
+        в TWIG - не передавая аргументы из Контролера
+
+         <p>user id = {{ app.user.id }}</p>
+   		 <p>user name = {{ app.user.username }}</p>
+
+
+  4) Цикл из объекта в twig 
+
+  
+
+		  {% for article in prevArticles %}
+
+		   {{ article.top_logo_advert }}
+
+		{% endfor %}
+
+
+---------------
+18) TWIG
+
+Template
+
+<body>
+{% block header %}
+
+      
+{% endblock %}
+<div class="row">
+    <div style="margin: 0 auto;float: none" class="col-xs-6">
+        {% block widget %}{% endblock %}
+    </div>
+</div>
+
+
+{% block body %}{% endblock %}
+
+
+{% block javascripts %}{% endblock %}
+</body>
+</html>
+
+----------------------------------
+
+
+//используем template 
+{% extends 'app.php.twig' %}
+
+{% block widget %}
+        <h1>{{ page_title }}</h1>
+
+        <ul id="navigation">
+            {% for item in navigation %}
+                <li><a href="{{ item.href }}">{{ item.caption }}</a></li>
+            {% endfor %}
+        </ul>
+
+{% endblock %}
+
+{% block body %}
+	
+		//Если Юзер залогинился можно сразу испольховать его данные в виде не передавая аргументя из контролера
+		 {% if  app.user.id  %}
+ 		    <p>user id = {{ app.user.id }}</p>   
+   			 <p>user name = {{ app.user.username }}</p>
+   		 {% endif %}>
+
+{% endblock %}
+
+
+
+
+
+
+------------------------ОТВЕТ ПО РЕЗЮМЕ
+	1) Weclip               (Портал для загрузки видео ,управление библиотекой, публикация и обменом видео )
+
+	Мой последний проект Weclip  (продолжительность 10 месяцев Singapur) 
+		back-end developer,
+		API developer.
+		back-end architect
+
+		PHP, Symfony 2, AngularJS, Google oAuth, YouTube API, Dailymotion API, Wordpress, HTML, SCSS.
+
+	Проект Weclip является информационным порталом для видео, управления библиотекой, продвижения, публикации и обмена видео на несколько платформ. Пользователь может загрузить свое видео и организовать публикации в самых популярных социальных сетях. Weclip станет площадкой для интеграции бренда на YouTube, Лоза, Instagram, Twitter и других соцсетях.
+
+	2) Api for web-application ( 10 месяцев USA) (показывало близкие города с их текущей погодой - накладывание верстки на картинку и отдавали с Бекенда)
+	PHP, Symfony 2, PostgreSQL, ffmpeg,Doctrine
+
+	В данном проекте была реализована поддержка gmaps, достаточно расчетов на стороне сервера с помощью пакета сервис postgre SQL-кода. Обработки изображений(масштабирование, обрезка, добавление оверлея). Проект работает с очень высокой нагрузкой.
+
+	3) Corporate site (3 месяца)  
+
+		PHP, JavaScript, Symfony 2,Doctrine.
+
+		Разработана серверной части корпоративного веб-сайта, которая позволяет управлять контентом.
+
+	4) Online shop (8 month UA) 
+
+		Создание интернет магазинов по продаже косметики. В symfony 2. Распределенная система с возможностью поддержки большого целевого трафика. И интеграции с большим количеством сторонних систем API
+
+		PHP, Symfony 2, Doctrine, PayPal,Skrill,other payment systems ,delivery systems, google maps
+
+	5) Music management system (3  UA)
+
+		Создание соответствующих систем для онлайн воспроизведения, резервного копирования, его выход для художников, а также привязку клипов к композициям и отображается на экране с помощью внешнего устройства
+
+		PHP, Codeigniter, MySQL, jQuery, HTTP
+
+
+	6) SMS sending system (2 UA) ( Sending system gateway atompark)
+
+	Создание приложения для отправки SMS - сообщений, Формат, выбранный с загружаемыми списками и шаблонами.
+
+	Codeigniter, JavaScript, MySQL
+
+
+
 
