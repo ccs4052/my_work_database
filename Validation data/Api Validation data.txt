@@ -1,0 +1,154 @@
+
+
+
+1) Создаем json файл в котором будут содержаться параметры валидации полей формы 
+(Валидация полей в зависимости от того какая страна пришла в запросе )
+
+validation.js
+
+{
+  "validateParams": {
+    "param": [
+      {
+        "key": "Country",
+        "required": "true",
+        "type": "fkey",
+        "min": "1",
+        "max": "100",
+        "optional_enabled": { "enabled": "All" },      //для каких стран включено
+        "optional_disabled": { "disabled": "none" }    //для каких стран выключено
+      },
+      {
+        "key": "title",
+        "required": "true",
+        "type": "string",
+        "min": "1",
+        "max": "255",
+        "optional_enabled": { "enabled": "All" },
+        "optional_disabled": { "disabled": "none" }
+      },
+      {
+        "key": "codiceFiscale",
+        "required": "true",
+        "type": "string",
+        "min": "1",
+        "max": "255",
+        "optional_enabled": { "enabled": "ITA" },    //для каких стран включено
+        "optional_disabled": {                       //для каких стран выключено
+          "disabled": [
+            "ESP",
+            "GBR",
+            "DEU",
+            "CHN",
+            "NLD",
+            "AUT",
+            "BRA",
+            "ARG"
+          ]
+        }
+      }
+    ]
+  }
+}
+
+
+
+
+PHP код куда приходит форма
+
+
+ $valid_file = file_get_contents(validation.json); //пожключаем json file
+        $decoded = json_decode($valid_file, true);
+        $enabled = '';
+        $disabled = '';
+
+
+
+  //validate field via json pattern app/validation.json
+        foreach ( $pattern as $itemPattern ) {
+
+            // Enabled params
+            $item = $itemPattern['optional_enabled']['enabled'];
+            if( is_array($item) || is_object($item) ) {
+                foreach ($item as $enabledItem) {
+                    $enabled[$itemPattern['key']][$enabledItem] = $enabledItem;
+                }
+            }
+            else {
+                if ( $item == 'All' ) {
+                    $enabled[$itemPattern['key']] = $countryCodes;
+                }
+                else {
+                    $enabled[$itemPattern['key']][$item] = $item;
+                }
+            }
+
+            // Disabled params
+            $item = $itemPattern['optional_disabled']['disabled'];
+            if( is_array($item) || is_object($item) ) {
+                foreach ($item as $disabledItem) {
+                    $disabled[$itemPattern['key']][$disabledItem] = $disabledItem;
+                }
+            }
+            else {
+                    if ( $item == 'All' ) {
+                        $disabled[$itemPattern['key']] = $countryCodes;
+                    }
+                    else { $disabled[$itemPattern['key']]['disabled'] = $item; }
+            }
+
+            // Validation check
+            //if field requred == true in json file this field is reqired
+            //if condition is true return error message
+            if ( $itemPattern['required'] == 'true' && array_key_exists($this->request['Country'], $enabled[$itemPattern['key']])
+                && ( !isset( $this->request[$itemPattern['key']] ) || empty( $this->request[$itemPattern['key']] ) ) ) 
+                 
+                 {
+                        $this->out['status'] = $this->_requestStatus(422);
+                        $this->out['result'] = 'Failure';
+                        $this->out['message'] = 'Required param ' . $itemPattern['key'] . ' is empty';
+                        array_push( $this->error, $this->out['message'] );
+
+                        $this->writeLog( date('H:i:s d-m-Y') . ' Customer -> action POST -> validation: '. $this->out['result'] . ' : ' . $this->out['message'] );
+
+                }
+
+        }
+
+
+
+        //unset request key for new request
+         foreach( $this->request as $customer=>$val ) {
+
+            // Check if needle validation for current param
+            if( $this->recursive_array_search($customer, $pattern, $currentKey = '') ) {   
+                    if( !array_key_exists($this->request['Country'], $enabled[$customer]) && array_key_exists($this->request['Country'], $disabled[$customer])) {
+                        unset($_REQUEST[$customer], $this->request[$customer]);
+                    }
+            }
+            else {
+                    unset($_REQUEST[$customer], $this->request[$customer]);
+            }
+        }
+
+
+
+
+        //function 
+
+         public function recursive_array_search($needle, $haystack, $currentKey = '') {
+            foreach($haystack as $key=>$value) {
+                if (is_array($value)) {
+                    $nextKey = $this->recursive_array_search($needle,$value, $currentKey . '[' . $key . ']');
+                    if ($nextKey) {
+                        return $nextKey;
+                    }
+                }
+                else if($value==$needle) {
+                    return is_numeric($key) ? $currentKey . '[' .$key . ']' : $currentKey . '["' .$key . '"]';
+                }
+            }
+            return false;
+        }
+
+       
