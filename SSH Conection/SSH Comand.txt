@@ -21,3 +21,13 @@ chmod -R 777 clout-cron -> add permission to all derictory
 
 
 cp - copy file with new name    (cp config.example.php config.php) -> cype example to new file config.php
+
+
+Cntr+w - search in nano
+
+
+Cntr+x - exit nano
+
+
+//Перезагрузить Apache 
+	- в любом месте SSH пишем - service apache2 restart
