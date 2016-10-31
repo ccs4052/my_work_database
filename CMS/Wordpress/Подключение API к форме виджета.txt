@@ -1,0 +1,95 @@
+
+
+
+
+1) Создаем виджет формы в админке 
+
+2) Регистрируем виджет 
+
+
+register_sidebar( array(
+		'name'          => __( 'Footer Sidebar', 'sydney' ),  //имя виджета
+		'id'            => 'footer-sidebar',
+		'description'   => 'Sidebar in the footer area, displayed on "post"-type pages',
+		'before_widget' => '<aside id="%1$s" class="widget %2$s subscribe">',
+		'after_widget'  => '</aside>',
+		'before_title'  => '<h3 class="widget-title">',
+		'after_title'   => '</h3>',
+	) );	
+
+
+
+3) вызываем виджет с формой в нужном месте 
+
+		<div id="footer-sidebar" class="widget-area container">
+			<?php  dynamic_sidebar( 'footer-sidebar' ); ?>
+		</div><!-- #menu-sidebar -->
+
+
+
+4) Прямо в эторм файле создаем javascript для отправки формы аяксом и принятие даннфых с ответа аякса
+
+
+
+ <!--send request to subscribe new user -->
+    <script type="text/javascript">
+        jQuery('#mc-embedded-subscribe').click(function(){
+            var email = jQuery('#mce-EMAIL').val();
+            var name = jQuery('#mce-FNAME').val();
+            //if name empty return false
+            if (name.length == 0){
+                jQuery('#s_sub_error').html('<div class="mce_inline_error">This field is required.</div>');
+                return false;
+            }
+            //check email validation
+            if (email.indexOf('.', 0) == -1 || email.indexOf('@', 0) == -1) {
+                return false;
+            }
+
+
+            jQuery.ajax({
+                type:"POST",
+                url: "http://computoolsglobal.com/blog/wp-admin/admin-ajax.php",       //путь к файлу WP который	 отвечает за аякс
+                data: {action: "addMailchimp",email:email,name:name},//{newCustomerForm}, //addMailchimp функция в фалйе function.php для принятия формы файла
+                success:function(data){
+                    // jQuery("#feedback").html(data);
+                    console.log(data);
+
+                }
+            });
+
+        });
+    </script>
+
+
+5)  Принимаем данные формы в файле function.php и подключаем mail чимп для подписки емейлов - описание mailchimp написано в разделе API
+
+//подключили mailchimp
+require_once 'mailchimp/Config.php';
+require_once 'mailchimp/Mailchimp.php';
+
+function addMailchimp() {       //Название функции совпадает с названием функции в action ajax запроса
+
+    $mailchimp_config = new Config();
+    $list_id = $mailchimp_config->sub_list['computools_blog_list'];
+    $key = $mailchimp_config->header_api_token;
+    $email = $_POST['email'];
+    $firstname = $_POST['name'];
+    $lastname = $_POST['name'];
+    $user = new Mailchimp($list_id,$key);
+
+
+    print_r($user->add_new_user($email, $firstname, $lastname)); //ОТВЕТ АЯКСУ НА ЕГО ЗАПРОС - 
+
+
+
+
+
+
+
+    wp_die(); // this is required to terminate immediately and return a proper response
+}
+//Регистрируем функцию
+add_action('wp_ajax_addMailchimp', 'addMailchimp');
+add_action('wp_ajax_nopriv_addMailchimp', 'addMailchimp');
+

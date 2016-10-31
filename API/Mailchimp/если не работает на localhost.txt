@@ -1,0 +1,3 @@
+
+- в корневую папку PHP установить файл cacert.pem если его нету - но на Опен сервере он есть и прописать эту строку в php.ini
+curl.cainfo=”C:\OpenServer\modules\php\PHP-5.5-x64\cacert.pem”
