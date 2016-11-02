@@ -12,3 +12,72 @@
             ->leftJoin('AppBundle:Country', 'co', 'WITH', 'co.id = e.country')
             ->getQuery()
             ->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+
+
+
+
+ 2)   Inner join query in controller   
+
+ $product = $this->getDoctrine()
+                ->getRepository('AppBundle:Product')
+                ->createQueryBuilder('e')
+                ->select('e.id,e.name, co.name as cat_name')
+                ->leftJoin('AppBundle:Category', 'co', 'WITH', 'co.id = e.category')
+                ->getQuery()
+                ->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+
+
+
+
+
+ 3) Inner Join and where condition 
+
+
+ 	$product = $this->getDoctrine()
+            ->getRepository('AppBundle:Product')
+            //->find($productId);
+            ->createQueryBuilder('e')
+            ->select('e.id,e.name, co.name as cat_name')
+            ->leftJoin('AppBundle:Category', 'co', 'WITH', 'co.id = e.category')
+            ->where('e.id = :id')
+            ->setParameter('id', $productId)
+            ->getQuery()
+            ->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+
+
+
+
+
+ 4) Доступ к Doctrine ORM Relation table row name 
+ гетеры и сетеры я не писал потому как они генерируються одной командой из командной строки
+    ----------------
+    //Entity Product
+    /**
+     * @ORM\ManyToOne(targetEntity="Category", inversedBy="products")
+     * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
+     */
+    public $category;
+
+
+    //Entity Category 
+
+     public function __construct()
+    {
+        $this->products = new ArrayCollection();
+    }
+
+    /**
+     * @ORM\OneToMany(targetEntity="Product", mappedBy="category")
+     */
+    public $products;
+
+
+
+    ----------------
+
+
+ 		$test = $this->getDoctrine()
+            ->getRepository('AppBundle:Product')
+            ->find($productId);
+            //category -> поле по которому делали связь
+        $categoryName = $test->getCategory()->getName();
