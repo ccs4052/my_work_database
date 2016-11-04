@@ -4,3 +4,40 @@
 1) Очистить кеш 
 
 	php bin/console cache:clear --env=prod
+
+
+
+
+---------------- Database 
+
+
+
+Создание базыданных
+
+php bin/console doctrine:database:create
+
+
+
+
+1) Создание таблици 
+
+	php bin/console doctrine:generate:entity
+
+
+2) Добавление созданой таблици в базу данных
+
+	php bin/console doctrine:schema:update --force
+
+
+
+
+
+
+4) Когда создали новую Сушьность Entity можно автоматически добавить все гетеры и сетеры с этой командой 
+
+	php bin/console doctrine:generate:entities AppBundle/Entity/Product
+
+	php bin/console doctrine:generate:entities AppBundle - генирирует все гетеры и сетеры для все классов
+
+
+
