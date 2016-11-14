@@ -1,0 +1,73 @@
+Documentation http://symfony.com/doc/current/bundles/FOSRestBundle/6-automatic-route-generation_multiple-restful-controllers.html
+
+1)Создаем рест контролер
+
+<?php
+
+namespace AppBundle\Controller;
+
+use FOS\RestBundle\Controller\Annotations\RouteResource;
+use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\FOSRestBundle;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
+
+/**
+ * @RouteResource("User", pluralize=false)
+ */
+class RestController extends FOSRestController
+{
+
+    public function cgetAction(Request $request)
+    {
+        header("Access-Control-Allow-origin: *");
+        header("Content-Type: application/json");
+        header("Cache-Control: no-cache");
+
+        //return new JsonResponse(array("test"=
+        return new JsonResponse($request->request->all());
+    } // "cget_user"     [GET] /user
+
+    public function newAction()
+    {
+
+    } // "new_user"     [GET] /user/new
+
+    public function postAction($slug,Request $request)
+    {
+        header("Access-Control-Allow-origin: *");
+        header("Content-Type: application/json");
+        header("Cache-Control: no-cache");
+
+        return new JsonResponse(array("test"=>$slug,"post"=>$request->request->all()));
+    } // "get_user"      [GET] /user/{slug}
+
+    // ...
+    public function getCommentAction($slug)
+    {
+        header("Access-Control-Allow-origin: *");
+        header("Content-Type: application/json");
+        header("Cache-Control: no-cache");
+
+        return new JsonResponse(array("test"=>$slug));
+    } // "cget_user_comment"    [GET] /user/{slug}/comment
+
+    // ...
+}
+
+
+
+
+2) Config yml
+
+fos_rest:
+    routing_loader:
+        default_format: json
+
+
+3) routing yml
+
+rest:
+    type:     rest
+    host:     backend
+    resource: AppBundle\Controller\RestController

@@ -1,0 +1,32 @@
+Resours - https://gist.github.com/tjamps/11d617a4b318d65ca583
+
+Symfony API project
+
+
+
+1)  В config.yml добавляем
+
+Framework
+    serializer: true
+
+
+2) Устанавливем Бандлы для АПИ
+
+composer require friendsofsymfony/rest-bundle
+composer require friendsofsymfony/user-bundle "~2.0@dev"
+composer require jms/serializer-bundle
+composer require nelmio/api-doc-bundle
+composer require friendsofsymfony/oauth-server-bundle
+
+
+3) AppKernel add new class
+
+$bundles = array(
+            // ...
+            new FOS\RestBundle\FOSRestBundle(),
+            new FOS\OAuthServerBundle\FOSOAuthServerBundle(),
+            new JMS\SerializerBundle\JMSSerializerBundle(),
+            new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
+ 	    new FOS\UserBundle\FOSUserBundle(),
+        );
+
