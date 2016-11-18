@@ -2,6 +2,8 @@
 
 
 1) Очистить кеш 
+	
+    php bin/console cache:clear
 
 	php bin/console cache:clear --env=prod
 
@@ -38,6 +40,11 @@ php bin/console doctrine:database:create
 	php bin/console doctrine:generate:entities AppBundle/Entity/Product
 
 	php bin/console doctrine:generate:entities AppBundle - генирирует все гетеры и сетеры для все классов
+
+
+4) Validate Schema 
+
+	php bin/console doctrine:schema:validate
 
 
 

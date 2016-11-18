@@ -1,0 +1,25 @@
+set_time_limit(0);
+//$source = fopen('http://64.150.176.139/oem_data_full.sql','r');
+$source = fopen('http://64.150.176.139/db_bkp_online_22_nov_14_no_item_data.sql.gz','r');
+$out = fopen('c:/2.gz','w');
+while($chunk = fread($source, 1024*1024)) {
+    fwrite($out, $chunk);
+}
+fclose($source);
+fclose($out);
+
+die();
+
+
+
+
+
+set_time_limit(0);
+$source = fopen('http://64.150.176.139/Jasoren/partscat_envyfinal.sql','r');
+$output = fopen('c:/new/partscat_envyfinal.sql','w');
+while ($chunk = fread($source, 1024*1024)) {
+    fwrite($output, $chunk);
+}
+fclose($source);
+fclose($output);
+die();
