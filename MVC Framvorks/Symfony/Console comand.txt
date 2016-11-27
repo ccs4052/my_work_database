@@ -1,4 +1,4 @@
-
+﻿
 
 
 1) Очистить кеш 
@@ -38,6 +38,13 @@ php bin/console doctrine:database:create
 	php bin/console doctrine:generate:entities AppBundle/Entity/Product
 
 	php bin/console doctrine:generate:entities AppBundle - генирирует все гетеры и сетеры для все классов
+
+5) display routing 
+
+		
+	показать все роутинги -  php bin/console debug:router
+
+	инфо о конкретном роутинге - php bin/console debug:router article_show
 
 
 

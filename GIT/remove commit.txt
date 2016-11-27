@@ -1,0 +1,4 @@
+1) remove last remote commit in branch master
+
+
+git push origin +HEAD^:master
