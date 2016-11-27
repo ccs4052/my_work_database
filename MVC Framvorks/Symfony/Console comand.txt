@@ -2,6 +2,8 @@
 
 
 1) Очистить кеш 
+	
+    php bin/console cache:clear
 
 	php bin/console cache:clear --env=prod
 
@@ -45,6 +47,11 @@ php bin/console doctrine:database:create
 	показать все роутинги -  php bin/console debug:router
 
 	инфо о конкретном роутинге - php bin/console debug:router article_show
+
+
+4) Validate Schema 
+
+	php bin/console doctrine:schema:validate
 
 
 
