@@ -1,0 +1,17 @@
+
+path of file C:\OpenServer\modules\system\html\openserver\rockmongo\config.php
+
+$MONGO["servers"][0]["mongo_name"] = "127.0.0.1";
+$MONGO["servers"][0]["mongo_name"] = "127.0.0.1";
+$MONGO["servers"][0]["mongo_port"] = "27017";//mongo port
+
+
+start Mongo DB
+
+c:\MongoDB\bin>mongod.exe --config c:\mongodb\mongo.config
+
+
+
+
+
+1) Запуск Mongo сначала запускаем C:\MongoDB\bin\mongod.pdb и а потом mongo.exe

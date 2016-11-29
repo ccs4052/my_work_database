@@ -1,0 +1,8 @@
+switch ($bar <=> $foo) {
+    case 0:
+        echo '$bar и $foo равны';
+    case -1:
+        echo '$foo больше';
+    case 1:
+        echo '$bar больше';
+}

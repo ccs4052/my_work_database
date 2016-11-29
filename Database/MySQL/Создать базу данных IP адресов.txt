@@ -1,0 +1,7 @@
+
+http://dev.maxmind.com/geoip/geoip2/geolite2/ - ссылка на скачивание базы данных ip  по странам и городам
+
+https://gist.github.com/aufa/8957728 - инструкция на установку cvn баз данніх скачаной
+
+http://dev.maxmind.com/geoip/legacy/csv/   //Запросы из установленой таблици ip адресов и отсюда качаем таблицу
+

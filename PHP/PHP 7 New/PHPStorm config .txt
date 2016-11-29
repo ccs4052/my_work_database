@@ -1,0 +1,1 @@
+Settings/Languages & Frameforks / PHP / -> Interpreter (set path to php 7 -> php.exe (C:\OpenServer\modules\php\PHP-7-x64\php.exe))

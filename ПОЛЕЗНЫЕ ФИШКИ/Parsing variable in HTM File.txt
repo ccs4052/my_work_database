@@ -1,0 +1,36 @@
+ 
+
+
+ ///////////////Class Method
+
+ public static function index()
+    {
+        //считываем HTML
+        $main_html = file_get_contents(base_url."system/template/index.htm");
+      
+
+
+        $a = array('foo'=>'One variable', 'bar'=>'Second Variable');
+        //Меняем переменные в HTML и выводим результат
+        foreach(array_keys($a) as $key) {
+            $main_html = preg_replace(
+                '/\\{'.preg_quote($key,'/').'\\}/'
+                ,$a[$key]
+                ,$main_html
+            );
+        }
+        echo $main_html;
+
+    }
+
+
+
+    -------HTML
+    <div>
+    <!--test inject from controller controller/Main.php-->
+        {foo}   - эту переменную меняем на переменые из контролера
+    </div>
+
+    <div>
+        {bar}
+    </div>

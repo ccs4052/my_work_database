@@ -1,0 +1,19 @@
+До PHP 7:
+
+if (isset($foo)) {
+    $bar = $foo;
+} else {
+    $bar = 'default'; // присваиваем $bar значение 'default' если $foo равен NULL
+}
+
+
+
+В PHP 7:
+
+$bar = $foo ?? 'default';
+
+
+
+Можно использовать с цепочкой переменных:
+
+$bar = $foo ?? $baz ?? 'default';

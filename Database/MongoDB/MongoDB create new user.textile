@@ -1,0 +1,75 @@
+
+
+1) открываем консоль  С:/MongoDB/bin
+
+
+
+2)
+---->>>>создаем файл JS с созданием нового юзера (user.js)
+
+
+
+use admin
+db.createUser(
+   {
+     user: "root",
+     pwd: "root",
+     roles:
+       [
+         { role: "readWrite", db: "config" },
+         "clusterAdmin"
+       ]
+   }
+)
+
+3) Запускаем команду  на запуск этого скрипта 
+
+
+mongo admin < C:\user.js
+
+
+
+4) Create user 
+
+from cpmman line
+
+use test  - switch database
+db.createUser(  
+   {  
+     user: "mynewuser1",  
+     pwd: "myuser1123",  
+     roles: [ ]  
+   }  
+);
+
+
+5) Create Collection
+
+db.createCollection("admin", { size: 2147483648999 } )
+
+
+
+6) Import database open WINDOWS Coman Line -> cd to MongoDB/BIN 
+
+и потом mongoimport -d test -c admin < c:/bname.json
+
+
+
+
+7) Query example 
+
+
+ $m = new MongoClient();
+            $db = $m->selectDB('test');
+            $collection = new MongoCollection($db, 'admin');
+
+            $rangeQuery = array('store_id' => 1);
+
+            $cursor = $collection->find($rangeQuery);
+
+            foreach ($cursor as $doc) {
+                return $doc;
+            }
+            
+            //return $cursor[0];
+            die();
