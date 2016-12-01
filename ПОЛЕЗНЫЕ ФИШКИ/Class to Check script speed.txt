@@ -1,0 +1,49 @@
+class Duration
+{
+    private $start = array();
+    private $stop = array();
+    private $duration = array();
+    private $hours = array();
+    private $minutes = array();
+    private $seconds = array();
+    private $controller = array();
+
+    //remove all from log file ->>> to dave new script log file
+    public function __construct()
+    {
+        $handle = fopen ("log.log", "w+");
+        fclose($handle);
+    }
+
+    public function start($controller,$flag)
+    {
+        $this->start[$flag] = microtime(true);
+        $this->controller[$flag] = $controller;
+    }
+    public function stop($flag)
+    {
+        $this->stop[$flag] = microtime(true);
+        $this->duration[$flag] = (int)($this->stop[$flag] - $this->start[$flag]);
+        $this->hours[$flag] = (int)($this->duration[$flag]/60/60);
+        $this->minutes[$flag] = (int)($this->duration[$flag]/60)-$this->hours[$flag]*60;
+        $this->seconds[$flag] = (int)$this->duration[$flag]-$this->hours[$flag]*60*60-($this->minutes[$flag]*60);
+
+        error_log("Controller '".$this->controller[$flag]."', Description '".$flag."'  executive time = ".$this->seconds[$flag]."  second\n", 3, "log.log");
+    }
+
+}
+
+//place this before any script you want to calculate time
+//$time_start = microtime(true);
+$duration = new Duration();
+$duration->start("User/Index",'database');
+for($i=0; $i<2; $i++){
+    sleep(1);
+}
+$duration->stop('database');
+
+$duration->start("User/Index",'filter');
+for($i=0; $i<3; $i++){
+    sleep(1);
+}
+$duration->stop('filter');
