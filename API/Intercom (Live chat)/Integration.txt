@@ -1,0 +1,220 @@
+
+
+1) Регистрируемся на https://app.intercom.io/admins/sign_in
+
+2) Далее логинимся и
+
+	- создаем Personal Access Token в этом разделе
+
+	- и API Keys
+
+
+	- Из админки Intercom для чата нужно обязательно включить Intercom Acquire и Intercom Ingage (Далее если зайти в Ingage можно настроить автоматическую рассылку писем все пользователям которые заходят на сайт подключивший API Intercom)
+
+
+3) через композер качаем 2 библиотеки 
+
+
+	{
+  "require": {
+    "intercom/intercom-php": "*",
+    "guzzlehttp/guzzle": "*"
+  }
+}
+
+
+4) В контролере подключаем composer autoload (на примере codeigniter) 
+
+require FCPATH.'/vendor/autoload.php';
+
+
+use Intercom\IntercomClient;
+	
+	//пример $client = new IntercomClient('v8m8hova', 'b384c36cae5470dbb5cb8e0e45555be292caf24f');
+
+   $client = new IntercomClient($this->config->item('app_id'), $this->config->item('api_key'));
+
+
+   //создаем клиента 
+
+    $user = $client->users->create([
+        "email" => "bogdan@intercom.io",
+        "phone" => "345345345",
+        "name" => "bogdan dvinin"
+    ]);
+
+     // отправляем в вид параметры юзера 
+
+     $this->load->view('site/index', array('current_user' => $user)
+
+
+     5) В виде перед body устанавливаем такой JS код с параметрами нового юзера для чата
+
+
+        		<script>
+                    window.intercomSettings = {
+                        app_id: "v8m8hova",
+                        name: "<?php $current_user->name; ?>", // Full name
+                        email: "<?php echo $current_user->email; ?>", // Email address
+                        created_at: <?php echo $current_user->created_at; ?> // Signup date as a Unix timestamp
+                    };
+                </script>
+                <script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/v8m8hova';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>
+
+
+
+          -Теперь чат автоматически открываеться при загрузке станици и с сайта Intercom с админки можно рассылать сообщения всем пользователям сайте который поключил API
+
+
+
+
+
+
+
+          ----Остальной мануал тут https://github.com/intercom/intercom-php и тут https://developers.intercom.com/reference#api-summary
+                
+
+
+
+
+
+5) Перехватчик exeptions
+
+intercom/intercom-php/src/IntercomUsers -> method create      ---Класс по созданию пользователей для чата - перехватываем ошибки
+
+Перехватываем все ошибки связаные с действиями Users
+
+use GuzzleHttp\Exception;
+
+
+public function create($options)
+  {
+    //this is custom respons
+   //   return $this->client->post("users", $options);
+      $response = '';
+      try {
+          $response = $this->client->post("users", $options);
+
+      } catch (\Exception $exception) {
+
+          log_message('error','Intercom error : '.$exception->getResponse()->getBody()->getContents());
+      }
+      return $response;
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+  -------------------------------------------------
+  -------------------------------------------------ПРИМЕР РАЗНЫХ ЗАПРОСОВ
+
+
+  /require __DIR__ . '/vendor/autoload.php';
+//example of curl request https://developers.intercom.com/reference#update-lead
+/*
+ use Intercom\IntercomClient;
+
+$client = new IntercomClient(<insert_token_here>, null);
+ */
+
+//use Intercom\IntercomClient;
+//$client = new IntercomClient('v8m8hova', 'b384c36cae5470dbb5cb8e0e45555be292caf24f');
+
+
+//create user
+/*
+$cl = $client->users->create([
+        "email" => "bogdan@intercom.io",
+        "phone" => "345345345",
+        "name" => "bogdan dvinin"
+    ]);
+if($cl){
+    if(isset($cl->id)){
+        //respons parametr
+        var_dump($cl->type);
+        var_dump($cl->id);
+        var_dump($cl->email);
+        var_dump($cl->phone);
+    }
+}
+
+var_dump($cl);
+
+*/
+
+
+// Delete a user by ID
+//$delete = $client->users->deleteUser("58465e07e7f5d55cf90072e5");
+
+//var_dump($delete);
+
+
+// Get a user by ID
+//$client->users->getUser("570680a8a1bcbca8a90001b9");
+
+
+/*
+// Add companies to a user
+$client->users->create([
+    "email" => "test@intercom.io",
+    "companies" => [
+        [
+            "id" => "3"
+        ]
+    ]
+]);
+
+// Find a single user by email
+$client->users->getUsers(["email" => "bob@intercom.io"]);
+
+// List all users
+$client->users->getUsers([]);
+*/
+
+
+//------------------ CREATE LEAD
+/*
+$cl = $client->leads->create([
+    "email" => "kiuikirtyll@intercom.io",
+    "phone" => "345345345",
+    "name" => "bogdan"
+]);
+
+var_dump($cl);
+*/
+/*
+// List leads
+// See more options here: https://developers.intercom.io/reference#list-leads
+$client->leads->getLeads([]);
+
+// Find a lead by ID
+$client->leads->getLead("570680a8a1bcbca8a90000a9");
+
+// Delete a lead by ID
+$client->leads->deleteLead("570680a8a1bcbca8a90000a9");
+
+// Convert a Lead to a User
+$leads->convertLead([
+  "contact" => [
+    "user_id" => "8a88a590-e1c3-41e2-a502-e0649dbf721c"
+  ],
+  "user" => [
+    "email" => "winstonsmith@truth.org"
+  ]
+]);
+
+ */
+
+//ALL SDK EXAMPLE   https://github.com/intercom/intercom-php
+
