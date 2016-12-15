@@ -48,6 +48,8 @@ php bin/console doctrine:database:create
 
 	инфо о конкретном роутинге - php bin/console debug:router article_show
 
+	или Роутинг так - php app/console router:debug
+
 
 4) Validate Schema 
 
