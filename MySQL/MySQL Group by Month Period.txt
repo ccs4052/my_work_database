@@ -1,0 +1,19 @@
+
+
+
+
+---------------Групировка запроса по Периудам - периоды сохранены в виде Timestamp
+
+
+SELECT 
+                    (case when (sum(c.rating) > 0) 
+                     THEN 	
+                        TRUNCATE(FLOOR(sum(c.rating))/count(c.id),1)
+                     ELSE
+                        0
+                     END) as rating,
+                     MONTH(FROM_UNIXTIME(c.reviewReceived)) as month
+                     FROM customers c 
+                     WHERE c.businessId  = '{$businessId}' AND c.parentId = 0 
+                                or (c.parentId > 0 and c.reviewReceived > 0)
+                     AND c.reviewReceived >= UNIX_TIMESTAMP(CURRENT_DATE() - INTERVAL 12 MONTH) group by MONTH(FROM_UNIXTIME(c.reviewReceived))
