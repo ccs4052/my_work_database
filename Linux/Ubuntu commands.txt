@@ -1,0 +1,9 @@
+
+
+
+
+
+
+NGINX ---------------
+
+	 sudo service nginx restart   - nginx restart

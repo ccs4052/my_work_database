@@ -1,0 +1,4 @@
+
+
+
+sudo chmod -R 775 /home/get5s/workspace/get5stars/Symfony  - permission tp all folder in Symfony!!

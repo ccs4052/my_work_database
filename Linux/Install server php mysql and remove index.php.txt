@@ -1,0 +1,76 @@
+
+
+
+1) https://www.digitalocean.com/community/tutorials/how-to-install-linux-apache-mysql-php-lamp-stack-on-debian-8 - Install mysql php and apache2
+
+
+
+2) Change mysql password 
+	
+	Login to SSH
+
+	a) service mysql stop
+
+	b) mysqld_safe --skip-grant-tables &
+
+	v) mysql
+
+	g) UPDATE mysql.user SET Password=PASSWORD('NEW-PASSWORD') WHERE User='root';
+
+	 mysql >	FLUSH PRIVILEGES;
+	 mysql >	exit;
+
+	 d) mysqladmin -u root -p shutdown
+
+	 e) service mysql start
+
+
+
+
+
+
+
+
+
+
+
+
+3) Remove index.php 
+
+
+Step 1 :
+
+Add this in htaccess file
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  #RewriteBase /
+
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^ index.php [QSA,L]
+</IfModule>
+
+Step 2 :
+
+
+Remove index.php in codeigniter config
+
+$config['base_url'] = ''; 
+$config['index_page'] = '';
+
+Step 3 :
+
+
+Allow overriding htaccess in Apache Configuration (Command)
+
+sudo nano /etc/apache2/apache2.conf
+
+and edit the file & change to
+
+
+ 
+<Directory /var/www/html/>                       /var/www/html/ - root directory
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+</Directory>
