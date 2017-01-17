@@ -1,0 +1,20 @@
+
+1) Create .sh script
+
+#!/bin/bash
+sudo mysqldump -u root -pcci90da token>/var/www/sqldump/token.sql          ->>> -pcci90da     ->>> -p это команда пароля пишется вместе с паролем без пробела
+sudo zip "/var/www/sqldump/$(date)_token.zip" /var/www/sqldump/token.sql   ->>> создаем архив  из дампа 
+sudo rm /var/www/sqldump/token.sql                                         ->>> удаляем sql файл потому как уже создали архив
+
+
+
+
+2)  sudo crontab -e  - Open cron config file and add line to open script to run every day
+
+
+и записываем в него эту строку - теперь крон будет запускать этот скрипт 1 раз в сутки 
+
+00 2 * * * bash /var/www/sqldump/script/mysql_token_dump.sh
+
+
+После сохранения крон автоматически начинает работать!!!!
