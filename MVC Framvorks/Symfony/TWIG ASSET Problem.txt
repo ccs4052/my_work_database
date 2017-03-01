@@ -1,3 +1,5 @@
 
 
 1)  php app/console assetic:dump --env=prod --no-debug - если стили не подключаются попробывать эту команду
+
+2) php app/console assets:install web - для картинок
