@@ -1,4 +1,4 @@
 
 
-
-git rm -r --cached .idea
+//If git ignore do not working
+git rm -r --cached .
