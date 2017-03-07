@@ -1,0 +1,99 @@
+
+1) Обновить все пакеты Ubuntu
+
+sudo apt-get update
+
+
+
+-установка Java (для PhpStorm)
+
+	- java -version    - проверяем версию джава
+	- sudo apt-get install default-jre      - установка Java
+
+	- sudo apt-get install openjdk-7-jre    - становка OpenJdk
+
+
+
+
+
+	2) Install Nginx                    host in  /etc/hostss
+
+
+	    - sudo apt-get update
+    	- sudo apt-get install nginx
+
+
+    	- sudo ufw allow 'Nginx HTTP' - выключаем SSL сертифика проверку если нужно
+
+    		//проверяем ip  (на вируал бокс такой 127.0.0.1)
+		  -  sudo apt-get install curl
+		  -  curl -4 icanhazip.com
+
+
+		  			 Start server - sudo systemctl stop nginx
+
+		  			 Stop server  - sudo systemctl start nginx   (restart)
+
+		  			 Reload (without drop connection) - sudo systemctl reload nginx
+
+
+		  			 			Content put to  /var/www/html
+
+		  			 			Server Configuration - > /etc/nginx/nginx.conf
+
+		  			 							/etc/nginx/sites-available: The directory where per-site "server blocks" can be stored. Nginx will not use the configuration files found in this directory unless they are linked to the sites-enabled directory (see below). Typically, all server block configuration is done in this directory, and then enabled by linking to the other directory.
+
+		  			 							/etc/nginx/sites-enabled/: The directory where enabled per-site "server blocks" are stored. Typically, these are created by linking to configuration files found in the sites-available directory.
+
+		  			 							/etc/nginx/snippets: This directory contains configuration fragments that can be included elsewhere in the Nginx configuration. Potentially repeatable configuration segments are good candidates for refactoring into snippets.
+
+		  			 			Server Logs
+
+		  			 							/var/log/nginx/access.log: Every request to your web server is recorded in this log file unless Nginx is configured to do otherwise.
+
+		  			 							/var/log/nginx/error.log: Any Nginx errors will be recorded in this log.
+
+
+
+
+
+
+
+
+    3) Install PHP
+
+    	- sudo apt install php7.0-cli
+
+
+
+
+    4) Install MySql 
+
+    	- sudo apt-get install mysql-server
+
+    	mysql -uroot -p - подключиться к серверу
+
+
+
+
+    	Test MySql 
+
+    	- service mysql status
+
+    	Старт Mysql
+    	-sudo service mysql start
+
+
+    	PHPMyDamin
+    		- sudo apt-get install phpmyadmin
+
+
+    									Открыть базу mysql-uroot -p
+
+
+    									1)Список баз  
+    										mysql> show databases;
+
+    									2)Посмотреть таблицу 
+    										mysql> show tables;
+
