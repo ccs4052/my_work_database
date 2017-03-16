@@ -51,3 +51,10 @@ class CreateTasksTable extends Migration
         Schema::drop('tasks');
     }
 }
+
+
+
+
+//Migration to a special folder
+
+ php artisan make:migration create_payment_table --create=payment_methods --path=/vendor/mfy/main/src/AdvertSocket/migrations

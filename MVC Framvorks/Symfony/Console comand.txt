@@ -37,7 +37,7 @@ php bin/console doctrine:database:create
 
 4) Когда создали новую Сушьность Entity можно автоматически добавить все гетеры и сетеры с этой командой 
 
-	php bin/console doctrine:generate:entities AppBundle/Entity/Product
+	php bin/console doctrine:generate:entities AppBundle/Entity/Product      -- SET GETERS AND SETTERS
 
 	php bin/console doctrine:generate:entities AppBundle - генирирует все гетеры и сетеры для все классов
 

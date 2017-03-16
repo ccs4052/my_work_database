@@ -1,0 +1,25 @@
+
+1) mysql -u root -p       - connect to mysql
+
+
+2) SHOW DATABASES;        - display database
+
+3) CREATE DATABASE name; - create database
+
+4) DROP DATABASE name; - delete database
+
+5) USE name;  - use database
+
+6) SHOW tables; - show database table
+
+7) Create table example ->>>
+
+	CREATE TABLE potluck (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+	name VARCHAR(20),
+	food VARCHAR(30),
+	confirmed CHAR(1), 
+	signup_date DATE);
+
+8) DESCRIBE test;      - display table fields
+
+9) INSERT INTO `potluck` (`id`,`name`,`food`,`confirmed`,`signup_date`) VALUES (NULL, "John", "Casserole","Y", '2012-04-11');   - Insert data via terminal in Ubuntu

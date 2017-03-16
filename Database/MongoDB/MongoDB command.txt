@@ -1,0 +1,11 @@
+
+
+1) delete database
+	use temp
+	db.dropDatabase()
+
+2) display collection
+	show collections
+
+3) create database
+	use mydb

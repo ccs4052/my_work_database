@@ -1,0 +1,4 @@
+
+1) /etc/nginx/nginx.conf
+   /etc/nginx/sites-available
+    /etc/nginx/sites-enabled
